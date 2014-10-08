@@ -3,6 +3,7 @@
     public enum TileType
     {
         Unknown,
+        Stone,
         Water,
         Grass
     }

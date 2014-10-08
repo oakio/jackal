@@ -32,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build.Tasks.v4.0" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,8 +42,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\AttackPirates.cs" />
+    <Compile Include="Actions\DropCoins.cs" />
+    <Compile Include="Actions\Landing.cs" />
+    <Compile Include="MapGenerator.cs" />
+    <Compile Include="Actions\MovePirate.cs" />
+    <Compile Include="Actions\Naviation.cs" />
+    <Compile Include="Actions\Explore.cs" />
+    <Compile Include="Actions\Shipping.cs" />
+    <Compile Include="Actions\TakeCoin.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="Actions\GameAction.cs" />
+    <Compile Include="Actions\IGameAction.cs" />
+    <Compile Include="Actions\GameActionList.cs" />
+    <Compile Include="Monitor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
