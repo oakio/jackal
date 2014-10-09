@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Schema;
 using Jackal;
 using JackalHost.Actions;
 
@@ -11,7 +9,9 @@ namespace JackalHost
         private readonly IPlayer[] _players;
 
         public Board Board;
+
         public Dictionary<int, int> Scores; // TeamId->Total couns
+        public int CoinsLeft;
 
         public Game(IPlayer[] players, Board board)
         {
@@ -19,6 +19,11 @@ namespace JackalHost
 
             Board = board;
             Scores = new Dictionary<int, int>();
+            foreach (var team in Board.Teams)
+            {
+                Scores[team.Id] = 0;
+            }
+            CoinsLeft = Board.Generator.TotalCoins;
         }
 
         public bool Turn()
@@ -224,17 +229,7 @@ namespace JackalHost
 
         public bool IsGameOver
         {
-            get
-            {
-                int totalCoins = 0;
-                foreach (var team in Board.Teams)
-                {
-                    var coins = team.Ship.Coins;
-                    totalCoins += coins;
-                    Scores[team.Id] = coins;
-                }
-                return totalCoins == Board.Generator.TotalCoins;
-            }
+            get { return CoinsLeft == 0; }
         }
 
         public int TurnNo { get; set; }
