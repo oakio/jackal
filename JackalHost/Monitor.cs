@@ -36,7 +36,10 @@ namespace JackalHost
                 Console.ResetColor();
             }
             Console.WriteLine();
+            Console.BackgroundColor = GetTeamColor(_game.CurrentTeamId);
             Console.Write("TurnNo: {0}", _game.TurnNo);
+            Console.ResetColor();
+
             Console.WriteLine();
         }
 
