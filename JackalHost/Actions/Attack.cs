@@ -2,11 +2,11 @@
 
 namespace JackalHost.Actions
 {
-    class AttackPirates : IGameAction
+    class Attack : IGameAction
     {
         private readonly Pirate[] _enemy;
 
-        public AttackPirates(Pirate[] enemy)
+        public Attack(Pirate[] enemy)
         {
             _enemy = enemy;
         }

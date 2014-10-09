@@ -2,12 +2,12 @@
 
 namespace JackalHost.Actions
 {
-    class MovePirate : IGameAction
+    class Walk : IGameAction
     {
         private readonly Pirate _pirate;
         private readonly Position _to;
 
-        public MovePirate(Pirate pirate, Position to)
+        public Walk(Pirate pirate, Position to)
         {
             _pirate = pirate;
             _to = to;
