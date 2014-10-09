@@ -7,17 +7,16 @@ namespace JackalHost
 {
     public class Game
     {
+        private readonly IPlayer[] _players;
+
         public Board Board;
         public Dictionary<int, int> Scores; // TeamId->Total couns
 
-        private readonly IPlayer[] _players;
-        private readonly MapGenerator _generator;
-
-        public Game(IPlayer[] players, MapGenerator generator)
+        public Game(IPlayer[] players, Board board)
         {
             _players = players;
-            _generator = generator;
-            Board = new Board();
+
+            Board = board;
             Scores = new Dictionary<int, int>();
         }
 
@@ -107,7 +106,7 @@ namespace JackalHost
                             moves.Add(new Move(pirate, to, false));
                             actions.Add(GameActionList.Create(
                                 new DropCoins(Board, pirate),
-                                new Explore(Board, to, _generator),
+                                new Explore(Board, to),
                                 new MovePirate(Board, pirate, to),
                                 new Landing(Board, pirate, ship)));
                         }
@@ -117,7 +116,7 @@ namespace JackalHost
                         moves.Add(new Move(pirate, to, false));
                         actions.Add(GameActionList.Create(
                             new DropCoins(Board, pirate),
-                            new Explore(Board, to, _generator),
+                            new Explore(Board, to),
                             new MovePirate(Board, pirate, to)));
                     }
 
@@ -242,7 +241,7 @@ namespace JackalHost
                     totalCoins += coins;
                     Scores[team.Id] = coins;
                 }
-                return totalCoins == _generator.TotalCoins;
+                return totalCoins == Board.Generator.TotalCoins;
             }
         }
 

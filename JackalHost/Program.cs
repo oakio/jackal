@@ -16,8 +16,8 @@ namespace JackalHost
             };
             const int mapId = 987412;
 
-            var mapGen = new MapGenerator(mapId);
-            var game = new Game(players, mapGen);
+            var board = new Board(mapId);
+            var game = new Game(players, board);
             var monitor = new Monitor(game);
 
             while (!game.IsGameOver)

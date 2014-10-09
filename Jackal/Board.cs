@@ -6,14 +6,15 @@ namespace Jackal
     {
         public const int Size = 13;
 
+        public MapGenerator Generator;
         public Tile[,] Map;
         public Team[] Teams;
 
-        public Board()
+        public Board(int mapId)
         {
+            Generator = new MapGenerator(mapId);
             Map = new Tile[Size, Size];
             InitMap();
-
 
             Teams = new Team[4];
             InitTeam(0, (Size - 1)/2, 0);
@@ -29,7 +30,6 @@ namespace Jackal
 
         private void InitMap()
         {
-
             for (int i = 0; i < Size; i++)
             {
                 SetWater(i, 0);

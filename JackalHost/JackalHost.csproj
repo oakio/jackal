@@ -45,7 +45,6 @@
     <Compile Include="Actions\AttackPirates.cs" />
     <Compile Include="Actions\DropCoins.cs" />
     <Compile Include="Actions\Landing.cs" />
-    <Compile Include="MapGenerator.cs" />
     <Compile Include="Actions\MovePirate.cs" />
     <Compile Include="Actions\Naviation.cs" />
     <Compile Include="Actions\Explore.cs" />

@@ -7,10 +7,10 @@ namespace JackalHost.Actions
         private readonly Position _position;
         private readonly MapGenerator _generator;
 
-        public Explore(Board board, Position position, MapGenerator generator) : base(board)
+        public Explore(Board board, Position position) : base(board)
         {
             _position = position;
-            _generator = generator;
+            _generator = Board.Generator;
         }
 
         public override void Act()

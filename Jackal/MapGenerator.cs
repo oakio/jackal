@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jackal;
 
-namespace JackalHost
+namespace Jackal
 {
     public class MapGenerator
     {
