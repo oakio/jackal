@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Schema;
 using Jackal;
 using JackalHost.Actions;
 
@@ -107,7 +108,6 @@ namespace JackalHost
                             actions.Add(GameActionList.Create(
                                 new DropCoin(pirate),
                                 new Explore(to),
-                                new Walk(pirate, to),
                                 new Landing(pirate, ship)));
                         }
                     }
@@ -161,14 +161,8 @@ namespace JackalHost
                 }
                 case TileType.Grass:
                 {
-                    var enemy = new List<Pirate>();
-                    foreach (var enemyTeam in team.Enemies)
-                    {
-                        Pirate[] enemyPirates = enemyTeam.Pirates.Where(p => p.Position == to).ToArray();
-                        enemy.AddRange(enemyPirates);
-                    }
-
-                    if (enemy.Count > 0)
+                    var attack = tile.OccupationTeamId.HasValue && tile.OccupationTeamId.Value != pirate.TeamId;
+                    if (attack)
                     {
                         // attack
                         if (onShip)
@@ -178,8 +172,7 @@ namespace JackalHost
                                 moves.Add(new Move(pirate, to, false));
                                 actions.Add(GameActionList.Create(
                                     new DropCoin(pirate),
-                                    new Attack(enemy.ToArray()),
-                                    new Walk(pirate, to),
+                                    new Attack(to),
                                     new Landing(pirate, ship)));
                             }
                         }
@@ -188,7 +181,7 @@ namespace JackalHost
                             moves.Add(new Move(pirate, to, false));
                             actions.Add(GameActionList.Create(
                                 new DropCoin(pirate),
-                                new Attack(enemy.ToArray()),
+                                new Attack(to),
                                 new Walk(pirate, to)));
                         }
                     }
@@ -200,7 +193,6 @@ namespace JackalHost
                             {
                                 moves.Add(new Move(pirate, to, false));
                                 actions.Add(GameActionList.Create(
-                                    new Walk(pirate, to),
                                     new Landing(pirate, ship)));
                             }
                         }

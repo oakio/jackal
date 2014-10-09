@@ -4,27 +4,28 @@ namespace JackalHost.Actions
 {
     class Attack : IGameAction
     {
-        private readonly Pirate[] _enemy;
+        private readonly Position _to;
 
-        public Attack(Pirate[] enemy)
+        public Attack(Position to)
         {
-            _enemy = enemy;
+            _to = to;
         }
-
+        
         public void Act(Game game)
         {
             Board board = game.Board;
-            foreach (var enemy in _enemy)
-            {
-                Team enemyTeam = board.Teams[enemy.TeamId];
-                Position position = enemy.Position;
-                Tile tile = board.Map[position.X, position.Y];
+            Tile tile = board.Map[_to.X, _to.Y];
 
-                tile.Coins += enemy.Coins;
-                enemy.Coins = 0;
-                enemy.Position = enemyTeam.Ship.Position;
-                enemyTeam.Ship.Crew.Add(enemy);
+            foreach (var enemyPirate in tile.Pirates)
+            {
+                Team enemyTeam = board.Teams[enemyPirate.TeamId];
+                tile.Coins += enemyPirate.Coins;
+                enemyPirate.Coins = 0;
+                enemyPirate.Position = enemyTeam.Ship.Position;
+                enemyTeam.Ship.Crew.Add(enemyPirate);
             }
+            tile.OccupationTeamId = null;
+            tile.Pirates.Clear();
         }
     }
 }

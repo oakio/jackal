@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Jackal;
 
 namespace JackalHost
@@ -103,19 +104,17 @@ namespace JackalHost
                         }
                         else
                         {
-                            foreach (var pirate in team.Pirates)
+                            Pirate pirate = tile.Pirates.FirstOrDefault();
+                            if (pirate != null)
                             {
-                                if (pirate.Position == position)
+                                foreground = ConsoleColor.White;
+                                background = GetTeamColor(team.Id);
+                                int coins = pirate.Coins;
+                                if (coins > 0)
                                 {
-                                    foreground = ConsoleColor.White;
-                                    background = GetTeamColor(team.Id);
-                                    int coins = pirate.Coins;
-                                    if (coins > 0)
-                                    {
-                                        ;
-                                    }
-                                    symbol = coins == 0 ? "p" : coins.ToString();
+                                    ;
                                 }
+                                symbol = coins == 0 ? "p" : coins.ToString();
                             }
                         }
                     }
