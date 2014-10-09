@@ -201,7 +201,6 @@ namespace JackalHost
                             {
                                 moves.Add(new Move(pirate, to, false));
                                 actions.Add(GameActionList.Create(
-                                    new AttackPirates(Board, enemy.ToArray()),
                                     new MovePirate(Board, pirate, to),
                                     new Landing(Board, pirate, ship)));
                             }
@@ -211,7 +210,11 @@ namespace JackalHost
                             moves.Add(new Move(pirate, to, false));
                             actions.Add(GameActionList.Create(
                                 new DropCoins(Board, pirate),
-                                new AttackPirates(Board, enemy.ToArray()),
+                                new MovePirate(Board, pirate, to)));
+
+                            moves.Add(new Move(pirate, to, true));
+                            actions.Add(GameActionList.Create(
+                                new TakeCoin(Board, pirate),
                                 new MovePirate(Board, pirate, to)));
                         }                       
                     }
