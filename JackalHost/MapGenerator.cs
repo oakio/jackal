@@ -7,44 +7,58 @@ namespace JackalHost
 {
     public class MapGenerator
     {
+        public int Size = 11;
         public int TotalCoins = 37;
 
-        static readonly Random Rnd = new Random(42);
+        private readonly Random _rand;
         private readonly List<Tile> _tiles;
-        private int _next;
+        private int _nextTile;
 
-        public MapGenerator()
+        public MapGenerator(int mapId)
         {
-            _tiles = new List<Tile>(11*11);
+            _rand = new Random(mapId);
+
+            _tiles = new List<Tile>(Size*Size);
 
             for (int i = 0; i < 5; i++)
             {
-                _tiles.Add(new Tile(TileType.Grass) {Coins = 1});
-                _tiles.Add(new Tile(TileType.Grass) {Coins = 2});
+                AddTile(new Tile(TileType.Grass, 1));
+                AddTile(new Tile(TileType.Grass, 2));
             }
 
             for (int i = 0; i < 3; i++)
             {
-                _tiles.Add(new Tile(TileType.Grass) {Coins = 3});
+                AddTile(new Tile(TileType.Grass, 3));
             }
 
             for (int i = 0; i < 2; i++)
             {
-                _tiles.Add(new Tile(TileType.Grass) {Coins = 4});
+                AddTile(new Tile(TileType.Grass, 4));
             }
 
-            _tiles.Add(new Tile(TileType.Grass) {Coins = 5});
+            AddTile(new Tile(TileType.Grass, 5));
 
-            for (int i = 0; i < 110; i++)
+            for (int i = 0; i < (Size*Size - 11); i++)
             {
-                _tiles.Add(new Tile(TileType.Grass));
+                AddTile(new Tile(TileType.Grass));
             }
-            _tiles = _tiles.OrderBy(x => Rnd.Next()).ToList();
+
+            _tiles = ShuffleTiles();
+        }
+
+        private void AddTile(Tile tile)
+        {
+            _tiles.Add(tile);
+        }
+
+        private List<Tile> ShuffleTiles()
+        {
+            return _tiles.OrderBy(x => _rand.Next()).ToList();
         }
 
         public Tile GetNext()
         {
-            return _tiles[_next++];
+            return _tiles[_nextTile++];
         }
     }
 }

@@ -14,14 +14,19 @@ namespace JackalHost
                 new RandomPlayer(),
                 new RandomPlayer(),
             };
+            const int mapId = 987412;
 
-            var game = new Game(players);
+            var mapGen = new MapGenerator(mapId);
+            var game = new Game(players, mapGen);
             var monitor = new Monitor(game);
 
             while (!game.IsGameOver)
             {
-                monitor.Draw();
-                
+
+                if (game.TurnNo%100 == 0)
+                {
+                    monitor.Draw();
+                }
                 //Console.ReadKey();
                 game.Turn();
             }

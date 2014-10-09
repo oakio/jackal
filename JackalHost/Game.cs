@@ -13,12 +13,12 @@ namespace JackalHost
         private readonly IPlayer[] _players;
         private readonly MapGenerator _generator;
 
-        public Game(IPlayer[] players)
+        public Game(IPlayer[] players, MapGenerator generator)
         {
             _players = players;
+            _generator = generator;
             Board = new Board();
             Scores = new Dictionary<int, int>();
-            _generator = new MapGenerator();
         }
 
         public bool Turn()
