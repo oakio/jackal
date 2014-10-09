@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\AttackPirates.cs" />
-    <Compile Include="Actions\DropCoins.cs" />
+    <Compile Include="Actions\DropCoin.cs" />
     <Compile Include="Actions\Landing.cs" />
     <Compile Include="Actions\MovePirate.cs" />
     <Compile Include="Actions\Naviation.cs" />
@@ -51,7 +51,6 @@
     <Compile Include="Actions\Shipping.cs" />
     <Compile Include="Actions\TakeCoin.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="Actions\GameAction.cs" />
     <Compile Include="Actions\IGameAction.cs" />
     <Compile Include="Actions\GameActionList.cs" />
     <Compile Include="Monitor.cs" />

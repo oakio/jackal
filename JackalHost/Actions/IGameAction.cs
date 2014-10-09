@@ -1,7 +1,7 @@
 ﻿namespace JackalHost.Actions
 {
-    public interface IGameAction
+    interface IGameAction
     {
-        void Act();
+        void Act(Game game);
     }
 }

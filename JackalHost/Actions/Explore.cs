@@ -2,20 +2,19 @@
 
 namespace JackalHost.Actions
 {
-    class Explore : GameAction
+    class Explore : IGameAction
     {
         private readonly Position _position;
-        private readonly MapGenerator _generator;
-
-        public Explore(Board board, Position position) : base(board)
+        
+        public Explore(Position position)
         {
             _position = position;
-            _generator = Board.Generator;
         }
 
-        public override void Act()
+        public void Act(Game game)
         {
-            Board.Map[_position.X, _position.Y] = _generator.GetNext();
+            Board board = game.Board;
+            board.Map[_position.X, _position.Y] = board.Generator.GetNext();
         }
     }
 }

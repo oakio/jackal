@@ -2,22 +2,23 @@
 
 namespace JackalHost.Actions
 {
-    class AttackPirates : GameAction
+    class AttackPirates : IGameAction
     {
         private readonly Pirate[] _enemy;
 
-        public AttackPirates(Board board, Pirate[] enemy) : base(board)
+        public AttackPirates(Pirate[] enemy)
         {
             _enemy = enemy;
         }
 
-        public override void Act()
+        public void Act(Game game)
         {
+            Board board = game.Board;
             foreach (var enemy in _enemy)
             {
-                Team enemyTeam = Board.Teams[enemy.TeamId];
+                Team enemyTeam = board.Teams[enemy.TeamId];
                 Position position = enemy.Position;
-                Tile tile = Board.Map[position.X, position.Y];
+                Tile tile = board.Map[position.X, position.Y];
 
                 tile.Coins += enemy.Coins;
                 enemy.Coins = 0;

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using Jackal;
 
 namespace JackalHost.Actions
 {
-    public class GameActionList : IGameAction
+    class GameActionList : IGameAction
     {
         private readonly List<IGameAction> _actions;
 
@@ -11,26 +12,17 @@ namespace JackalHost.Actions
             _actions = new List<IGameAction>(actions);
         }
 
-        public void Act()
+        public void Act(Game game)
         {
             foreach (var action in _actions)
             {
-                action.Act();
+                action.Act(game);
             }
         }
 
         public static GameActionList Create(params IGameAction[] actions)
         {
             return new GameActionList(actions);
-        }
-
-        public GameActionList AddIf(IGameAction action, bool condition)
-        {
-            if (condition)
-            {
-                _actions.Add(action);
-            }
-            return this;
         }
     }
 }

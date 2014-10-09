@@ -2,19 +2,20 @@
 
 namespace JackalHost.Actions
 {
-    class TakeCoin : GameAction
+    class TakeCoin : IGameAction
     {
         private readonly Pirate _pirate;
 
-        public TakeCoin(Board board, Pirate pirate) : base(board)
+        public TakeCoin(Pirate pirate)
         {
             _pirate = pirate;
         }
 
-        public override void Act()
+        public void Act(Game game)
         {
+            Board board = game.Board;
             Position position = _pirate.Position;
-            Tile tile = Board.Map[position.X, position.Y];
+            Tile tile = board.Map[position.X, position.Y];
             if (tile.Coins == 0 || _pirate.Coins > 0)
             {
                 return;

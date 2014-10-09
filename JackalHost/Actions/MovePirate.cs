@@ -2,18 +2,18 @@
 
 namespace JackalHost.Actions
 {
-    public class MovePirate : GameAction
+    class MovePirate : IGameAction
     {
         private readonly Pirate _pirate;
         private readonly Position _to;
 
-        public MovePirate(Board board, Pirate pirate, Position to) : base(board)
+        public MovePirate(Pirate pirate, Position to)
         {
             _pirate = pirate;
             _to = to;
         }
 
-        public override void Act()
+        public void Act(Game game)
         {
             _pirate.Position = _to;
         }

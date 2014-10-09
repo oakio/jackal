@@ -32,7 +32,7 @@ namespace JackalHost
             int moveNo = me.OnMove(Board, availableMoves.ToArray());
 
             IGameAction action = actions[moveNo];
-            action.Act();
+            action.Act(this);
             TurnNo++;
             return true;
         }
@@ -105,19 +105,19 @@ namespace JackalHost
                             // landing
                             moves.Add(new Move(pirate, to, false));
                             actions.Add(GameActionList.Create(
-                                new DropCoins(Board, pirate),
-                                new Explore(Board, to),
-                                new MovePirate(Board, pirate, to),
-                                new Landing(Board, pirate, ship)));
+                                new DropCoin(pirate),
+                                new Explore(to),
+                                new MovePirate(pirate, to),
+                                new Landing(pirate, ship)));
                         }
                     }
                     else
                     {
                         moves.Add(new Move(pirate, to, false));
                         actions.Add(GameActionList.Create(
-                            new DropCoins(Board, pirate),
-                            new Explore(Board, to),
-                            new MovePirate(Board, pirate, to)));
+                            new DropCoin(pirate),
+                            new Explore(to),
+                            new MovePirate(pirate, to)));
                     }
 
                     break;
@@ -133,14 +133,14 @@ namespace JackalHost
                         // shipping with coins
                         moves.Add(new Move(pirate, to, true));
                         actions.Add(GameActionList.Create(
-                            new TakeCoin(Board, pirate),
-                            new Shipping(Board, pirate, ship)));
+                            new TakeCoin(pirate),
+                            new Shipping(pirate, ship)));
 
                         // shipping without coins
                         moves.Add(new Move(pirate, to, false));
                         actions.Add(GameActionList.Create(
-                            new DropCoins(Board, pirate),
-                            new Shipping(Board, pirate, ship)));
+                            new DropCoin(pirate),
+                            new Shipping(pirate, ship)));
                     }
                     else if (pirate.Position == ship.Position)
                     {
@@ -155,7 +155,7 @@ namespace JackalHost
                         // navigation
                         moves.Add(new Move(pirate, to, true));
                         actions.Add(GameActionList.Create(
-                            new Naviation(Board, ship, to)));
+                            new Naviation(ship, to)));
                     }
                     break;
                 }
@@ -177,19 +177,19 @@ namespace JackalHost
                             {
                                 moves.Add(new Move(pirate, to, false));
                                 actions.Add(GameActionList.Create(
-                                    new DropCoins(Board, pirate),
-                                    new AttackPirates(Board, enemy.ToArray()),
-                                    new MovePirate(Board, pirate, to),
-                                    new Landing(Board, pirate, ship)));
+                                    new DropCoin(pirate),
+                                    new AttackPirates(enemy.ToArray()),
+                                    new MovePirate(pirate, to),
+                                    new Landing(pirate, ship)));
                             }
                         }
                         else
                         {
                             moves.Add(new Move(pirate, to, false));
                             actions.Add(GameActionList.Create(
-                                new DropCoins(Board, pirate),
-                                new AttackPirates(Board, enemy.ToArray()),
-                                new MovePirate(Board, pirate, to)));
+                                new DropCoin(pirate),
+                                new AttackPirates(enemy.ToArray()),
+                                new MovePirate(pirate, to)));
                         }
                     }
                     else
@@ -200,21 +200,21 @@ namespace JackalHost
                             {
                                 moves.Add(new Move(pirate, to, false));
                                 actions.Add(GameActionList.Create(
-                                    new MovePirate(Board, pirate, to),
-                                    new Landing(Board, pirate, ship)));
+                                    new MovePirate(pirate, to),
+                                    new Landing(pirate, ship)));
                             }
                         }
                         else
                         {
                             moves.Add(new Move(pirate, to, false));
                             actions.Add(GameActionList.Create(
-                                new DropCoins(Board, pirate),
-                                new MovePirate(Board, pirate, to)));
+                                new DropCoin(pirate),
+                                new MovePirate(pirate, to)));
 
                             moves.Add(new Move(pirate, to, true));
                             actions.Add(GameActionList.Create(
-                                new TakeCoin(Board, pirate),
-                                new MovePirate(Board, pirate, to)));
+                                new TakeCoin(pirate),
+                                new MovePirate(pirate, to)));
                         }                       
                     }
                     break;

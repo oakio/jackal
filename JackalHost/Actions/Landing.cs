@@ -2,18 +2,18 @@
 
 namespace JackalHost.Actions
 {
-    class Landing : GameAction
+    class Landing : IGameAction
     {
         private readonly Pirate _pirate;
         private readonly Ship _ship;
 
-        public Landing(Board board, Pirate pirate, Ship ship) : base(board)
+        public Landing(Pirate pirate, Ship ship)
         {
             _pirate = pirate;
             _ship = ship;
         }
 
-        public override void Act()
+        public void Act(Game game)
         {
             _ship.Crew.Remove(_pirate);
         }

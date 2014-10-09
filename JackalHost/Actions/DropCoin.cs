@@ -2,24 +2,25 @@
 
 namespace JackalHost.Actions
 {
-    public class DropCoins : GameAction
+    class DropCoin : IGameAction
     {
         private readonly Pirate _pirate;
 
-        public DropCoins(Board board, Pirate pirate) : base(board)
+        public DropCoin(Pirate pirate)
         {
             _pirate = pirate;
         }
 
-        public override void Act()
+        public void Act(Game game)
         {
+            Board board = game.Board;
             if (_pirate.Coins == 0)
             {
                 return;
             }
 
             Position position = _pirate.Position;
-            Tile tile = Board.Map[position.X, position.Y];
+            Tile tile = board.Map[position.X, position.Y];
             tile.Coins += _pirate.Coins;
             _pirate.Coins = 0;
         }
