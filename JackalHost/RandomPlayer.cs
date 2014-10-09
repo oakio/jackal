@@ -9,7 +9,7 @@ namespace JackalHost
 
         public int OnMove(Board board, Move[] availableMoves)
         {
-            return Rnd.Next(0, availableMoves.Length - 1);
+            return Rnd.Next(0, availableMoves.Length);
         }
     }
 }
