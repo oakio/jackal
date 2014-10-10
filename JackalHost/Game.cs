@@ -13,6 +13,9 @@ namespace JackalHost
         public Dictionary<int, int> Scores; // TeamId->Total couns
         public int CoinsLeft;
 
+        private readonly List<Move> _availableMoves;
+        private readonly List<IGameAction> _actions;
+
         public Game(IPlayer[] players, Board board)
         {
             _players = players;
@@ -24,6 +27,9 @@ namespace JackalHost
                 Scores[team.Id] = 0;
             }
             CoinsLeft = Board.Generator.TotalCoins;
+
+            _availableMoves = new List<Move>();
+            _actions = new List<IGameAction>();
         }
 
         public bool Turn()
@@ -31,25 +37,23 @@ namespace JackalHost
             int teamId = CurrentTeamId;
             IPlayer me = _players[teamId];
 
-            List<Move> availableMoves;
-            List<IGameAction> actions;
-            GetAvailableMoves(teamId, out availableMoves, out actions);
+            GetAvailableMoves(teamId);
 
-            int moveNo = me.OnMove(Board, availableMoves.ToArray());
+            int moveNo = me.OnMove(Board, _availableMoves.ToArray());
 
-            IGameAction action = actions[moveNo];
+            IGameAction action = _actions[moveNo];
             action.Act(this);
             TurnNo++;
             return true;
         }
 
-        private void GetAvailableMoves(int teamId, out List<Move> moves, out List<IGameAction> actions)
+        private void GetAvailableMoves(int teamId)
         {
+            _availableMoves.Clear();
+            _actions.Clear();
+            
             Team team = Board.Teams[teamId];
             Ship ship = team.Ship;
-
-            moves = new List<Move>();
-            actions = new List<IGameAction>();
 
             foreach (var pirate in team.Pirates)
             {
@@ -57,42 +61,44 @@ namespace JackalHost
 
                 if (position.Y > 0) // N
                 {
-                    Step(moves, actions, position.X, position.Y - 1, pirate, ship, team);
+                    Step(position.X, position.Y - 1, pirate, ship, team);
                 }
                 if (position.X < (Board.Size-1) && position.Y > 0) // NE
                 {
-                    Step(moves, actions, position.X + 1, position.Y - 1, pirate, ship, team);
+                    Step(position.X + 1, position.Y - 1, pirate, ship, team);
                 }
                 if (position.X < (Board.Size - 1)) // E
                 {
-                    Step(moves, actions, position.X + 1, position.Y, pirate, ship, team);
+                    Step(position.X + 1, position.Y, pirate, ship, team);
                 }
                 if (position.X < (Board.Size - 1) && position.Y < (Board.Size-1)) // SE
                 {
-                    Step(moves, actions, position.X + 1, position.Y + 1, pirate, ship, team);
+                    Step(position.X + 1, position.Y + 1, pirate, ship, team);
                 }
                 if (position.Y < (Board.Size - 1)) // S
                 {
-                    Step(moves, actions, position.X, position.Y + 1, pirate, ship, team);
+                    Step(position.X, position.Y + 1, pirate, ship, team);
                 }
                 if (position.X > 0 && position.Y < (Board.Size - 1)) // SW
                 {
-                    Step(moves, actions, position.X - 1, position.Y + 1, pirate, ship, team);
+                    Step(position.X - 1, position.Y + 1, pirate, ship, team);
                 }
                 if (position.X > 0) // W
                 {
-                    Step(moves, actions, position.X - 1, position.Y, pirate, ship, team);
+                    Step(position.X - 1, position.Y, pirate, ship, team);
                 }
                 if (position.X > 0 && position.Y > 0) // NW
                 {
-                    Step(moves, actions, position.X - 1, position.Y - 1, pirate, ship, team);
+                    Step(position.X - 1, position.Y - 1, pirate, ship, team);
                 }
-
             }
         }
 
-        private void Step(List<Move> moves, List<IGameAction> actions, int toX, int toY, Pirate pirate, Ship ship, Team team)
+        private void Step(int toX, int toY, Pirate pirate, Ship ship, Team team)
         {
+            var moves = _availableMoves;
+            var actions = _actions;
+
             var to = new Position(toX, toY);
             Tile tile = Board.Map[toX, toY];
 
