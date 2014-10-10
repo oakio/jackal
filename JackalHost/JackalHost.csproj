@@ -46,7 +46,7 @@
     <Compile Include="Actions\DropCoin.cs" />
     <Compile Include="Actions\Landing.cs" />
     <Compile Include="Actions\Walk.cs" />
-    <Compile Include="Actions\Naviation.cs" />
+    <Compile Include="Actions\Navigation.cs" />
     <Compile Include="Actions\Explore.cs" />
     <Compile Include="Actions\Shipping.cs" />
     <Compile Include="Actions\TakeCoin.cs" />

@@ -166,7 +166,7 @@ namespace JackalHost
                         // navigation
                         moves.Add(new Move(pirate, to, true));
                         actions.Add(GameActionList.Create(
-                            new Naviation(ship, to)));
+                            new Navigation(ship, to)));
                     }
                     break;
                 }

@@ -2,12 +2,12 @@
 
 namespace JackalHost.Actions
 {
-    class Naviation : IGameAction
+    class Navigation : IGameAction
     {
         private readonly Ship _ship;
         private readonly Position _to;
 
-        public Naviation(Ship ship, Position to)
+        public Navigation(Ship ship, Position to)
         {
             _ship = ship;
             _to = to;
