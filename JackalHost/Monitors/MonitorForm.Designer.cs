@@ -41,7 +41,7 @@
             // 
             this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer.Margin = new System.Windows.Forms.Padding(2);
             this.splitContainer.Name = "splitContainer";
             // 
             // splitContainer.Panel2
@@ -57,7 +57,7 @@
             this.txtTurn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtTurn.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.txtTurn.Location = new System.Drawing.Point(0, 0);
-            this.txtTurn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtTurn.Margin = new System.Windows.Forms.Padding(2);
             this.txtTurn.Name = "txtTurn";
             this.txtTurn.Size = new System.Drawing.Size(451, 30);
             this.txtTurn.TabIndex = 0;
@@ -73,7 +73,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1071, 678);
             this.Controls.Add(this.splitContainer);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MonitorForm";
             this.Text = "MonitorForm";
             this.Load += new System.EventHandler(this.MonitorForm_Load);

@@ -7,9 +7,9 @@ namespace JackalHost
     {
         static readonly Random Rnd = new Random(42);
 
-        public int OnMove(Board board, Move[] availableMoves, int teamId)
+        public int OnMove(GameState gameState)
         {
-            return Rnd.Next(0, availableMoves.Length);
+            return Rnd.Next(gameState.AvailableMoves.Length);
         }
     }
 }

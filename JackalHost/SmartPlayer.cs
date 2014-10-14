@@ -9,8 +9,12 @@ namespace JackalHost
     {
         static readonly Random Rnd = new Random(1);
 
-        public int OnMove(Board board, Move[] availableMoves, int teamId)
+        public int OnMove(GameState gameState)
         {
+            Board board=gameState.Board;
+            Move[] availableMoves = gameState.AvailableMoves;
+            int teamId = gameState.TeamId;
+
             List<Move> goodMoves = new List<Move>();
             foreach (Move move in availableMoves)
             {

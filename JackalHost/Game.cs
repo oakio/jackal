@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Jackal;
 using JackalHost.Actions;
 
@@ -15,6 +16,8 @@ namespace JackalHost
 
         private readonly List<Move> _availableMoves;
         private readonly List<IGameAction> _actions;
+
+        private readonly Guid GameId = Guid.NewGuid();
 
         public Game(IPlayer[] players, Board board)
         {
@@ -39,7 +42,14 @@ namespace JackalHost
 
             GetAvailableMoves(teamId);
 
-            int moveNo = me.OnMove(Board, _availableMoves.ToArray(),teamId);
+            GameState gameState=new GameState();
+            gameState.AvailableMoves = _availableMoves.ToArray();
+            gameState.Board = Board;
+            gameState.GameId = GameId;
+            gameState.TurnNumber = TurnNo;
+            gameState.SubTurnNumber = 1;
+            gameState.TeamId = teamId;
+            int moveNo = me.OnMove(gameState);
 
             IGameAction action = _actions[moveNo];
             action.Act(this);
