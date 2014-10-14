@@ -2,6 +2,7 @@
 
 namespace JackalHost.Actions
 {
+    /*
     class DropCoin : IGameAction
     {
         private readonly Pirate _pirate;
@@ -25,4 +26,5 @@ namespace JackalHost.Actions
             _pirate.Coins = 0;
         }
     }
+     */ 
 }

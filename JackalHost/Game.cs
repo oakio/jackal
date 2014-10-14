@@ -39,7 +39,7 @@ namespace JackalHost
 
             GetAvailableMoves(teamId);
 
-            int moveNo = me.OnMove(Board, _availableMoves.ToArray());
+            int moveNo = me.OnMove(Board, _availableMoves.ToArray(),teamId);
 
             IGameAction action = _actions[moveNo];
             action.Act(this);
@@ -94,41 +94,51 @@ namespace JackalHost
             }
         }
 
+        private void AddMoveAndActions(Move move, IGameAction action)
+        {
+            if (_availableMoves.Exists(x => x == move)) return;
+            _availableMoves.Add(move);
+            _actions.Add(action);
+        }
+
         private void Step(int toX, int toY, Pirate pirate, Ship ship, Team team)
         {
-            var moves = _availableMoves;
-            var actions = _actions;
+            //var moves = _availableMoves;
+            //var actions = _actions;
 
-            var to = new Position(toX, toY);
-            Tile tile = Board.Map[toX, toY];
+            var target = new Position(toX, toY);
+            Tile targetTile = Board.Map[toX, toY];
+
+            var source = pirate.Position;
+            Tile sourceTile = Board.Map[source.X, source.Y];
 
             bool onShip = (ship.Position == pirate.Position);
 
-            switch (tile.Type)
+            switch (targetTile.Type)
             {
                 case TileType.Unknown:
                 {
                     // exploration
-                    
+
                     if (onShip)
                     {
-                        if (CanLanding(pirate, to))
+                        if (CanLanding(pirate, target))
                         {
                             // landing
-                            moves.Add(new Move(pirate, to, false));
-                            actions.Add(GameActionList.Create(
-                                new DropCoin(pirate),
-                                new Explore(to),
-                                new Landing(pirate, ship)));
+                            AddMoveAndActions(new Move(pirate, target, false),
+                                GameActionList.Create(
+                                    //new DropCoin(pirate),
+                                    new Explore(target),
+                                    new Landing(pirate, ship)));
                         }
                     }
                     else
                     {
-                        moves.Add(new Move(pirate, to, false));
-                        actions.Add(GameActionList.Create(
-                            new DropCoin(pirate),
-                            new Explore(to),
-                            new Walk(pirate, to)));
+                        AddMoveAndActions(new Move(pirate, target, false),
+                            GameActionList.Create(
+                                //new DropCoin(pirate),
+                                new Explore(target),
+                                new Walk(pirate, target)));
                     }
 
                     break;
@@ -139,86 +149,92 @@ namespace JackalHost
                 }
                 case TileType.Water:
                 {
-                    if (to == ship.Position)
+                    if (target == ship.Position)
                     {
-                        // shipping with coins
-                        moves.Add(new Move(pirate, to, true));
-                        actions.Add(GameActionList.Create(
-                            new TakeCoin(pirate),
-                            new Shipping(pirate, ship)));
+                        if (sourceTile.Coins > 0)
+                        {
+                            // shipping with coins
+                            AddMoveAndActions(new Move(pirate, target, true),
+                                GameActionList.Create(
+                                    new TakeCoinToShip(pirate,ship),
+                                    new Shipping(pirate, ship)));
+                        }
 
                         // shipping without coins
-                        moves.Add(new Move(pirate, to, false));
-                        actions.Add(GameActionList.Create(
-                            new DropCoin(pirate),
-                            new Shipping(pirate, ship)));
+                        AddMoveAndActions(new Move(pirate, target, false),
+                            GameActionList.Create(
+                                //new DropCoin(pirate),
+                                new Shipping(pirate, ship)));
                     }
                     else if (pirate.Position == ship.Position)
                     {
                         if (((ship.Position.X == 0 || ship.Position.X == Board.Size - 1) &&
-                             (to.Y == 0 || to.Y == Board.Size - 1)) ||
+                             (target.Y == 0 || target.Y == Board.Size - 1)) ||
                             ((ship.Position.Y == 0 || ship.Position.Y == Board.Size - 1) &&
-                             (to.X == 0 || to.X == Board.Size - 1)))
+                             (target.X == 0 || target.X == Board.Size - 1)))
                         {
                             break; // enemy water territories
                         }
 
                         // navigation
-                        moves.Add(new Move(pirate, to, true));
-                        actions.Add(GameActionList.Create(
-                            new Navigation(ship, to)));
+                        AddMoveAndActions(new Move(pirate, target, false),
+                            GameActionList.Create(
+                                new Navigation(ship, target)));
                     }
                     break;
                 }
                 case TileType.Grass:
                 {
-                    var attack = tile.OccupationTeamId.HasValue && tile.OccupationTeamId.Value != pirate.TeamId;
+                    var attack = targetTile.OccupationTeamId.HasValue && targetTile.OccupationTeamId.Value != pirate.TeamId;
                     if (attack)
                     {
                         // attack
                         if (onShip)
                         {
-                            if (CanLanding(pirate, to))
+                            if (CanLanding(pirate, target))
                             {
-                                moves.Add(new Move(pirate, to, false));
-                                actions.Add(GameActionList.Create(
-                                    new DropCoin(pirate),
-                                    new Attack(to),
-                                    new Landing(pirate, ship)));
+                                AddMoveAndActions(new Move(pirate, target, false),
+                                    GameActionList.Create(
+                                        //new DropCoin(pirate),
+                                        new Attack(target),
+                                        new Landing(pirate, ship)));
                             }
                         }
                         else
                         {
-                            moves.Add(new Move(pirate, to, false));
-                            actions.Add(GameActionList.Create(
-                                new DropCoin(pirate),
-                                new Attack(to),
-                                new Walk(pirate, to)));
+                            AddMoveAndActions(new Move(pirate, target, false),
+                                GameActionList.Create(
+                                    //new DropCoin(pirate),
+                                    new Attack(target),
+                                    new Walk(pirate, target)));
                         }
                     }
                     else
                     {
                         if (onShip)
                         {
-                            if (CanLanding(pirate, to))
+                            if (CanLanding(pirate, target))
                             {
-                                moves.Add(new Move(pirate, to, false));
-                                actions.Add(GameActionList.Create(
-                                    new Landing(pirate, ship)));
+                                AddMoveAndActions(new Move(pirate, target, false),
+                                    GameActionList.Create(
+                                        new Landing(pirate, ship)));
                             }
                         }
                         else
                         {
-                            moves.Add(new Move(pirate, to, false));
-                            actions.Add(GameActionList.Create(
-                                new DropCoin(pirate),
-                                new Walk(pirate, to)));
+                            AddMoveAndActions(new Move(pirate, target, false),
+                                GameActionList.Create(
+                                    //new DropCoin(pirate),
+                                    new Walk(pirate, target)));
 
-                            moves.Add(new Move(pirate, to, true));
-                            actions.Add(GameActionList.Create(
-                                new TakeCoin(pirate),
-                                new Walk(pirate, to)));
-                        }                       
+                            if (sourceTile.Coins > 0)
+                            {
+                                AddMoveAndActions(new Move(pirate, target, true),
+                                    GameActionList.Create(
+                                        //new MoveCoin(pirate,to),
+                                        new Walk(pirate, target,true)));
+                            }
+                        }
                     }
                     break;
                 }

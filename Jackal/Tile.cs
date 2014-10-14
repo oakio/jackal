@@ -4,11 +4,18 @@ namespace Jackal
 {
     public class Tile
     {
-        public TileType Type;
+        public Position Position;
+        public readonly TileType Type;
         public int Coins;
 
         public int? OccupationTeamId;
-        public HashSet<Pirate> Pirates;
+        public readonly HashSet<Pirate> Pirates;
+
+
+        public Tile(Position position,TileType type, int coins = 0):this(type,coins)
+        {
+            Position = position;
+        }
 
         public Tile(TileType type, int coins = 0)
         {

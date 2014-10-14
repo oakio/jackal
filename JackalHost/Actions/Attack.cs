@@ -19,8 +19,8 @@ namespace JackalHost.Actions
             foreach (var enemyPirate in tile.Pirates)
             {
                 Team enemyTeam = board.Teams[enemyPirate.TeamId];
-                tile.Coins += enemyPirate.Coins;
-                enemyPirate.Coins = 0;
+                //tile.Coins += enemyPirate.Coins;
+                //enemyPirate.Coins = 0;
                 enemyPirate.Position = enemyTeam.Ship.Position;
                 enemyTeam.Ship.Crew.Add(enemyPirate);
             }

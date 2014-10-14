@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Jackal;
 
 namespace JackalHost
@@ -9,10 +10,10 @@ namespace JackalHost
         {
             IPlayer[] players =
             {
-                new RandomPlayer(),
-                new RandomPlayer(),
-                new RandomPlayer(),
-                new RandomPlayer(),
+                new SmartPlayer(),
+                new SmartPlayer(),
+                new SmartPlayer(),
+                new SmartPlayer(),
             };
             const int mapId = 987412;
 
@@ -22,11 +23,11 @@ namespace JackalHost
 
             while (!game.IsGameOver)
             {
-
-                if (game.TurnNo%100 == 0)
+                //if (game.TurnNo%100 == 0)
                 {
                     monitor.Draw();
                 }
+                Thread.Sleep(TimeSpan.FromMilliseconds(1));
                 //Console.ReadKey();
                 game.Turn();
             }

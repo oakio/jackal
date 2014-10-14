@@ -14,7 +14,9 @@ namespace JackalHost.Actions
         public void Act(Game game)
         {
             Board board = game.Board;
-            board.Map[_position.X, _position.Y] = board.Generator.GetNext();
+            var newTile = board.Generator.GetNext();
+            newTile.Position = new Position(_position.X, _position.Y);
+            board.Map[_position.X, _position.Y] = newTile;
         }
     }
 }

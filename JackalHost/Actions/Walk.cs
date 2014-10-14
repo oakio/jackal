@@ -1,4 +1,5 @@
-﻿using Jackal;
+﻿using System;
+using Jackal;
 
 namespace JackalHost.Actions
 {
@@ -6,11 +7,13 @@ namespace JackalHost.Actions
     {
         private readonly Pirate _pirate;
         private readonly Position _to;
+        private bool _withCoin;
 
-        public Walk(Pirate pirate, Position to)
+        public Walk(Pirate pirate, Position to, bool withCoin = false)
         {
             _pirate = pirate;
             _to = to;
+            _withCoin = withCoin;
         }
 
         public void Act(Game game)
@@ -30,6 +33,13 @@ namespace JackalHost.Actions
             var toTile = map[_to.X, _to.Y];
             toTile.OccupationTeamId = _pirate.TeamId;
             toTile.Pirates.Add(_pirate);
+
+            if (_withCoin)
+            {
+                if (fromTile.Coins == 0) throw new Exception("No coins");
+                fromTile.Coins--;
+                toTile.Coins++;
+            }
         }
     }
 }

@@ -2,6 +2,6 @@
 {
     public interface IPlayer
     {
-        int OnMove(Board board, Move[] availableMoves);
+        int OnMove(Board board, Move[] availableMoves, int teamId);
     }
 }

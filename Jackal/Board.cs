@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Jackal
 {
@@ -9,6 +10,17 @@ namespace Jackal
         public MapGenerator Generator;
         public Tile[,] Map;
         public Team[] Teams;
+
+        public IEnumerable<Tile> AllTiles(Predicate<Tile> selector)
+        {
+            for (int i = 0; i < Size; i++)
+                for (int j = 0; j < Size; j++)
+                {
+                    var tile = Map[i, j];
+                    if (selector(tile))
+                        yield return tile;
+                }
+        }
 
         public Board(int mapId)
         {
@@ -53,15 +65,15 @@ namespace Jackal
 
         void SetWater(int x, int y)
         {
-            Map[x, y] = new Tile(TileType.Water);
+            Map[x, y] = new Tile(new Position(x,y),TileType.Water);
         }
         void SetUnknown(int x, int y)
         {
-            Map[x, y] = new Tile(TileType.Unknown);
+            Map[x, y] = new Tile(new Position(x, y), TileType.Unknown);
         }
         void SetStone(int x, int y)
         {
-            Map[x, y] = new Tile(TileType.Stone);
+            Map[x, y] = new Tile(new Position(x, y), TileType.Stone);
         }
 
         private void InitTeam(int teamId, int x, int y)

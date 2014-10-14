@@ -109,12 +109,12 @@ namespace JackalHost
                             {
                                 foreground = ConsoleColor.White;
                                 background = GetTeamColor(team.Id);
-                                int coins = pirate.Coins;
-                                if (coins > 0)
-                                {
-                                    ;
-                                }
-                                symbol = coins == 0 ? "p" : coins.ToString();
+                                //int coins = pirate.Coins;
+                                //if (coins > 0)
+                                //{
+                                //    ;
+                                //}
+                                symbol = "p";//coins == 0 ? "p" : coins.ToString();
                             }
                         }
                     }
