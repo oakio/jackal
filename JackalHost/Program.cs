@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
+using System.Windows.Forms;
 using Jackal;
+using JackalHost.Monitors;
 
 namespace JackalHost
 {
@@ -19,8 +21,13 @@ namespace JackalHost
 
             var board = new Board(mapId);
             var game = new Game(players, board);
-            var monitor = new Monitor(game);
+            //var monitor = new JackalHost.Monitors.WinFormMonitor(game);
 
+
+            Application.EnableVisualStyles();
+            Application.Run(new MonitorForm(game));
+
+            /*
             while (!game.IsGameOver)
             {
                 //if (game.TurnNo%100 == 0)
@@ -31,7 +38,8 @@ namespace JackalHost
                 //Console.ReadKey();
                 game.Turn();
             }
-            monitor.GameOver();
+            */ 
+            //monitor.GameOver();
             Console.ReadKey();
         }
     }
