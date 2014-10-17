@@ -179,9 +179,10 @@ namespace JackalHost
                     else if (pirate.Position == ship.Position)
                     {
                         if (((ship.Position.X == 0 || ship.Position.X == Board.Size - 1) &&
-                             (target.Y == 0 || target.Y == Board.Size - 1)) ||
+                             (target.Y <= 1 || target.Y >= Board.Size - 2)) 
+                             ||
                             ((ship.Position.Y == 0 || ship.Position.Y == Board.Size - 1) &&
-                             (target.X == 0 || target.X == Board.Size - 1)))
+                             (target.X <= 1 || target.X >= Board.Size - 2)))
                         {
                             break; // enemy water territories
                         }

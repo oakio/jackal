@@ -54,13 +54,16 @@ namespace Jackal
             {
                 for (int y = 1; y < Size - 1; y++)
                 {
-                    SetUnknown(x, y);
+                    if ((x==1 || x==Size-2) && (y==1||y==Size-2) )
+                        SetWater(x, y);
+                    else
+                        SetUnknown(x, y);
                 }
             }
-            SetStone(0, 0);
-            SetStone(Size - 1, 0);
-            SetStone(Size - 1, Size - 1);
-            SetStone(0, Size - 1);
+            //SetStone(0, 0);
+            //SetStone(Size - 1, 0);
+            //SetStone(Size - 1, Size - 1);
+            //SetStone(0, Size - 1);
         }
 
         void SetWater(int x, int y)

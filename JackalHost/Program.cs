@@ -17,7 +17,7 @@ namespace JackalHost
                 new SmartPlayer(),
                 new SmartPlayer(),
             };
-            const int mapId = 987412;
+            const int mapId = 987412+1;
 
             var board = new Board(mapId);
             var game = new Game(players, board);

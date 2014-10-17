@@ -17,7 +17,8 @@ namespace Jackal
         {
             _rand = new Random(mapId);
 
-            _tiles = new List<Tile>(Size*Size);
+            int totalUnknown = Size*Size - 4;
+            _tiles = new List<Tile>(totalUnknown);
 
             for (int i = 0; i < 5; i++)
             {
@@ -37,7 +38,7 @@ namespace Jackal
 
             AddTile(new Tile(TileType.Grass, 5));
 
-            for (int i = 0; i < (Size*Size - 11); i++)
+            while(_tiles.Count<totalUnknown)
             {
                 AddTile(new Tile(TileType.Grass));
             }

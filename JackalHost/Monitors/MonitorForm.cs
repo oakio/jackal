@@ -48,9 +48,9 @@ namespace JackalHost.Monitors
 		    timer1.Enabled = true;
 		}
 
-		public void Draw()
+        public void Draw(bool isGameOver=false)
 		{
-			DrawStats();
+            DrawStats(isGameOver);
 
 			for (int y = 0; y < Board.Size; y++)
 			{
@@ -75,6 +75,7 @@ namespace JackalHost.Monitors
 						{
 							backColor = GetTeamColor(team.Id);
 							piratesCount = ship.Crew.Count;
+						    goldCount = ship.Coins;
 							break;
 						}
 						foreach (var pirate in team.Pirates)
@@ -94,7 +95,7 @@ namespace JackalHost.Monitors
 			splitContainer.Panel1.Invalidate();
 		}
 
-		private void DrawStats()
+        private void DrawStats(bool isGameOver = false)
 		{
 			for (int i = 0; i < _game.Board.Teams.Length; i++)
 			{
@@ -110,7 +111,7 @@ namespace JackalHost.Monitors
 				DrawStat(statControl, team.Id, goldCount);
 			}
 
-			DrawTurn();
+			DrawTurn(isGameOver);
 		}
 
 		private void DrawStat(StatControl statControl, int teamId, int goldCount)
@@ -129,7 +130,7 @@ namespace JackalHost.Monitors
 			//});				
 		}
 
-		private void DrawTurn()
+        private void DrawTurn(bool isGameOver = false)
 		{
             /*
 			if (InvokeRequired == false)
@@ -140,31 +141,42 @@ namespace JackalHost.Monitors
 
 			//txtTurn.Invoke((MethodInvoker)delegate
 			//{
-				txtTurn.Text = "TurnNo: " + _game.TurnNo;
-			//});			
+            txtTurn.Text = "TurnNo: " + _game.TurnNo + (isGameOver ? " - game over" : "");
+            //});			
 		}
 
-		private void DrawTile(TileControl tileControl,
-							Color backColor,
-							int goldCount,
-							int piratesCount)
-		{
-            /*
+	    private void DrawTile(TileControl tileControl,
+	        Color backColor,
+	        int goldCount,
+	        int piratesCount)
+	    {
+	        /*
 			if (InvokeRequired == false)
 			{
 				return;
 			}
-             **/ 
+             **/
 
-			//tileControl.Invoke((MethodInvoker) delegate
-			//{
-				tileControl.BackColor = backColor;
-				tileControl.lblGold.Text = goldCount != 0 ? goldCount.ToString() : "";
-				tileControl.lblPirates.Text = piratesCount != 0 ? piratesCount.ToString() : "";
-			//});
-		}
+	        //tileControl.Invoke((MethodInvoker) delegate
+	        //{
 
-		private static string GetStatKey(int index)
+	        tileControl.BackColor = backColor;
+
+	        string goldText = "";
+	        if (goldCount > 0)
+	            goldText = goldCount.ToString() + " o";
+	        tileControl.lblGold.Text = goldText;
+
+	        string piratesText = "";
+	        if (piratesCount == 1)
+	            piratesText = "P";
+	        else if (piratesCount > 1)
+	            piratesText = piratesCount.ToString() + "P";
+	        tileControl.lblPirates.Text = piratesText;
+	        //});
+	    }
+
+	    private static string GetStatKey(int index)
 		{
 			return string.Format("index={0}", index);
 		}
@@ -208,7 +220,7 @@ namespace JackalHost.Monitors
             _game.Turn();
             if (_game.IsGameOver)
             {
-                Draw();
+                Draw(true);
                 timer1.Enabled = false;
             }
         }

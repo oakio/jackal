@@ -47,8 +47,8 @@
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.txtTurn);
-            this.splitContainer.Size = new System.Drawing.Size(1071, 678);
-            this.splitContainer.SplitterDistance = 617;
+            this.splitContainer.Size = new System.Drawing.Size(1328, 764);
+            this.splitContainer.SplitterDistance = 765;
             this.splitContainer.SplitterWidth = 3;
             this.splitContainer.TabIndex = 0;
             // 
@@ -59,7 +59,7 @@
             this.txtTurn.Location = new System.Drawing.Point(0, 0);
             this.txtTurn.Margin = new System.Windows.Forms.Padding(2);
             this.txtTurn.Name = "txtTurn";
-            this.txtTurn.Size = new System.Drawing.Size(451, 30);
+            this.txtTurn.Size = new System.Drawing.Size(560, 30);
             this.txtTurn.TabIndex = 0;
             // 
             // timer1
@@ -71,7 +71,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1071, 678);
+            this.ClientSize = new System.Drawing.Size(1328, 764);
             this.Controls.Add(this.splitContainer);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MonitorForm";
