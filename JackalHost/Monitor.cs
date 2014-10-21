@@ -75,6 +75,12 @@ namespace JackalHost
                             background = ConsoleColor.Cyan;
                             break;
                         }
+						case TileType.Gold:
+						{
+							symbol = " ";
+							background = ConsoleColor.Yellow;
+							break;
+						}
                         case TileType.Grass:
                         {
                             symbol = " ";

@@ -5,6 +5,7 @@
         Unknown,
         Stone,
         Water,
-        Grass
+        Grass,
+		Gold
     }
 }

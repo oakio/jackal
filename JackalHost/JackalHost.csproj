@@ -52,6 +52,7 @@
     <Compile Include="Actions\Explore.cs" />
     <Compile Include="Actions\Shipping.cs" />
     <Compile Include="Actions\TakeCoinToShip.cs" />
+    <Compile Include="AIPlayer.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Actions\IGameAction.cs" />
     <Compile Include="Actions\GameActionList.cs" />

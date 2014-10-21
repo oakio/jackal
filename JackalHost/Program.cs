@@ -15,7 +15,7 @@ namespace JackalHost
                 new SmartPlayer(),
                 new SmartPlayer(),
                 new SmartPlayer(),
-                new SmartPlayer(),
+                new AIPlayer(),
             };
             const int mapId = 987412+1;
 

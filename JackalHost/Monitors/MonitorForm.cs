@@ -194,6 +194,7 @@ namespace JackalHost.Monitors
 				case TileType.Stone: return Color.DarkGray;
 				case TileType.Water: return Color.Cyan;
 				case TileType.Grass: return Color.Green;
+				case TileType.Gold: return Color.Gold;
 				default: throw new NotSupportedException();
 			}
 		}

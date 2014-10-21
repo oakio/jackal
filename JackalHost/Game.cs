@@ -194,6 +194,7 @@ namespace JackalHost
                     }
                     break;
                 }
+				case TileType.Gold:
                 case TileType.Grass:
                 {
                     var attack = targetTile.OccupationTeamId.HasValue && targetTile.OccupationTeamId.Value != pirate.TeamId;
