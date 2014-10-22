@@ -16,7 +16,7 @@
 
 		public override int GetHashCode()
 		{
-			return this.Pirate.GetHashCode() + this.To.GetHashCode() + this.WithCoins.GetHashCode();
+			return base.GetHashCode();
 		}
 
 		public bool Equals(Move other)
