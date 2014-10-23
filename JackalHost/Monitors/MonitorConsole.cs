@@ -2,15 +2,16 @@
 using System.Linq;
 using Jackal;
 
-namespace JackalHost
+namespace JackalHost.Monitors
 {
-    public class Monitor
+    // todo obsolete
+    public class MonitorConsole
     {
         private readonly Game _game;
         private readonly Board _board;
         private readonly string _horizontalLine = new string('=', Console.WindowWidth);
 
-        public Monitor(Game game)
+        public MonitorConsole(Game game)
         {
             _game = game;
             _board = game.Board;
@@ -75,6 +76,12 @@ namespace JackalHost
                             background = ConsoleColor.Cyan;
                             break;
                         }
+						case TileType.Gold:
+						{
+							symbol = " ";
+							background = ConsoleColor.Yellow;
+							break;
+						}
                         case TileType.Grass:
                         {
                             symbol = " ";

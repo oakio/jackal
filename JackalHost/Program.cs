@@ -19,15 +19,13 @@ namespace JackalHost
             };
             const int mapId = 987412+1;
 
-            var board = new Board(mapId);
-            var game = new Game(players, board);
-            //var monitor = new JackalHost.Monitors.WinFormMonitor(game);
-
-
             Application.EnableVisualStyles();
-            Application.Run(new MonitorForm(game));
+            Application.Run(new MonitorForm(players, mapId));
 
             /*
+            var board = new Board(mapId);
+            var game = new Game(players, board);
+            
             while (!game.IsGameOver)
             {
                 //if (game.TurnNo%100 == 0)
@@ -38,9 +36,9 @@ namespace JackalHost
                 //Console.ReadKey();
                 game.Turn();
             }
-            */ 
-            //monitor.GameOver();
+            monitor.GameOver();
             Console.ReadKey();
+            */
         }
     }
 }

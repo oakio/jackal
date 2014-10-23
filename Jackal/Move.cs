@@ -18,6 +18,11 @@
             WithCoins = withCoin;
         }
 
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+
         public bool Equals(Move other)
         {
             return this.Pirate.Position == other.Pirate.Position
@@ -28,7 +33,7 @@
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return obj is Move && Equals((Move)obj);
+			return obj is Move && Equals((Move)obj);
         }
 
         public static bool operator ==(Move left, Move right)

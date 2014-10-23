@@ -44,8 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Monitor.cs" />
-    <Compile Include="Monitors\IMonitor.cs" />
+    <Compile Include="Monitors\MonitorConsole.cs" />
     <Compile Include="Monitors\MonitorForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -8,19 +8,32 @@ namespace JackalHost.Monitors
 {
 	public partial class MonitorForm : Form
 	{
-		private readonly Game _game;
-		private readonly Board _board;
+        private const int TILE_SIZE = 56;
+        private const int STAT_SIZE = 36;
 
-		public MonitorForm(Game game)
+        private readonly IPlayer[] _players;
+        private readonly int _mapId;
+
+		private Game _game;
+		private Board _board;
+
+        public MonitorForm(IPlayer[] players, int mapId)
 		{
-			_game = game;
-			_board = game.Board;
+            _players = players;
+            _mapId = mapId;
+
+            _board = new Board(_mapId);
+            _game = new Game(_players, _board);
+
 			InitializeComponent();
 		}
 
 		private void MonitorForm_Load(object sender, EventArgs e)
 		{
-			splitContainer.Panel1.Controls.Clear();
+            this.Height = (TILE_SIZE + 2) * Board.Size + 48;
+            gameSplitContainer.SplitterDistance = (TILE_SIZE + 2) * Board.Size;
+
+			gameSplitContainer.Panel1.Controls.Clear();
 
 			for (int y = 0; y < Board.Size; y++)
 			{
@@ -28,10 +41,13 @@ namespace JackalHost.Monitors
 				{
 					var tileControl = new TileControl
 					{
-						Name = GetTileKey(x, y), 
-						Location = new Point(x*56, y*56)
+						Name = GetTileKey(x, y),
+                        Location = new Point(x * (TILE_SIZE + 2), y * (TILE_SIZE + 2)),
+                        Size = new Size(TILE_SIZE, TILE_SIZE)
 					};
-					splitContainer.Panel1.Controls.Add(tileControl);
+                    tileControl.lblPirates.Size = new Size(TILE_SIZE, TILE_SIZE / 2);
+                    tileControl.lblGold.Size = new Size(TILE_SIZE, TILE_SIZE / 2);
+					gameSplitContainer.Panel1.Controls.Add(tileControl);
 				}
 			}
 
@@ -40,15 +56,17 @@ namespace JackalHost.Monitors
 				var teamStatControl = new StatControl
 				{
 					Name = GetStatKey(i),
-					Location = new Point(0, (i + 1)*36)
+                    Location = new Point(0, (i + 1) * STAT_SIZE),
+                    Anchor = AnchorStyles.Left | AnchorStyles.Right
 				};
-				splitContainer.Panel2.Controls.Add(teamStatControl);
+				statSplitContainer.Panel1.Controls.Add(teamStatControl);
 			}
 
-		    timer1.Enabled = true;
+		    gameTurnTimer.Enabled = false;
+			Draw();
 		}
 
-        public void Draw(bool isGameOver=false)
+        public void Draw(bool isGameOver = false)
 		{
             DrawStats(isGameOver);
 
@@ -56,7 +74,7 @@ namespace JackalHost.Monitors
 			{
 				for (int x = 0; x < Board.Size; x++)
 				{
-					var tileControl = splitContainer.Panel1.Controls[GetTileKey(x, y)] as TileControl;
+					var tileControl = gameSplitContainer.Panel1.Controls[GetTileKey(x, y)] as TileControl;
 					if (tileControl == null)
 					{
 						continue;
@@ -88,18 +106,18 @@ namespace JackalHost.Monitors
 						}     
 					}
 
-					DrawTile(tileControl, backColor, goldCount, piratesCount);
+					DrawTile(tileControl, tile, backColor, goldCount, piratesCount);
 				}
 			}
 
-			splitContainer.Panel1.Invalidate();
+			gameSplitContainer.Panel1.Invalidate();
 		}
 
         private void DrawStats(bool isGameOver = false)
 		{
 			for (int i = 0; i < _game.Board.Teams.Length; i++)
 			{
-				var statControl = splitContainer.Panel2.Controls[GetStatKey(i)] as StatControl;
+				var statControl = statSplitContainer.Panel1.Controls[GetStatKey(i)] as StatControl;
 				if (statControl == null)
 				{
 					continue;
@@ -116,64 +134,35 @@ namespace JackalHost.Monitors
 
 		private void DrawStat(StatControl statControl, int teamId, int goldCount)
 		{
-            /*
-			if (InvokeRequired == false)
-			{
-				return;
-			}
-            */
-
-			//statControl.Invoke((MethodInvoker)delegate
-			//{
-				statControl.txtBox.BackColor = GetTeamColor(teamId);
-				statControl.txtBox.Text = string.Format("Team {0}: gold = {1}", teamId, goldCount);
-			//});				
+			statControl.txtBox.BackColor = GetTeamColor(teamId);
+			statControl.txtBox.Text = string.Format("Team {0}: gold = {1}", teamId, goldCount);			
 		}
 
         private void DrawTurn(bool isGameOver = false)
 		{
-            /*
-			if (InvokeRequired == false)
-			{
-				return;
-			}
-             */ 
-
-			//txtTurn.Invoke((MethodInvoker)delegate
-			//{
-            txtTurn.Text = "TurnNo: " + _game.TurnNo + (isGameOver ? " - game over" : "");
-            //});			
+            txtTurn.Text = "TurnNo: " + _game.TurnNo + (isGameOver ? " - game over" : "");		
 		}
 
 	    private void DrawTile(TileControl tileControl,
+			Tile tile,
 	        Color backColor,
 	        int goldCount,
 	        int piratesCount)
 	    {
-	        /*
-			if (InvokeRequired == false)
-			{
-				return;
-			}
-             **/
-
-	        //tileControl.Invoke((MethodInvoker) delegate
-	        //{
-
 	        tileControl.BackColor = backColor;
 
-	        string goldText = "";
-	        if (goldCount > 0)
-	            goldText = goldCount.ToString() + " o";
-	        tileControl.lblGold.Text = goldText;
+			tileControl.DrawGold(goldCount, tile);
 
 	        string piratesText = "";
-	        if (piratesCount == 1)
-	            piratesText = "P";
-	        else if (piratesCount > 1)
-	            piratesText = piratesCount.ToString() + "P";
+            if (piratesCount == 1)
+            {
+                piratesText = "P";
+            }
+            else if (piratesCount > 1)
+            {
+                piratesText = piratesCount.ToString() + "P";
+            }
 	        tileControl.lblPirates.Text = piratesText;
-	        //});
 	    }
 
 	    private static string GetStatKey(int index)
@@ -194,6 +183,7 @@ namespace JackalHost.Monitors
 				case TileType.Stone: return Color.DarkGray;
 				case TileType.Water: return Color.Cyan;
 				case TileType.Grass: return Color.Green;
+				case TileType.Gold: return Color.Gold;
 				default: throw new NotSupportedException();
 			}
 		}
@@ -210,19 +200,51 @@ namespace JackalHost.Monitors
 			}
 		}
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void gameTurnTimer_Tick(object sender, EventArgs e)
         {
-            //if (game.TurnNo%100 == 0)
             Draw();
-            
-            //Thread.Sleep(TimeSpan.FromMilliseconds(1));
-            //Console.ReadKey();
             _game.Turn();
+
             if (_game.IsGameOver)
             {
                 Draw(true);
-                timer1.Enabled = false;
+                gameTurnTimer.Enabled = false;
             }
         }
+
+        private void newGameBtn_Click(object sender, EventArgs e)
+        {
+            _board = new Board(_mapId);
+            _game = new Game(_players, _board);
+
+            gameTurnTimer.Enabled = true;
+            pauseGameBtn.Text = "Pause game";
+        }
+
+        private void pauseGameBtn_Click(object sender, EventArgs e)
+        {
+            if (gameTurnTimer.Enabled)
+            {
+                gameTurnTimer.Enabled = false;
+                pauseGameBtn.Text = "Start game";
+            }
+            else
+            {
+                gameTurnTimer.Enabled = true;
+                pauseGameBtn.Text = "Pause game";
+            }
+        }
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			if (gameTurnTimer.Enabled)
+			{
+				gameTurnTimer.Enabled = false;
+				pauseGameBtn.Text = "Start game";
+			}
+
+			_game.Turn();
+			Draw();
+		}
 	}
 }
