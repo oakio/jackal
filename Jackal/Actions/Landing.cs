@@ -1,7 +1,6 @@
 ﻿using System;
-using Jackal;
 
-namespace JackalHost.Actions
+namespace Jackal.Actions
 {
     class Landing : IGameAction
     {

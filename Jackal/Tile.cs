@@ -11,6 +11,9 @@ namespace Jackal
         public int? OccupationTeamId;
         public readonly HashSet<Pirate> Pirates;
 
+        public Tile()
+        {
+        }
 
         public Tile(Position position,TileType type, int coins = 0):this(type,coins)
         {

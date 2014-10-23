@@ -1,11 +1,15 @@
 ﻿namespace Jackal
 {
-    public struct Move
+    public class Move
     {
         public Pirate Pirate;
 
         public Position To;
         public bool WithCoins;
+
+        public Move()
+        {
+        }
 
         public Move(Pirate pirate, Position to, bool withCoin)
         {
@@ -24,7 +28,7 @@
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return obj is Position && Equals((Move)obj);
+            return obj is Move && Equals((Move)obj);
         }
 
         public static bool operator ==(Move left, Move right)

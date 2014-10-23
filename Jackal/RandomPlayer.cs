@@ -1,9 +1,8 @@
 ﻿using System;
-using Jackal;
 
-namespace JackalHost
+namespace Jackal
 {
-    class RandomPlayer : IPlayer
+    public class RandomPlayer : IPlayer
     {
         static readonly Random Rnd = new Random(42);
 

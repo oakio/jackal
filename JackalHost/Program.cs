@@ -12,7 +12,7 @@ namespace JackalHost
         {
             IPlayer[] players =
             {
-                new SmartPlayer(),
+                new RandomPlayer(), 
                 new SmartPlayer(),
                 new SmartPlayer(),
                 new SmartPlayer(),

@@ -1,6 +1,4 @@
-﻿using Jackal;
-
-namespace JackalHost.Actions
+﻿namespace Jackal.Actions
 {
     class Explore : IGameAction
     {

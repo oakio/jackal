@@ -34,10 +34,10 @@ namespace Jackal
             InitTeam(2, (Size - 1)/2, (Size - 1));
             InitTeam(3, 0, (Size - 1)/2);
 
-            Teams[0].Enemies = new[] {Teams[1], Teams[2], Teams[3]};
-            Teams[1].Enemies = new[] {Teams[0], Teams[2], Teams[3]};
-            Teams[2].Enemies = new[] {Teams[0], Teams[1], Teams[3]};
-            Teams[3].Enemies = new[] {Teams[0], Teams[1], Teams[2]};
+            Teams[0].Enemies = new[] {1, 2, 3};
+            Teams[1].Enemies = new[] {0, 2, 3};
+            Teams[2].Enemies = new[] {0, 1, 3};
+            Teams[3].Enemies = new[] {0, 1, 2};
         }
 
         private void InitMap()

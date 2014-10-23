@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jackal;
-using JackalHost.Actions;
+using Jackal.Actions;
 
-namespace JackalHost
+namespace Jackal
 {
     public class Game
     {
@@ -17,7 +16,7 @@ namespace JackalHost
         private readonly List<Move> _availableMoves;
         private readonly List<IGameAction> _actions;
 
-        private readonly Guid GameId = Guid.NewGuid();
+        public readonly Guid GameId = Guid.NewGuid();
 
         public Game(IPlayer[] players, Board board)
         {

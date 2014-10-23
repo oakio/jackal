@@ -1,4 +1,4 @@
-﻿namespace JackalHost.Actions
+﻿namespace Jackal.Actions
 {
     interface IGameAction
     {

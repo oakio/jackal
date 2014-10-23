@@ -28,18 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBoxLog = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.textBoxReport = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // textBox2
+            // textBoxLog
             // 
-            this.textBox2.Location = new System.Drawing.Point(-1, 24);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(918, 214);
-            this.textBox2.TabIndex = 6;
+            this.textBoxLog.Location = new System.Drawing.Point(-1, 24);
+            this.textBoxLog.Multiline = true;
+            this.textBoxLog.Name = "textBoxLog";
+            this.textBoxLog.ReadOnly = true;
+            this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxLog.Size = new System.Drawing.Size(918, 214);
+            this.textBoxLog.TabIndex = 6;
+            this.textBoxLog.WordWrap = false;
             // 
             // label2
             // 
@@ -50,15 +54,37 @@
             this.label2.TabIndex = 5;
             this.label2.Text = "Статус";
             // 
+            // textBoxReport
+            // 
+            this.textBoxReport.Location = new System.Drawing.Point(174, 263);
+            this.textBoxReport.Multiline = true;
+            this.textBoxReport.Name = "textBoxReport";
+            this.textBoxReport.ReadOnly = true;
+            this.textBoxReport.Size = new System.Drawing.Size(456, 127);
+            this.textBoxReport.TabIndex = 7;
+            this.textBoxReport.WordWrap = false;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(171, 247);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(67, 13);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "Результаты";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(929, 363);
-            this.Controls.Add(this.textBox2);
+            this.ClientSize = new System.Drawing.Size(929, 402);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.textBoxReport);
+            this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.label2);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -66,8 +92,10 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBoxLog;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBoxReport;
+        private System.Windows.Forms.Label label1;
     }
 }
 

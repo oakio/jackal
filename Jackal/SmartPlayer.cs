@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jackal;
 
-namespace JackalHost
+namespace Jackal
 {
-    class SmartPlayer : IPlayer
+    public class SmartPlayer : IPlayer
     {
         static readonly Random Rnd = new Random(1);
 
@@ -123,7 +122,7 @@ namespace JackalHost
         private bool IsEnemyPosition(Position to, Board board, int teamId)
         {
             var occupationTeamId = board.Map[to.X, to.Y].OccupationTeamId;
-            if (occupationTeamId.HasValue && board.Teams[teamId].Enemies.ToList().Exists(x => x.Id == occupationTeamId.Value)) return true;
+            if (occupationTeamId.HasValue && board.Teams[teamId].Enemies.ToList().Exists(x => x == occupationTeamId.Value)) return true;
             return false;
         }
 

@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.button1 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBoxServer = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBoxLog = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button1
@@ -45,12 +45,13 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // textBox1
+            // textBoxServer
             // 
-            this.textBox1.Location = new System.Drawing.Point(12, 47);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(461, 20);
-            this.textBox1.TabIndex = 1;
+            this.textBoxServer.Location = new System.Drawing.Point(12, 47);
+            this.textBoxServer.Name = "textBoxServer";
+            this.textBoxServer.Size = new System.Drawing.Size(461, 20);
+            this.textBoxServer.TabIndex = 1;
+            this.textBoxServer.Text = "tcp://localhost:29998/";
             // 
             // label1
             // 
@@ -70,24 +71,26 @@
             this.label2.TabIndex = 3;
             this.label2.Text = "Статус";
             // 
-            // textBox2
+            // textBoxLog
             // 
-            this.textBox2.Location = new System.Drawing.Point(12, 96);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(918, 214);
-            this.textBox2.TabIndex = 4;
+            this.textBoxLog.Location = new System.Drawing.Point(12, 96);
+            this.textBoxLog.Multiline = true;
+            this.textBoxLog.Name = "textBoxLog";
+            this.textBoxLog.ReadOnly = true;
+            this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxLog.Size = new System.Drawing.Size(918, 214);
+            this.textBoxLog.TabIndex = 4;
+            this.textBoxLog.WordWrap = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(959, 322);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.textBoxServer);
             this.Controls.Add(this.button1);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -99,10 +102,10 @@
         #endregion
 
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBoxServer;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBoxLog;
     }
 }
 
