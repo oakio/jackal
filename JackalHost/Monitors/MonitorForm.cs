@@ -212,15 +212,6 @@ namespace JackalHost.Monitors
             }
         }
 
-        private void newGameBtn_Click(object sender, EventArgs e)
-        {
-            _board = new Board(_mapId);
-            _game = new Game(_players, _board);
-
-            gameTurnTimer.Enabled = true;
-            pauseGameBtn.Text = "Pause game";
-        }
-
         private void pauseGameBtn_Click(object sender, EventArgs e)
         {
             if (gameTurnTimer.Enabled)
@@ -235,7 +226,7 @@ namespace JackalHost.Monitors
             }
         }
 
-		private void button1_Click(object sender, EventArgs e)
+		private void oneTurnBtn_Click(object sender, EventArgs e)
 		{
 			if (gameTurnTimer.Enabled)
 			{
@@ -246,5 +237,14 @@ namespace JackalHost.Monitors
 			_game.Turn();
 			Draw();
 		}
+
+        private void newGameBtn_Click(object sender, EventArgs e)
+        {
+            _board = new Board(_mapId);
+            _game = new Game(_players, _board);
+
+            gameTurnTimer.Enabled = true;
+            pauseGameBtn.Text = "Pause game";
+        }
 	}
 }
