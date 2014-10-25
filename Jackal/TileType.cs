@@ -3,9 +3,12 @@
     public enum TileType
     {
         Unknown,
-        Stone,
         Water,
         Grass,
-		Gold
+		Chest1,
+        Chest2,
+        Chest3,
+        Chest4,
+        Chest5
     }
 }

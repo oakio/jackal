@@ -6,7 +6,13 @@ using Jackal;
 
 namespace JackalHost.Monitors
 {
-	public partial class MonitorForm : Form
+    /*
+     *  Скажем спасибо ресурсу http://www.gamedev.ru/projects/forum/?id=190046 
+     *  и лично Esper за предоставленные картинки высокого качества, 
+     *  считаю что данного товарища можно пригласить в проект
+    */
+
+    public partial class MonitorForm : Form
 	{
         private const int STAT_COUNT = 5;
 
@@ -27,25 +33,54 @@ namespace JackalHost.Monitors
 			InitializeComponent();
 		}
 
+        private void MonitorForm_Load(object sender, EventArgs e)
+        {
+            var boardPanel = gameSplitContainer.Panel1;
+            boardPanel.Controls.Clear();
+            for (int y = 0; y < Board.Size; y++)
+            {
+                for (int x = 0; x < Board.Size; x++)
+                {
+                    var tileControl = new TileControl 
+                    { 
+                        Name = GetTileKey(x, y) 
+                    };
+                    boardPanel.Controls.Add(tileControl);
+                }
+            }
+
+            var statPanel = statSplitContainer.Panel1;
+            statPanel.Controls.Clear();
+            for (int i = 0; i < STAT_COUNT; i++)
+            {
+                var statControl = new StatControl
+                {
+                    Name = GetStatKey(i),
+                };
+                statPanel.Controls.Add(statControl);
+            }
+
+            gameSplitContainer_Panel1_Resize(this, EventArgs.Empty);
+            statSplitContainer_Panel1_Resize(this, EventArgs.Empty);
+        }
+
         private void gameSplitContainer_Panel1_Resize(object sender, EventArgs e)
         {
-            gameSplitContainer.Panel1.Controls.Clear();
-            int tileWidth = gameSplitContainer.Panel1.Width / Board.Size - 2;
-            int tileHeight = gameSplitContainer.Panel1.Height / Board.Size - 2;
+            var boardPanel = gameSplitContainer.Panel1;
+            int tileWidth = boardPanel.Width / Board.Size - 2;
+            int tileHeight = boardPanel.Height / Board.Size - 2;
 
             for (int y = 0; y < Board.Size; y++)
             {
                 for (int x = 0; x < Board.Size; x++)
                 {
-                    var tileControl = new TileControl
+                    var tileControl = boardPanel.Controls[GetTileKey(x, y)] as TileControl;
+                    if (tileControl == null)
                     {
-                        Name = GetTileKey(x, y),
-                        Location = new Point(x * (tileWidth + 2), y * (tileHeight + 2)),
-                        Size = new Size(tileWidth, tileHeight)
-                    };
-                    tileControl.lblPirates.Size = new Size(tileWidth, tileHeight / 2);
-                    tileControl.lblGold.Size = new Size(tileWidth, tileHeight / 2);
-                    gameSplitContainer.Panel1.Controls.Add(tileControl);
+                        continue;
+                    }
+                    tileControl.Size = new Size(tileWidth, tileHeight);
+                    tileControl.Location = new Point(x * (tileWidth + 2), y * (tileHeight + 2));
                 }
             }
 
@@ -54,21 +89,19 @@ namespace JackalHost.Monitors
 
         private void statSplitContainer_Panel1_Resize(object sender, EventArgs e)
         {
-            statSplitContainer.Panel1.Controls.Clear();
-            int statWidth = statSplitContainer.Panel1.Width;
-            int statHeight = statSplitContainer.Panel1.Height / STAT_COUNT;
+            var statPanel = statSplitContainer.Panel1;
+            int statWidth = statPanel.Width;
+            int statHeight = statPanel.Height / STAT_COUNT;
 
             for (int i = 0; i < STAT_COUNT; i++)
             {
-                var teamStatControl = new StatControl
+                var statControl = statPanel.Controls[GetStatKey(i)] as StatControl;
+                if (statControl == null)
                 {
-                    Name = GetStatKey(i),
-                    Width = statWidth,
-                    Height = statHeight,
-                    Location = new Point(0, i * statHeight),
-                    Anchor = AnchorStyles.Left | AnchorStyles.Right
-                };
-                statSplitContainer.Panel1.Controls.Add(teamStatControl);
+                    continue;
+                }
+                statControl.Size = new Size(statWidth, statHeight);
+                statControl.Location = new Point(0, i * statHeight);
             }
 
             DrawStats(false);
@@ -89,7 +122,7 @@ namespace JackalHost.Monitors
 					}
 
 					var tile = _board.Map[x, y];
-					var backColor = GetTileColor(tile);
+					Color? backColor = null;
 					int goldCount = tile.Coins > 0 ? tile.Coins : 0;
 					int piratesCount = 0;
 
@@ -163,12 +196,11 @@ namespace JackalHost.Monitors
 
 	    private void DrawTile(TileControl tileControl,
 			Tile tile,
-	        Color backColor,
+	        Color? backColor,
 	        int goldCount,
 	        int piratesCount)
 	    {
-	        tileControl.BackColor = backColor;
-
+            tileControl.Draw(tile.Type);
 			tileControl.DrawGold(goldCount, tile);
 
 	        string piratesText = "";
@@ -181,6 +213,11 @@ namespace JackalHost.Monitors
                 piratesText = piratesCount.ToString() + "P";
             }
 	        tileControl.lblPirates.Text = piratesText;
+
+            if (backColor != null)
+            {
+                tileControl.lblPirates.BackColor = backColor.Value;
+            }
 	    }
 
 	    private static string GetStatKey(int index)
@@ -191,19 +228,6 @@ namespace JackalHost.Monitors
 		private static string GetTileKey(int x, int y)
 		{
 			return string.Format("x={0}y={1}", x, y);
-		}
-
-		private static Color GetTileColor(Tile tile)
-		{
-			switch (tile.Type)
-			{
-				case TileType.Unknown: return Color.Gray;
-				case TileType.Stone: return Color.DarkGray;
-				case TileType.Water: return Color.Cyan;
-				case TileType.Grass: return Color.Green;
-				case TileType.Gold: return Color.Gold;
-				default: throw new NotSupportedException();
-			}
 		}
 
 		private static Color GetTeamColor(int teamId)

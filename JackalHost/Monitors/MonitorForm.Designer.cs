@@ -134,6 +134,7 @@
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "MonitorForm";
             this.Text = "MonitorForm";
+            this.Load += new System.EventHandler(this.MonitorForm_Load);
             this.gameSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gameSplitContainer)).EndInit();
             this.gameSplitContainer.ResumeLayout(false);

@@ -152,10 +152,6 @@ namespace Jackal
 
                     break;
                 }
-                case TileType.Stone:
-                {
-                    return;
-                }
                 case TileType.Water:
                 {
                     if (target == ship.Position)
@@ -193,7 +189,7 @@ namespace Jackal
                     }
                     break;
                 }
-				case TileType.Gold:
+				case TileType.Chest1:
                 case TileType.Grass:
                 {
                     var attack = targetTile.OccupationTeamId.HasValue && targetTile.OccupationTeamId.Value != pirate.TeamId;
