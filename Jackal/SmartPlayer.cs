@@ -6,7 +6,12 @@ namespace Jackal
 {
     public class SmartPlayer : IPlayer
     {
-        static readonly Random Rnd = new Random(1);
+        private Random Rnd;
+
+        public void OnNewGame()
+        {
+            Rnd = new Random(1);
+        }
 
         public int OnMove(GameState gameState)
         {

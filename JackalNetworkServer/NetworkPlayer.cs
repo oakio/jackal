@@ -12,6 +12,10 @@ namespace JackalNetworkServer
             _client = client;
         }
 
+        public void OnNewGame()
+        {
+        }
+
         public int OnMove(GameState gameState)
         {
             DecisionRequest request = new DecisionRequest();

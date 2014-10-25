@@ -8,7 +8,7 @@ namespace Jackal
     {
         private readonly IPlayer[] _players;
 
-        public Board Board;
+        public readonly Board Board;
 
         public Dictionary<int, int> Scores; // TeamId->Total couns
         public int CoinsLeft;
@@ -28,10 +28,15 @@ namespace Jackal
             {
                 Scores[team.Id] = 0;
             }
-            CoinsLeft = Board.Generator.TotalCoins;
+            CoinsLeft = MapGenerator.TotalCoins;
 
             _availableMoves = new List<Move>();
             _actions = new List<IGameAction>();
+
+            foreach (var player in _players)
+            {
+                player.OnNewGame();
+            }
         }
 
         public bool Turn()
@@ -265,7 +270,7 @@ namespace Jackal
             get { return CoinsLeft == 0; }
         }
 
-        public int TurnNo { get; set; }
+        public int TurnNo { get; private set; }
 
         public int CurrentTeamId
         {

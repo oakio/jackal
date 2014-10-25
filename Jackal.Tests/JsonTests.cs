@@ -49,6 +49,10 @@ namespace Jackal.Tests
 
         public class TestJsonPlayer : IPlayer
         {
+            public void OnNewGame()
+            {
+            }
+
             public int OnMove(GameState gameState)
             {
                 DecisionRequest request = new DecisionRequest();

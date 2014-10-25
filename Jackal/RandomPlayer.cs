@@ -4,7 +4,12 @@ namespace Jackal
 {
     public class RandomPlayer : IPlayer
     {
-        static readonly Random Rnd = new Random(42);
+        private Random Rnd;
+
+        public void OnNewGame()
+        {
+            Rnd = new Random(42);
+        }
 
         public int OnMove(GameState gameState)
         {

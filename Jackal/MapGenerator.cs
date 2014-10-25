@@ -6,59 +6,59 @@ namespace Jackal
 {
     public class MapGenerator
     {
-        public int Size = 11;
-        public int TotalCoins = 37;
+        public const int Size = 11;
+        public const int TotalCoins = 37;
 
         private readonly Random _rand;
         private readonly List<Tile> _tiles;
-        private int _nextTile;
 
         public MapGenerator(int mapId)
         {
             _rand = new Random(mapId);
 
-            int totalUnknown = Size*Size - 4;
-            _tiles = new List<Tile>(totalUnknown);
+            const int totalUnknown = Size*Size - 4;
+            List<Tile> tiles = new List<Tile>(totalUnknown);
 
             for (int i = 0; i < 5; i++)
             {
-                AddTile(new Tile(TileType.Gold, 1));
-                AddTile(new Tile(TileType.Gold, 2));
+                tiles.Add(new Tile(TileType.Gold, 1));
+                tiles.Add(new Tile(TileType.Gold, 2));
             }
 
             for (int i = 0; i < 3; i++)
             {
-                AddTile(new Tile(TileType.Gold, 3));
+                tiles.Add(new Tile(TileType.Gold, 3));
             }
 
             for (int i = 0; i < 2; i++)
             {
-                AddTile(new Tile(TileType.Gold, 4));
+                tiles.Add(new Tile(TileType.Gold, 4));
             }
 
-            AddTile(new Tile(TileType.Gold, 5));
+            tiles.Add(new Tile(TileType.Gold, 5));
 
-            while(_tiles.Count<totalUnknown)
+            while (tiles.Count < totalUnknown)
             {
-                AddTile(new Tile(TileType.Grass));
+                tiles.Add(new Tile(TileType.Grass));
             }
 
-            _tiles = ShuffleTiles();
+            _tiles = Shuffle(tiles);
         }
 
-        private void AddTile(Tile tile)
+        private List<Tile> Shuffle( List<Tile> tiles)
         {
-            _tiles.Add(tile);
+            return tiles.Select(x => new {Tile = x, Number = _rand.Next()}).OrderBy(x => x.Number).Select(x => x.Tile).ToList();
         }
 
-        private List<Tile> ShuffleTiles()
+        public Tile GetNext(Position position)
         {
-            return _tiles.OrderBy(x => _rand.Next()).ToList();
-        }
+            int index = (position.Y - 1)*11 + position.X - 3;
+            if (position.Y == 1)
+                index++;
+            if (position.Y == 11)
+                index--;
 
-        public Tile GetNext()
-        {
-            return _tiles[_nextTile++];
+            return _tiles[index];
         }
     }
 }
