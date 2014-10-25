@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             this.gameSplitContainer = new System.Windows.Forms.SplitContainer();
             this.statSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.txtTurn = new System.Windows.Forms.TextBox();
             this.oneTurnBtn = new System.Windows.Forms.Button();
             this.pauseGameBtn = new System.Windows.Forms.Button();
             this.newGameBtn = new System.Windows.Forms.Button();
@@ -40,7 +39,6 @@
             this.gameSplitContainer.Panel2.SuspendLayout();
             this.gameSplitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.statSplitContainer)).BeginInit();
-            this.statSplitContainer.Panel1.SuspendLayout();
             this.statSplitContainer.Panel2.SuspendLayout();
             this.statSplitContainer.SuspendLayout();
             this.SuspendLayout();
@@ -52,6 +50,10 @@
             this.gameSplitContainer.Location = new System.Drawing.Point(0, 0);
             this.gameSplitContainer.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.gameSplitContainer.Name = "gameSplitContainer";
+            // 
+            // gameSplitContainer.Panel1
+            // 
+            this.gameSplitContainer.Panel1.Resize += new System.EventHandler(this.gameSplitContainer_Panel1_Resize);
             // 
             // gameSplitContainer.Panel2
             // 
@@ -71,7 +73,7 @@
             // 
             // statSplitContainer.Panel1
             // 
-            this.statSplitContainer.Panel1.Controls.Add(this.txtTurn);
+            this.statSplitContainer.Panel1.Resize += new System.EventHandler(this.statSplitContainer_Panel1_Resize);
             // 
             // statSplitContainer.Panel2
             // 
@@ -81,16 +83,6 @@
             this.statSplitContainer.Size = new System.Drawing.Size(532, 722);
             this.statSplitContainer.SplitterDistance = 325;
             this.statSplitContainer.TabIndex = 1;
-            // 
-            // txtTurn
-            // 
-            this.txtTurn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtTurn.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.txtTurn.Location = new System.Drawing.Point(0, 0);
-            this.txtTurn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.txtTurn.Name = "txtTurn";
-            this.txtTurn.Size = new System.Drawing.Size(530, 36);
-            this.txtTurn.TabIndex = 0;
             // 
             // oneTurnBtn
             // 
@@ -142,12 +134,9 @@
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "MonitorForm";
             this.Text = "MonitorForm";
-            this.Load += new System.EventHandler(this.MonitorForm_Load);
             this.gameSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gameSplitContainer)).EndInit();
             this.gameSplitContainer.ResumeLayout(false);
-            this.statSplitContainer.Panel1.ResumeLayout(false);
-            this.statSplitContainer.Panel1.PerformLayout();
             this.statSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.statSplitContainer)).EndInit();
             this.statSplitContainer.ResumeLayout(false);
@@ -157,8 +146,7 @@
 
 		#endregion
 
-		public System.Windows.Forms.SplitContainer gameSplitContainer;
-		public System.Windows.Forms.TextBox txtTurn;
+        public System.Windows.Forms.SplitContainer gameSplitContainer;
         private System.Windows.Forms.Timer gameTurnTimer;
         private System.Windows.Forms.SplitContainer statSplitContainer;
         private System.Windows.Forms.Button newGameBtn;

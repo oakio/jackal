@@ -8,8 +8,7 @@ namespace JackalHost.Monitors
 {
 	public partial class MonitorForm : Form
 	{
-        private const int TILE_SIZE = 56;
-        private const int STAT_SIZE = 36;
+        private const int STAT_COUNT = 5;
 
         private readonly IPlayer[] _players;
         private readonly int _mapId;
@@ -28,43 +27,52 @@ namespace JackalHost.Monitors
 			InitializeComponent();
 		}
 
-		private void MonitorForm_Load(object sender, EventArgs e)
-		{
-            this.Height = (TILE_SIZE + 2) * Board.Size + 48;
-            gameSplitContainer.SplitterDistance = (TILE_SIZE + 2) * Board.Size;
+        private void gameSplitContainer_Panel1_Resize(object sender, EventArgs e)
+        {
+            gameSplitContainer.Panel1.Controls.Clear();
+            int tileWidth = gameSplitContainer.Panel1.Width / Board.Size - 2;
+            int tileHeight = gameSplitContainer.Panel1.Height / Board.Size - 2;
 
-			gameSplitContainer.Panel1.Controls.Clear();
+            for (int y = 0; y < Board.Size; y++)
+            {
+                for (int x = 0; x < Board.Size; x++)
+                {
+                    var tileControl = new TileControl
+                    {
+                        Name = GetTileKey(x, y),
+                        Location = new Point(x * (tileWidth + 2), y * (tileHeight + 2)),
+                        Size = new Size(tileWidth, tileHeight)
+                    };
+                    tileControl.lblPirates.Size = new Size(tileWidth, tileHeight / 2);
+                    tileControl.lblGold.Size = new Size(tileWidth, tileHeight / 2);
+                    gameSplitContainer.Panel1.Controls.Add(tileControl);
+                }
+            }
 
-			for (int y = 0; y < Board.Size; y++)
-			{
-				for (int x = 0; x < Board.Size; x++)
-				{
-					var tileControl = new TileControl
-					{
-						Name = GetTileKey(x, y),
-                        Location = new Point(x * (TILE_SIZE + 2), y * (TILE_SIZE + 2)),
-                        Size = new Size(TILE_SIZE, TILE_SIZE)
-					};
-                    tileControl.lblPirates.Size = new Size(TILE_SIZE, TILE_SIZE / 2);
-                    tileControl.lblGold.Size = new Size(TILE_SIZE, TILE_SIZE / 2);
-					gameSplitContainer.Panel1.Controls.Add(tileControl);
-				}
-			}
+            Draw();
+        }
 
-			for (int i = 0; i < _game.Board.Teams.Length; i++)
-			{
-				var teamStatControl = new StatControl
-				{
-					Name = GetStatKey(i),
-                    Location = new Point(0, (i + 1) * STAT_SIZE),
+        private void statSplitContainer_Panel1_Resize(object sender, EventArgs e)
+        {
+            statSplitContainer.Panel1.Controls.Clear();
+            int statWidth = statSplitContainer.Panel1.Width;
+            int statHeight = statSplitContainer.Panel1.Height / STAT_COUNT;
+
+            for (int i = 0; i < STAT_COUNT; i++)
+            {
+                var teamStatControl = new StatControl
+                {
+                    Name = GetStatKey(i),
+                    Width = statWidth,
+                    Height = statHeight,
+                    Location = new Point(0, i * statHeight),
                     Anchor = AnchorStyles.Left | AnchorStyles.Right
-				};
-				statSplitContainer.Panel1.Controls.Add(teamStatControl);
-			}
+                };
+                statSplitContainer.Panel1.Controls.Add(teamStatControl);
+            }
 
-		    gameTurnTimer.Enabled = false;
-			Draw();
-		}
+            DrawStats(false);
+        }
 
         public void Draw(bool isGameOver = false)
 		{
@@ -115,7 +123,7 @@ namespace JackalHost.Monitors
 
         private void DrawStats(bool isGameOver = false)
 		{
-			for (int i = 0; i < _game.Board.Teams.Length; i++)
+            for (int i = 0; i < STAT_COUNT; i++)
 			{
 				var statControl = statSplitContainer.Panel1.Controls[GetStatKey(i)] as StatControl;
 				if (statControl == null)
@@ -123,24 +131,34 @@ namespace JackalHost.Monitors
 					continue;
 				}
 
-				var team = _game.Board.Teams[i];
+                if(i == 0)
+                {
+                    DrawTurn(statControl, isGameOver);
+                    continue;
+                }
+
+                if(i > _game.Board.Teams.Length)
+                {
+                    break;
+                }
+				var team = _game.Board.Teams[i - 1];
 				int goldCount;
 				_game.Scores.TryGetValue(team.Id, out goldCount);
 				DrawStat(statControl, team.Id, goldCount);
 			}
-
-			DrawTurn(isGameOver);
 		}
+
+        private void DrawTurn(StatControl statControl, bool isGameOver = false)
+        {
+            statControl.txtBox.BackColor = Color.White;
+            statControl.txtBox.ForeColor = Color.Black;
+            statControl.txtBox.Text = "TurnNo: " + _game.TurnNo + (isGameOver ? " - game over" : "");
+        }
 
 		private void DrawStat(StatControl statControl, int teamId, int goldCount)
 		{
 			statControl.txtBox.BackColor = GetTeamColor(teamId);
 			statControl.txtBox.Text = string.Format("Team {0}: gold = {1}", teamId, goldCount);			
-		}
-
-        private void DrawTurn(bool isGameOver = false)
-		{
-            txtTurn.Text = "TurnNo: " + _game.TurnNo + (isGameOver ? " - game over" : "");		
 		}
 
 	    private void DrawTile(TileControl tileControl,
