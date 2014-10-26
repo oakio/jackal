@@ -34,14 +34,14 @@ namespace Jackal
             _actions = new List<IGameAction>();
         }
 
-        public bool Turn()
+        public Move Turn()
         {
             int teamId = CurrentTeamId;
             IPlayer me = _players[teamId];
 
             GetAvailableMoves(teamId);
 
-            GameState gameState=new GameState();
+            GameState gameState = new GameState();
             gameState.AvailableMoves = _availableMoves.ToArray();
             gameState.Board = Board;
             gameState.GameId = GameId;
@@ -53,7 +53,7 @@ namespace Jackal
             IGameAction action = _actions[moveNo];
             action.Act(this);
             TurnNo++;
-            return true;
+            return _availableMoves[moveNo];
         }
 
         private void GetAvailableMoves(int teamId)
@@ -101,13 +101,6 @@ namespace Jackal
                     Step(position.X - 1, position.Y - 1, pirate, ship, team);
                 }
             }
-        }
-
-        private void AddMoveAndActions(Move move, IGameAction action)
-        {
-            if (_availableMoves.Exists(x => x == move)) return;
-            _availableMoves.Add(move);
-            _actions.Add(action);
         }
 
         private void Step(int toX, int toY, Pirate pirate, Ship ship, Team team)
@@ -246,6 +239,13 @@ namespace Jackal
                     break;
                 }
             }
+        }
+
+        private void AddMoveAndActions(Move move, IGameAction action)
+        {
+            if (_availableMoves.Exists(x => x == move)) return;
+            _availableMoves.Add(move);
+            _actions.Add(action);
         }
 
         private static bool CanLanding(Pirate pirate, Position to)

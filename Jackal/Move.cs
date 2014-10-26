@@ -3,7 +3,7 @@
     public class Move
     {
         public Pirate Pirate;
-
+        public Position From;
         public Position To;
         public bool WithCoins;
 
@@ -16,6 +16,9 @@
             Pirate = pirate;
             To = to;
             WithCoins = withCoin;
+
+            // используется для отрисовки предыдущей позиции пирата
+            From = new Position(pirate.Position.X, pirate.Position.Y);
         }
 
 		public override int GetHashCode()

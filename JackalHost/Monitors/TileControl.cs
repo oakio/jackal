@@ -7,6 +7,8 @@ namespace JackalHost.Monitors
 {
 	public partial class TileControl : UserControl
 	{
+        bool isUnknown = true;
+
 		public TileControl()
 		{
 			InitializeComponent();
@@ -14,20 +16,31 @@ namespace JackalHost.Monitors
 
         public void Draw(TileType type)
         {
+            if (isUnknown == false && type != TileType.Unknown)
+            {
+                return;
+            }
+
+            if(isUnknown && type != TileType.Unknown)
+            {
+                isUnknown = false;
+            }
+
             string relativePath = "";
             switch(type)
             {
-                case TileType.Unknown: 
+                case TileType.Unknown:
+                    isUnknown = true;
                     relativePath = @"Content\Fields\back.png";
                     break;
                 case TileType.Water:
                     relativePath = @"Content\Fields\water.png";
                     break;
                 case TileType.Grass:
-                    //Random rnd = new Random();
-                    //int index = rnd.Next(1, 5);
-                    //relativePath = @"Content\Fields\empty" + index + @".png";
-                    relativePath = @"Content\Fields\empty1.png";
+                    Random rnd = new Random();
+                    int index = rnd.Next(1, 5);
+                    relativePath = @"Content\Fields\empty" + index + @".png";
+                    //relativePath = @"Content\Fields\empty1.png";
                     break;
 		        case TileType.Chest1:
                     relativePath = @"Content\Fields\chest1.png";
@@ -52,17 +65,41 @@ namespace JackalHost.Monitors
             this.BackgroundImage = Image.FromFile(baseDir + relativePath);
         }
 
-		public void DrawGold(int goldCount, Tile tile)
+        public void DrawPirates(int piratesCount, int teamId)
+        {
+            if(teamId == -1)
+            {
+                this.lblPirates.Visible = false;
+                return;
+            }
+
+            lblPirates.Visible = true;
+            lblPirates.BackColor = GetTeamColor(teamId);
+            lblPirates.Text = piratesCount > 1 ? piratesCount.ToString() + "P" : "P";
+        }
+
+		public void DrawGold(int goldCount)
 		{
-			if (goldCount > 0)
-			{
-                lblGold.Text = goldCount.ToString();
-                lblGold.Visible = true;
-			}
-            else
+            if(goldCount == 0)
             {
                 lblGold.Visible = false;
+                return;
             }
+
+            lblGold.Text = goldCount.ToString();
+            lblGold.Visible = true;
 		}
+
+        public static Color GetTeamColor(int teamId)
+        {
+            switch (teamId)
+            {
+                case 0: return Color.DarkRed;
+                case 1: return Color.DarkBlue;
+                case 2: return Color.DarkViolet;
+                case 3: return Color.DarkOrange;
+                default: throw new NotSupportedException();
+            }
+        }
 	}
 }
