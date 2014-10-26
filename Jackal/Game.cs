@@ -267,10 +267,11 @@ namespace Jackal
 
         public bool IsGameOver
         {
-            get { return CoinsLeft == 0; }
+            get { return CoinsLeft == 0 || TurnNo - 4*50 > LastActionTurnNo; }
         }
 
         public int TurnNo { get; private set; }
+        public int LastActionTurnNo { get; internal set; }
 
         public int CurrentTeamId
         {

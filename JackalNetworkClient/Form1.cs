@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Jackal;
+using Jackal.Players;
 using JackalNetwork;
 using Newtonsoft.Json;
 
@@ -19,12 +20,14 @@ namespace JackalNetworkClient
 {
     public partial class Form1 : Form
     {
-        private IPlayer player = new SmartPlayer();
+        private IPlayer player = new MikePlayer();
 
         public Form1()
         {
             InitializeComponent();
         }
+
+        private volatile bool IsTerminated = false;
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -32,11 +35,12 @@ namespace JackalNetworkClient
 
             Thread connectionThread = new Thread(() => DoConnection(serverUri, Log));
             connectionThread.Start();
+            button1.Enabled = false;
         }
 
         private void DoConnection(Uri serverUri,Action<string> reporter)
         {
-            while (true)
+            while (IsTerminated==false)
             {
                 try
                 {
@@ -47,76 +51,91 @@ namespace JackalNetworkClient
                     reporter("Connected");
 
                     StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-                    writer = new StreamWriter(stream, Encoding.UTF8);
+                    StreamWriter writer = new StreamWriter(stream, Encoding.UTF8);
 
-                    while (client.Connected)
+                    while (client.Connected && IsTerminated == false)
                     {
                         string line = reader.ReadLine();
-                        NetworkMessage message = JsonHelper.DeserialiazeWithType<NetworkMessage>(line);
-                        reporter("Received message: " + message.GetType() + "\r\n");
-                        ProcessMessage(message);
+                        NetworkCommunication message = JsonHelper.DeserialiazeWithType<NetworkCommunication>(line);
+                        reporter("Received message: " + message.GetType());
+                        var answer = ProcessMessage(message);
+                        if (answer != null)
+                        {
+                            var str = JsonHelper.SerialiazeWithType(answer);
+                            writer.WriteLine(str);
+                            writer.Flush();
+                        }
                     }
 
                     // Close everything.
+                    reader.Close();
                     writer.Close();
-                    client.Close();
                     stream.Close();
                     client.Close();
                 }
                 catch (Exception exp)
                 {
-                    reporter("Error: " + exp.Message + "\r\n");
+                    reporter("Error: " + exp.Message);
                 }
-                Thread.Sleep(TimeSpan.FromSeconds(5));
+                for (int i = 1; i <= 50; i++)
+                {
+                    if (IsTerminated) break;
+                    Thread.Sleep(TimeSpan.FromSeconds(0.1));
+                }
             }
         }
 
-        private StreamWriter writer;
 
-        void ProcessMessage(NetworkMessage message)
+
+        NetworkMessage ProcessMessage(NetworkCommunication communication)
         {
-            if (message is CheckRequest)
-                ProcessCheckRequest(message as CheckRequest);
-            else if (message is DecisionRequest)
-                ProcessDecisionRequest(message as DecisionRequest);
-            else if (message is WelcomeRequest)
-                ProcessWelcomeRequest(message as WelcomeRequest);
+            if (communication is CheckRequest)
+                return ProcessCheck(communication as CheckRequest);
+            else if (communication is NewGameMessage)
+                ProcessNewGame(communication as NewGameMessage);
+            else if (communication is DecisionRequest)
+                return ProcessDecision(communication as DecisionRequest);
+            else if (communication is WelcomeRequest)
+                return ProcessWelcome(communication as WelcomeRequest);
+            return null;
         }
 
-
-        private void SendAnswer(NetworkMessage message)
+        private void ProcessNewGame(NewGameMessage newGameMessage)
         {
-            var str = JsonHelper.SerialiazeWithType(message);
-            writer.WriteLine(str);
-            writer.Flush();
+            player.OnNewGame();
         }
 
-        private void ProcessWelcomeRequest(WelcomeRequest welcomeRequest)
+        private WelcomeAnswer ProcessWelcome(WelcomeRequest welcomeRequest)
         {
             var welcomeAnswer = new WelcomeAnswer();
-            welcomeAnswer.ClientName = player.GetType().Name.ToString() + "_"+Guid.NewGuid();
-            SendAnswer(welcomeAnswer);
+            welcomeAnswer.ClientName = player.GetType().Name.ToString() + "_" + Guid.NewGuid();
+            return welcomeAnswer;
         }
 
-        private void ProcessDecisionRequest(DecisionRequest decisionRequest)
+        private DecisionAnswer ProcessDecision(DecisionRequest decisionRequest)
         {
             var decisionAnswer = new DecisionAnswer();
             decisionAnswer.RequestId = decisionRequest.RequestId;
-            decisionAnswer.Decision = player.OnMove(decisionRequest.State);
-            SendAnswer(decisionAnswer);
+            var gameState = decisionRequest.GetGameState();
+            decisionAnswer.Decision = player.OnMove(gameState);
+            return decisionAnswer;
         }
 
-        private void ProcessCheckRequest(CheckRequest checkRequest)
+        private CheckAnswer ProcessCheck(CheckRequest checkRequest)
         {
             var сheckAnswer = new CheckAnswer();
-            SendAnswer(сheckAnswer);
+            return сheckAnswer;
         }
-
-
 
         void Log(string line)
         {
-            UpdateUI(() => textBoxLog.AppendText(line + "\r\n"));
+            try
+            {
+                UpdateUI(() => textBoxLog.Text = line);
+            }
+            catch (Exception exp)
+            {
+            }
         }
 
         /// <summary>
@@ -154,6 +173,11 @@ namespace JackalNetworkClient
             {
                 action(data);
             }
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            IsTerminated = true;
         }
 
 

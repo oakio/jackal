@@ -29,6 +29,8 @@ namespace Jackal.Actions
 
             game.Scores[_pirate.TeamId] ++;
             game.CoinsLeft --;
+
+            game.LastActionTurnNo = game.TurnNo;
         }
     }
 }

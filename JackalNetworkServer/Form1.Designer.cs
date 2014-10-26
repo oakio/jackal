@@ -56,18 +56,18 @@
             // 
             // textBoxReport
             // 
-            this.textBoxReport.Location = new System.Drawing.Point(174, 263);
+            this.textBoxReport.Location = new System.Drawing.Point(2, 263);
             this.textBoxReport.Multiline = true;
             this.textBoxReport.Name = "textBoxReport";
             this.textBoxReport.ReadOnly = true;
-            this.textBoxReport.Size = new System.Drawing.Size(456, 127);
+            this.textBoxReport.Size = new System.Drawing.Size(915, 127);
             this.textBoxReport.TabIndex = 7;
             this.textBoxReport.WordWrap = false;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(171, 247);
+            this.label1.Location = new System.Drawing.Point(-1, 247);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(67, 13);
             this.label1.TabIndex = 8;
@@ -83,7 +83,8 @@
             this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.label2);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Jackal Server";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -48,16 +48,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CheckAnswer.cs" />
-    <Compile Include="CheckRequest.cs" />
-    <Compile Include="GameReport.cs" />
+    <Compile Include="Messages\CheckAnswer.cs" />
+    <Compile Include="Messages\CheckRequest.cs" />
+    <Compile Include="Messages\GameReport.cs" />
     <Compile Include="JsonHelper.cs" />
-    <Compile Include="NetworkMessage.cs" />
-    <Compile Include="DecisionAnswer.cs" />
-    <Compile Include="DecisionRequest.cs" />
+    <Compile Include="Messages\NetworkCommunication.cs" />
+    <Compile Include="Messages\NetworkMessage.cs" />
+    <Compile Include="Messages\DecisionAnswer.cs" />
+    <Compile Include="Messages\DecisionRequest.cs" />
+    <Compile Include="Messages\NetworkRequest.cs" />
+    <Compile Include="Messages\NewGameMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WelcomeAnswer.cs" />
-    <Compile Include="WelcomeRequest.cs" />
+    <Compile Include="Messages\WelcomeAnswer.cs" />
+    <Compile Include="Messages\WelcomeRequest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jackal\Jackal.csproj">

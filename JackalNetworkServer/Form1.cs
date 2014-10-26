@@ -14,15 +14,19 @@ namespace JackalNetworkServer
 {
     public partial class Form1 : Form
     {
+        private volatile bool IsTerminated = false;
+
         public Form1()
         {
             InitializeComponent();
         }
 
+        private NetworkGame networkGame;
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            GameOrganizer organizer = new GameOrganizer();
-            Thread organizerThread = new Thread(() => organizer.Do(ConnectedClients, Log,ReportState));
+            networkGame = new NetworkGame();
+            Thread organizerThread = new Thread(() => networkGame.Start(ConnectedClients, Log, ReportState));
             organizerThread.Start();
             Thread listenerThread = new Thread(StartListener);
             listenerThread.Start();
@@ -30,31 +34,56 @@ namespace JackalNetworkServer
 
         private void ReportState(string s)
         {
-            UpdateUI(() => textBoxReport.Text = s);
+            try
+            {
+                UpdateUI(() => textBoxReport.Text = s);
+            }
+            catch (Exception exp)
+            {
+            }
         }
 
         void StartListener()
         {
-            var server = System.Net.Sockets.TcpListener.Create(29998);
-            server.Start();
-
-            // Enter the listening loop. 
-            while (true)
+            try
             {
-                Log("Waiting for a connection...");
+                var server = System.Net.Sockets.TcpListener.Create(29998);
+                server.Start();
 
-                // Perform a blocking call to accept requests. 
-                // You could also user server.AcceptSocket() here.
-                TcpClient client = server.AcceptTcpClient();
+                Log("Started listening...");
 
-                Thread thread = new Thread(ProcessConnection);
-                thread.Start(client);
+                // Enter the listening loop. 
+                while (IsTerminated == false)
+                {
+                    if (server.Pending() == false)
+                    {
+                        Thread.Sleep(TimeSpan.FromMilliseconds(10));
+                        continue;
+                    }
+
+                    // Perform a blocking call to accept requests. 
+                    // You could also user server.AcceptSocket() here.
+                    TcpClient client = server.AcceptTcpClient();
+
+                    Thread thread = new Thread(ProcessConnection);
+                    thread.Start(client);
+                }
+            }
+            catch (Exception exp)
+            {
+                Log("Error: " + exp.Message);
             }
         }
 
         void Log(string line)
         {
-            UpdateUI(() => textBoxLog.AppendText(line + "\r\n"));
+            try
+            {
+                UpdateUI(() => textBoxLog.Text = line);
+            }
+            catch (Exception exp)
+            {
+            }
         }
 
         /// <summary>
@@ -117,11 +146,6 @@ namespace JackalNetworkServer
 
                 client.TcpClient = tcpClient;
 
-                lock (ConnectedClients)
-                {
-                    ConnectedClients.Add(client);
-                }
-
                 WelcomeRequest welcome = new WelcomeRequest();
                 welcome.ServerId = serverId;
                 welcome.DecisionTimeout = 60;
@@ -129,7 +153,12 @@ namespace JackalNetworkServer
                 var answer=client.Query(welcome) as WelcomeAnswer;
                 client.ClientId = answer.ClientName;
 
-                while (tcpClient.Connected)
+                lock (ConnectedClients)
+                {
+                    ConnectedClients.Add(client);
+                }
+
+                while (tcpClient.Connected && IsTerminated == false)
                 {
                     Thread.Sleep(TimeSpan.FromMilliseconds(10));
                 }
@@ -148,5 +177,11 @@ namespace JackalNetworkServer
         }
 
         private Guid serverId = Guid.NewGuid();
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            networkGame.Stop();
+            IsTerminated = true;
+        }
     }
 }

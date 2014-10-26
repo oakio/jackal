@@ -14,13 +14,16 @@ namespace JackalNetworkServer
 
         public void OnNewGame()
         {
+            NewGameMessage newGameMessage=new NewGameMessage();
+            newGameMessage.GameId = Guid.NewGuid();
+
+            _client.Query(newGameMessage);
         }
 
         public int OnMove(GameState gameState)
         {
-            DecisionRequest request = new DecisionRequest();
+            DecisionRequest request = new DecisionRequest(gameState);
             request.RequestId = Guid.NewGuid();
-            request.State = gameState;
 
             DecisionAnswer answer = _client.Query(request) as DecisionAnswer;
             if (answer.RequestId!=request.RequestId) throw new Exception("Wrong requestid");

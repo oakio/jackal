@@ -5,11 +5,11 @@ namespace Jackal
     public class Tile
     {
         public Position Position;
-        public readonly TileType Type;
+        public TileType Type;
         public int Coins;
 
         public int? OccupationTeamId;
-        public readonly HashSet<Pirate> Pirates;
+        public HashSet<Pirate> Pirates;
 
         public Tile()
         {

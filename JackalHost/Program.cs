@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Windows.Forms;
 using Jackal;
+using Jackal.Players;
 using JackalHost.Monitors;
 
 namespace JackalHost
@@ -10,14 +11,9 @@ namespace JackalHost
     {
         private static void Main(string[] args)
         {
-            IPlayer[] players =
-            {
-                new RandomPlayer(), 
-                new SmartPlayer(),
-                new SmartPlayer(),
-                new SmartPlayer(),
-            };
-            const int mapId = 987412+1;
+            IPlayer[] players = { new MikePlayer(), new SmartPlayer(), new SmartPlayer(), new SmartPlayer() };
+
+            const int mapId = 201;
 
             Application.EnableVisualStyles();
             Application.Run(new MonitorForm(players, mapId));

@@ -37,18 +37,22 @@ namespace JackalHost.Monitors
 
 			for (int y = 0; y < Board.Size; y++)
 			{
-				for (int x = 0; x < Board.Size; x++)
-				{
-					var tileControl = new TileControl
-					{
-						Name = GetTileKey(x, y),
-                        Location = new Point(x * (TILE_SIZE + 2), y * (TILE_SIZE + 2)),
-                        Size = new Size(TILE_SIZE, TILE_SIZE)
-					};
-                    tileControl.lblPirates.Size = new Size(TILE_SIZE, TILE_SIZE / 2);
-                    tileControl.lblGold.Size = new Size(TILE_SIZE, TILE_SIZE / 2);
-					gameSplitContainer.Panel1.Controls.Add(tileControl);
-				}
+			    for (int x = 0; x < Board.Size; x++)
+			    {
+			        var tileControl = new TileControl
+			        {
+			            Name = GetTileKey(x, Board.Size - 1 - y),
+			            Location = new Point(x*(TILE_SIZE + 2), y*(TILE_SIZE + 2)),
+			            Size = new Size(TILE_SIZE, TILE_SIZE)
+			        };
+			        tileControl.lblPirates.Size = new Size(TILE_SIZE, TILE_SIZE/2);
+			        tileControl.lblGold.Size = new Size(TILE_SIZE, TILE_SIZE/2);
+			        gameSplitContainer.Panel1.Controls.Add(tileControl);
+
+			        tileControl.lblGold.Width = TILE_SIZE;
+			        tileControl.lblPosition.Location = new Point(0, TILE_SIZE - 10);
+			        tileControl.lblPosition.Text = x + "," + (Board.Size - 1 - y);
+			    }
 			}
 
 			for (int i = 0; i < _game.Board.Teams.Length; i++)
@@ -140,7 +144,7 @@ namespace JackalHost.Monitors
 
         private void DrawTurn(bool isGameOver = false)
 		{
-            txtTurn.Text = "TurnNo: " + _game.TurnNo + (isGameOver ? " - game over" : "");		
+            txtTurn.Text = "TurnNo: " + _game.TurnNo + (isGameOver ? " - game over" : "");
 		}
 
 	    private void DrawTile(TileControl tileControl,
@@ -200,19 +204,26 @@ namespace JackalHost.Monitors
 			}
 		}
 
-        private void gameTurnTimer_Tick(object sender, EventArgs e)
-        {
-            Draw();
-            _game.Turn();
-
-            if (_game.IsGameOver)
-            {
-                Draw(true);
+	    private void gameTurnTimer_Tick(object sender, EventArgs e)
+	    {
+	        if (_game.IsGameOver)
+	        {
+                pauseGameBtn.Text = "Start game"; 
                 gameTurnTimer.Enabled = false;
-            }
-        }
+	            return;
+	        }
 
-        private void newGameBtn_Click(object sender, EventArgs e)
+	         Draw();
+	        _game.Turn();
+
+	        if (_game.IsGameOver)
+	        {
+	            Draw(true);
+	            gameTurnTimer.Enabled = false;
+	        }
+	    }
+
+	    private void newGameBtn_Click(object sender, EventArgs e)
         {
             _board = new Board(_mapId);
             _game = new Game(_players, _board);
@@ -243,8 +254,38 @@ namespace JackalHost.Monitors
 				pauseGameBtn.Text = "Start game";
 			}
 
-			_game.Turn();
-			Draw();
+		    if (_game.IsGameOver == false)
+		    {
+		        _game.Turn();
+		        Draw();
+		    }
+            if (_game.IsGameOver)
+            {
+                Draw(true);
+                gameTurnTimer.Enabled = false;
+            }
 		}
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (gameTurnTimer.Enabled)
+            {
+                gameTurnTimer.Enabled = false;
+                pauseGameBtn.Text = "Start game";
+            }
+
+            for (int i = 1; i <= 4; i++)
+            {
+                if (_game.IsGameOver) break;
+
+                _game.Turn();
+                Draw();
+            }
+            if (_game.IsGameOver)
+            {
+                Draw(true);
+                gameTurnTimer.Enabled = false;
+            }
+        }
 	}
 }

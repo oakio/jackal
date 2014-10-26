@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using Jackal.Players;
 using JackalNetwork;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -9,6 +11,15 @@ namespace Jackal.Tests
     [TestClass]
     public class JsonTests
     {
+        private static void CheckSerialization<T>(T obj) where T : class
+        {
+            var json = JsonHelper.SerialiazeWithType<T>(obj, Formatting.Indented);
+            var obj2 = JsonHelper.DeserialiazeWithType<T>(json);
+            Assert.IsNotNull(obj2);
+            var json2 = JsonHelper.SerialiazeWithType<T>(obj2, Formatting.Indented);
+            Assert.IsTrue(json == json2);
+        }
+
         [TestMethod]
         public void JsonTestAnswer()
         {
@@ -16,12 +27,7 @@ namespace Jackal.Tests
             answer.RequestId = Guid.NewGuid();
             answer.Decision = 1;
 
-            var message = JsonHelper.SerialiazeWithType(answer, Formatting.Indented);
-            var t = JsonHelper.DeserialiazeWithType<NetworkMessage>(message);
-            Assert.IsNotNull(t);
-            Assert.IsTrue(t is DecisionAnswer);
-            Assert.IsTrue(answer.RequestId == (t as DecisionAnswer).RequestId);
-            Assert.IsTrue(answer.Decision == (t as DecisionAnswer).Decision);
+            CheckSerialization(answer);
         }
 
         [TestMethod]
@@ -38,36 +44,31 @@ namespace Jackal.Tests
 
             var game = new Game(players.ToArray(), board);
 
-            while (game.IsGameOver == false && game.TurnNo<=4)
+            while (game.IsGameOver == false)
             {
                 //Console.ReadKey();
                 game.Turn();
             }
 
-            //report("Game end.");
+            Console.WriteLine("Game end, turns count: "+game.TurnNo);
         }
 
-        public class TestJsonPlayer : IPlayer
+        private class TestJsonPlayer : BlankPlayer
         {
-            public void OnNewGame()
+            public override int OnMove(GameState gameState)
             {
-            }
-
-            public int OnMove(GameState gameState)
-            {
-                DecisionRequest request = new DecisionRequest();
+                DecisionRequest request = new DecisionRequest(gameState);
                 request.RequestId = Guid.NewGuid();
-                request.State = gameState;
 
-                var message = JsonHelper.SerialiazeWithType(request, Formatting.Indented);
+                var gameState2 = request.GetGameState();
+                string json = JsonHelper.SerialiazeWithType(gameState, Formatting.Indented);
+                string json2 = JsonHelper.SerialiazeWithType(gameState2, Formatting.Indented);
 
-                var t = JsonHelper.DeserialiazeWithType<NetworkMessage>(message);
-                Assert.IsNotNull(t);
-                Assert.IsTrue(t is DecisionRequest);
+                Assert.IsTrue(json==json2);
 
-                Assert.IsTrue(request.State.AvailableMoves[0]==(t as DecisionRequest).State.AvailableMoves[0]);
+                CheckSerialization(request);
 
-                return 0;
+                return base.OnMove(gameState);
             }
         }
     }

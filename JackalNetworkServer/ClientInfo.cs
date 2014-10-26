@@ -15,14 +15,14 @@ namespace JackalNetworkServer
         readonly object ioLock=new object();
         public bool IsTerminated;
 
-        public NetworkMessage Query(NetworkMessage request)
+        public NetworkMessage Query(NetworkCommunication request)
         {
             var message = JsonHelper.SerialiazeWithType(request);
             string answerMessage;
             lock (ioLock)
             {
                 writer.WriteLine(message);
-                if (request is GameReport) return null;
+                if (request is NetworkMessage) return null;
 
                 answerMessage = reader.ReadLine();
             }

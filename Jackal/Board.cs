@@ -7,7 +7,7 @@ namespace Jackal
     {
         public const int Size = 13;
 
-        public MapGenerator Generator;
+        internal MapGenerator Generator;
         public Tile[,] Map;
         public Team[] Teams;
 
@@ -22,6 +22,10 @@ namespace Jackal
                 }
         }
 
+        public Board()
+        {
+        }
+
         public Board(int mapId)
         {
             Generator = new MapGenerator(mapId);
@@ -30,9 +34,9 @@ namespace Jackal
 
             Teams = new Team[4];
             InitTeam(0, (Size - 1)/2, 0);
-            InitTeam(1, (Size - 1), (Size - 1)/2);
-            InitTeam(2, (Size - 1)/2, (Size - 1));
-            InitTeam(3, 0, (Size - 1)/2);
+            InitTeam(1, 0, (Size - 1) / 2);
+            InitTeam(2, (Size - 1) / 2, (Size - 1));
+            InitTeam(3, (Size - 1), (Size - 1) / 2);
 
             Teams[0].Enemies = new[] {1, 2, 3};
             Teams[1].Enemies = new[] {0, 2, 3};
