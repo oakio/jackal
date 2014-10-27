@@ -16,5 +16,18 @@ namespace JackalHost.Monitors
 		{
 			InitializeComponent();
 		}
+
+        public void DrawTurn(int turnNo, bool isGameOver = false)
+        {
+            txtBox.BackColor = Color.White;
+            txtBox.ForeColor = Color.Black;
+            txtBox.Text = "TurnNo: " + turnNo + (isGameOver ? " - game over" : "");
+        }
+
+        public void DrawStat(int teamId, int goldCount)
+        {
+            txtBox.BackColor = TileControl.GetTeamColor(teamId);
+            txtBox.Text = string.Format("Team {0}: gold = {1}", teamId, goldCount);
+        }
 	}
 }

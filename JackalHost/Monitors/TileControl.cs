@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Jackal;
@@ -16,20 +18,34 @@ namespace JackalHost.Monitors
 
 	    public double RandomValue { get; set; }
 
-	    public void Draw(TileType type)
+        public void Draw(Tile tile, List<Ship> ships)
         {
-            if (isUnknown == false && type != TileType.Unknown)
+            var pirates = tile.Pirates;
+            int coins = tile.Coins;
+            foreach (var ship in ships)
+            {
+                if (tile.Position == ship.Position)
+                {
+                    pirates = ship.Crew;
+                    coins = ship.Coins;
+                    break;
+                }
+            }
+            DrawPirates(pirates);
+            DrawGold(coins);
+
+            if (isUnknown == false && tile.Type != TileType.Unknown)
             {
                 return;
             }
 
-            if(isUnknown && type != TileType.Unknown)
+            if (isUnknown && tile.Type != TileType.Unknown)
             {
                 isUnknown = false;
             }
 
             string relativePath = "";
-            switch(type)
+            switch(tile.Type)
             {
                 case TileType.Unknown:
                     isUnknown = true;
@@ -39,9 +55,7 @@ namespace JackalHost.Monitors
                     relativePath = @"Content\Fields\water.png";
                     break;
                 case TileType.Grass:
-                    int index = ((int) (RandomValue*4)) + 1; //rnd.Next(1, 5);
                     relativePath = @"Content\Fields\empty1.png";
-                    //relativePath = @"Content\Fields\1.png";
                     break;
 		        case TileType.Chest1:
                     relativePath = @"Content\Fields\chest1.png";
@@ -66,22 +80,22 @@ namespace JackalHost.Monitors
             this.BackgroundImage = Image.FromFile(baseDir + relativePath);
         }
 
-        public void DrawPirates(int piratesCount, int teamId)
+        private void DrawPirates(HashSet<Pirate> pirates)
         {
-            if(teamId == -1)
+            if (pirates == null || pirates.Count == 0)
             {
                 this.lblPirates.Visible = false;
                 return;
             }
 
             lblPirates.Visible = true;
-            lblPirates.BackColor = GetTeamColor(teamId);
-            lblPirates.Text = piratesCount > 1 ? piratesCount.ToString() + "P" : "P";
+            lblPirates.BackColor = GetTeamColor(pirates.First().TeamId);
+            lblPirates.Text = pirates.Count > 1 ? pirates.Count.ToString() + "P" : "P";
         }
 
-		public void DrawGold(int goldCount)
-		{
-            if(goldCount == 0)
+        private void DrawGold(int goldCount)
+        {
+            if (goldCount == 0)
             {
                 lblGold.Visible = false;
                 return;
@@ -89,7 +103,7 @@ namespace JackalHost.Monitors
 
             lblGold.Text = goldCount.ToString();
             lblGold.Visible = true;
-		}
+        }
 
         public static Color GetTeamColor(int teamId)
         {
