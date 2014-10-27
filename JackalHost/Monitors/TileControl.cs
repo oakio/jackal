@@ -40,8 +40,8 @@ namespace JackalHost.Monitors
                     break;
                 case TileType.Grass:
                     int index = ((int) (RandomValue*4)) + 1; //rnd.Next(1, 5);
-                    relativePath = @"Content\Fields\empty" + index + @".png";
-                    //relativePath = @"Content\Fields\empty1.png";
+                    relativePath = @"Content\Fields\empty1.png";
+                    //relativePath = @"Content\Fields\1.png";
                     break;
 		        case TileType.Chest1:
                     relativePath = @"Content\Fields\chest1.png";
