@@ -39,14 +39,14 @@ namespace Jackal
             }
         }
 
-        public bool Turn()
+        public Move Turn()
         {
             int teamId = CurrentTeamId;
             IPlayer me = _players[teamId];
 
             GetAvailableMoves(teamId);
 
-            GameState gameState=new GameState();
+            GameState gameState = new GameState();
             gameState.AvailableMoves = _availableMoves.ToArray();
             gameState.Board = Board;
             gameState.GameId = GameId;
@@ -58,7 +58,7 @@ namespace Jackal
             IGameAction action = _actions[moveNo];
             action.Act(this);
             TurnNo++;
-            return true;
+            return _availableMoves[moveNo];
         }
 
         private void GetAvailableMoves(int teamId)
@@ -108,13 +108,6 @@ namespace Jackal
             }
         }
 
-        private void AddMoveAndActions(Move move, IGameAction action)
-        {
-            if (_availableMoves.Exists(x => x == move)) return;
-            _availableMoves.Add(move);
-            _actions.Add(action);
-        }
-
         private void Step(int toX, int toY, Pirate pirate, Ship ship, Team team)
         {
             //var moves = _availableMoves;
@@ -157,10 +150,6 @@ namespace Jackal
 
                     break;
                 }
-                case TileType.Stone:
-                {
-                    return;
-                }
                 case TileType.Water:
                 {
                     if (target == ship.Position)
@@ -198,7 +187,11 @@ namespace Jackal
                     }
                     break;
                 }
-				case TileType.Gold:
+				case TileType.Chest1:
+                case TileType.Chest2:
+                case TileType.Chest3:
+                case TileType.Chest4:
+                case TileType.Chest5:
                 case TileType.Grass:
                 {
                     var attack = targetTile.OccupationTeamId.HasValue && targetTile.OccupationTeamId.Value != pirate.TeamId;
@@ -255,6 +248,13 @@ namespace Jackal
                     break;
                 }
             }
+        }
+
+        private void AddMoveAndActions(Move move, IGameAction action)
+        {
+            if (_availableMoves.Exists(x => x == move)) return;
+            _availableMoves.Add(move);
+            _actions.Add(action);
         }
 
         private static bool CanLanding(Pirate pirate, Position to)

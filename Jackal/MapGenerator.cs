@@ -21,21 +21,21 @@ namespace Jackal
 
             for (int i = 0; i < 5; i++)
             {
-                tiles.Add(new Tile(TileType.Gold, 1));
-                tiles.Add(new Tile(TileType.Gold, 2));
+                tiles.Add(new Tile(TileType.Chest1, 1));
+                tiles.Add(new Tile(TileType.Chest2, 2));
             }
 
             for (int i = 0; i < 3; i++)
             {
-                tiles.Add(new Tile(TileType.Gold, 3));
+                tiles.Add(new Tile(TileType.Chest3, 3));
             }
 
             for (int i = 0; i < 2; i++)
             {
-                tiles.Add(new Tile(TileType.Gold, 4));
+                tiles.Add(new Tile(TileType.Chest4, 4));
             }
 
-            tiles.Add(new Tile(TileType.Gold, 5));
+            tiles.Add(new Tile(TileType.Chest5, 5));
 
             while (tiles.Count < totalUnknown)
             {

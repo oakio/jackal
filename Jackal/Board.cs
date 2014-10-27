@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 
 namespace Jackal
@@ -77,10 +77,6 @@ namespace Jackal
         void SetUnknown(int x, int y)
         {
             Map[x, y] = new Tile(new Position(x, y), TileType.Unknown);
-        }
-        void SetStone(int x, int y)
-        {
-            Map[x, y] = new Tile(new Position(x, y), TileType.Stone);
         }
 
         private void InitTeam(int teamId, int x, int y)

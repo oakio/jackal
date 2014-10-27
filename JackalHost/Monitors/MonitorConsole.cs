@@ -65,18 +65,12 @@ namespace JackalHost.Monitors
                             background = ConsoleColor.Gray;
                             break;
                         }
-                        case TileType.Stone:
-                        {
-                            symbol = "^";
-                            background = ConsoleColor.DarkGray;
-                            break;
-                        }
                         case TileType.Water:
                         {
                             background = ConsoleColor.Cyan;
                             break;
                         }
-						case TileType.Gold:
+						case TileType.Chest1:
 						{
 							symbol = " ";
 							background = ConsoleColor.Yellow;
