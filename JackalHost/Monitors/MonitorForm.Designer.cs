@@ -34,6 +34,8 @@
             this.fastTurnesBtn = new System.Windows.Forms.Button();
             this.pauseGameBtn = new System.Windows.Forms.Button();
             this.newGameBtn = new System.Windows.Forms.Button();
+            this.nextOneBtn = new System.Windows.Forms.Button();
+            this.nextTurnesBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.gameSplitContainer)).BeginInit();
             this.gameSplitContainer.Panel2.SuspendLayout();
             this.gameSplitContainer.SuspendLayout();
@@ -76,6 +78,8 @@
             // 
             // statSplitContainer.Panel2
             // 
+            this.statSplitContainer.Panel2.Controls.Add(this.nextTurnesBtn);
+            this.statSplitContainer.Panel2.Controls.Add(this.nextOneBtn);
             this.statSplitContainer.Panel2.Controls.Add(this.slowTurnesBtn);
             this.statSplitContainer.Panel2.Controls.Add(this.fastTurnesBtn);
             this.statSplitContainer.Panel2.Controls.Add(this.pauseGameBtn);
@@ -132,6 +136,30 @@
             this.newGameBtn.UseVisualStyleBackColor = true;
             this.newGameBtn.Click += new System.EventHandler(this.newGameBtn_Click);
             // 
+            // nextOneBtn
+            // 
+            this.nextOneBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.nextOneBtn.Location = new System.Drawing.Point(4, 168);
+            this.nextOneBtn.Margin = new System.Windows.Forms.Padding(4);
+            this.nextOneBtn.Name = "nextOneBtn";
+            this.nextOneBtn.Size = new System.Drawing.Size(120, 47);
+            this.nextOneBtn.TabIndex = 6;
+            this.nextOneBtn.Text = "+1";
+            this.nextOneBtn.UseVisualStyleBackColor = true;
+            this.nextOneBtn.Click += new System.EventHandler(this.nextOneBtn_Click);
+            // 
+            // nextTurnesBtn
+            // 
+            this.nextTurnesBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.nextTurnesBtn.Location = new System.Drawing.Point(132, 168);
+            this.nextTurnesBtn.Margin = new System.Windows.Forms.Padding(4);
+            this.nextTurnesBtn.Name = "nextTurnesBtn";
+            this.nextTurnesBtn.Size = new System.Drawing.Size(120, 47);
+            this.nextTurnesBtn.TabIndex = 7;
+            this.nextTurnesBtn.Text = "+4";
+            this.nextTurnesBtn.UseVisualStyleBackColor = true;
+            this.nextTurnesBtn.Click += new System.EventHandler(this.nextTurnesBtn_Click);
+            // 
             // MonitorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -160,6 +188,8 @@
         private System.Windows.Forms.Button pauseGameBtn;
 		private System.Windows.Forms.Button fastTurnesBtn;
         private System.Windows.Forms.Button slowTurnesBtn;
+        private System.Windows.Forms.Button nextTurnesBtn;
+        private System.Windows.Forms.Button nextOneBtn;
 
 	}
 }

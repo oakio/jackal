@@ -24,6 +24,9 @@ namespace JackalHost.Monitors
         public event EventHandler OnFasterBtnClick;
         public event EventHandler OnNewGameBtnClick;
 
+        public event EventHandler OnNextOneBtnClick;
+        public event EventHandler OnNextTurnesBtnClick;
+
         public MonitorForm(Game game, int mapId)
 		{
             _game = game;
@@ -258,5 +261,17 @@ namespace JackalHost.Monitors
             OnNewGameBtnClick(this, EventArgs.Empty);
             pauseGameBtn.Text = "Pause game";
 		}
+
+        private void nextOneBtn_Click(object sender, EventArgs e)
+        {
+            OnNextOneBtnClick(this, EventArgs.Empty);
+            pauseGameBtn.Text = "Start game";
+        }
+
+        private void nextTurnesBtn_Click(object sender, EventArgs e)
+        {
+            OnNextTurnesBtnClick(this, EventArgs.Empty);
+            pauseGameBtn.Text = "Start game";
+        }
 	}
 }

@@ -15,7 +15,8 @@ namespace JackalHost
         private static Game game;
 
         private static bool isPause = true;
-        private static int turnTimeOutInMS = 100;
+        private static int turnTimeOutInMS = 128;
+        private static int nextTurnesCount = 0;
 
         private static void formStart()
         {
@@ -43,11 +44,11 @@ namespace JackalHost
             };
             _form.OnSlowerBtnClick += (s, e) =>
             {
-                turnTimeOutInMS = turnTimeOutInMS * 2;
+                turnTimeOutInMS = turnTimeOutInMS < 2048 ? turnTimeOutInMS * 2 : 2048;
             };
             _form.OnFasterBtnClick += (s, e) =>
             {
-                turnTimeOutInMS = turnTimeOutInMS / 2;
+                turnTimeOutInMS = turnTimeOutInMS > 2 ? turnTimeOutInMS / 2 : 2;
             };
             _form.OnNewGameBtnClick += (s, e) => {
                 mapId = new Random().Next(1000000);
@@ -55,6 +56,16 @@ namespace JackalHost
                 game = new Game(players, board);
                 _form.InitBoardPanel(game, mapId);
                 isPause = false;
+            };
+            _form.OnNextOneBtnClick += (s, e) =>
+            {
+                isPause = true;
+                nextTurnesCount = 1;
+            };
+            _form.OnNextTurnesBtnClick += (s, e) =>
+            {
+                isPause = true;
+                nextTurnesCount = 4;
             };
 
             var thread = new Thread(formStart);
@@ -64,9 +75,15 @@ namespace JackalHost
             {
                 while (!game.IsGameOver)
                 {
-                    while(isPause)
+                    while (isPause)
                     {
-                        Thread.Sleep(TimeSpan.FromMilliseconds(500));
+                        if (nextTurnesCount > 0)
+                        {
+                            nextTurnesCount--;
+                            break;
+                        }
+
+                        Thread.Sleep(TimeSpan.FromMilliseconds(250));
                     }
 
                     var move = game.Turn();
@@ -82,7 +99,7 @@ namespace JackalHost
                     Thread.Sleep(TimeSpan.FromMilliseconds(turnTimeOutInMS));
                 }
 
-                Thread.Sleep(TimeSpan.FromMilliseconds(500));
+                Thread.Sleep(TimeSpan.FromMilliseconds(250));
             }
 		}
 	}
