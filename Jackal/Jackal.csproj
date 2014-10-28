@@ -71,6 +71,10 @@
     <Compile Include="Tile.cs" />
     <Compile Include="TileType.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="Players\Personal\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Players\Personal\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
