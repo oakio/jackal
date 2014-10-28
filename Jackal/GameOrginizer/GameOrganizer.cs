@@ -94,7 +94,7 @@ namespace Jackal.GameOrginizer
                         }
                     }
                 }
-                Results.AddGameResult(currentPlayers[playerId].Id, positionsCount);
+                Results.AddGameResult(currentPlayers[playerId].Id, positionsCount,game.Scores[playerId]);
             }
 
             AddPlayersSet(currentPlayers);

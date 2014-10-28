@@ -56,6 +56,7 @@
             // 
             // textBoxReport
             // 
+            this.textBoxReport.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.textBoxReport.Location = new System.Drawing.Point(2, 263);
             this.textBoxReport.Multiline = true;
             this.textBoxReport.Name = "textBoxReport";

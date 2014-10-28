@@ -73,6 +73,7 @@
             // 
             // textBoxLog
             // 
+            this.textBoxLog.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.textBoxLog.Location = new System.Drawing.Point(12, 96);
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";

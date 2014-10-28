@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -108,7 +109,7 @@ namespace JackalNetworkClient
         private WelcomeAnswer ProcessWelcome(WelcomeRequest welcomeRequest)
         {
             var welcomeAnswer = new WelcomeAnswer();
-            welcomeAnswer.ClientName = player.GetType().Name.ToString() + "_" + Guid.NewGuid();
+            welcomeAnswer.ClientName = player.GetType().Name.ToString() + "_" + Dns.GetHostName();
             return welcomeAnswer;
         }
 

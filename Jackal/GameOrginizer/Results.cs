@@ -16,21 +16,33 @@ namespace Jackal.GameOrginizer
             String rez = "";
             lock (table)
             {
-                foreach (var pair in table.OrderBy(x => x.Value.AveragePosition))
+                int maxNameLen = table.Keys.Max(x => x.Length);
+                foreach (var pair in table.OrderByDescending(x => x.Value.Position1))
                 {
-                    rez += string.Format("{0}: средняя позиция {1:N3}, вероятности {2:N3} {3:N3} {4:N3} {5:N3}\r\n",
-                        pair.Key,
+                    double p1 = 0, p2 = 0, p3 = 0, p4 = 0;
+                    double total = pair.Value.Total;
+                    if (total >= 1)
+                    {
+                        p1 = pair.Value.Position1/total;
+                        p2 = pair.Value.Position2/total;
+                        p3 = pair.Value.Position3/total;
+                        p4 = pair.Value.Position4/total;
+                    }
+
+                    rez += string.Format("{0} средняя позиция {1:N3}, вероятности {2:N3} {3:N3} {4:N3} {5:N3}, золота {6:N1}\r\n",
+                        pair.Key.PadRight(maxNameLen),
                         pair.Value.AveragePosition,
-                        pair.Value.Position1 / pair.Value.Total,
-                        pair.Value.Position2 / pair.Value.Total,
-                        pair.Value.Position3 / pair.Value.Total,
-                        pair.Value.Position4 / pair.Value.Total);
+                        p1,
+                        p2,
+                        p3,
+                        p4,
+                        pair.Value.TotalGold/total);
                 }
             }
             return rez;
         }
 
-        public void AddGameResult(string clientId, double[] positionsCount)
+        public void AddGameResult(string clientId, double[] positionsCount,double goldCount)
         {
             if (positionsCount == null || positionsCount.Length != 4)
                 throw new ArgumentException();
@@ -46,6 +58,7 @@ namespace Jackal.GameOrginizer
                 rec.Position2 += positionsCount[1];
                 rec.Position3 += positionsCount[2];
                 rec.Position4 += positionsCount[3];
+                rec.TotalGold += goldCount;
             }
         }
     }
