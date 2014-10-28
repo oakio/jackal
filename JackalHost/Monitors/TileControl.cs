@@ -9,82 +9,41 @@ namespace JackalHost.Monitors
 {
 	public partial class TileControl : UserControl
 	{
-        bool isUnknown = true;
+        private bool isUnknown = true;
+
+        public double RandomValue { get; set; }
 
 		public TileControl()
 		{
 			InitializeComponent();
 		}
 
-	    public double RandomValue { get; set; }
-
         public void Draw(Tile tile, List<Ship> ships)
         {
-            var pirates = tile.Pirates;
-            int coins = tile.Coins;
-            foreach (var ship in ships)
+            var ship = ships.FirstOrDefault(item => item.Position == tile.Position);
+            if(ship != null)
             {
-                if (tile.Position == ship.Position)
-                {
-                    pirates = ship.Crew;
-                    coins = ship.Coins;
-                    break;
-                }
+                BackgroundImage = null;
+                BackColor = GetTeamColor(ship.TeamId);
             }
-            DrawPirates(pirates);
-            DrawGold(coins);
-
-            if (isUnknown == false && tile.Type != TileType.Unknown)
+            else if (tile.Type == TileType.Water && BackgroundImage == null)
             {
-                return;
+                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                string relativePath = @"Content\Fields\water.png";
+                BackgroundImage = Image.FromFile(baseDir + relativePath);
+                BackColor = SystemColors.Control;
             }
 
-            if (isUnknown && tile.Type != TileType.Unknown)
-            {
-                isUnknown = false;
-            }
-
-            string relativePath = "";
-            switch(tile.Type)
-            {
-                case TileType.Unknown:
-                    isUnknown = true;
-                    relativePath = @"Content\Fields\back.png";
-                    break;
-                case TileType.Water:
-                    relativePath = @"Content\Fields\water.png";
-                    break;
-                case TileType.Grass:
-                    relativePath = @"Content\Fields\empty1.png";
-                    break;
-		        case TileType.Chest1:
-                    relativePath = @"Content\Fields\chest1.png";
-                    break;
-                case TileType.Chest2:
-                    relativePath = @"Content\Fields\chest2.png";
-                    break;
-                case TileType.Chest3:
-                    relativePath = @"Content\Fields\chest3.png";
-                    break;
-                case TileType.Chest4:
-                    relativePath = @"Content\Fields\chest4.png";
-                    break;
-                case TileType.Chest5:
-                    relativePath = @"Content\Fields\chest5.png";
-                    break;
-                default: 
-                    throw new NotSupportedException();
-            }
-
-            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            this.BackgroundImage = Image.FromFile(baseDir + relativePath);
+            DrawPirates(ship == null ? tile.Pirates : ship.Crew);
+            DrawGold(ship == null ? tile.Coins : ship.Coins);
+            DrawTileBackground(tile.Type, ship);
         }
 
         private void DrawPirates(HashSet<Pirate> pirates)
         {
             if (pirates == null || pirates.Count == 0)
             {
-                this.lblPirates.Visible = false;
+                lblPirates.Visible = false;
                 return;
             }
 
@@ -103,6 +62,60 @@ namespace JackalHost.Monitors
 
             lblGold.Text = goldCount.ToString();
             lblGold.Visible = true;
+        }
+
+        private void DrawTileBackground(TileType type, Ship ship)
+        {
+            // не зарисовываем корабль водой
+            if(ship != null)
+            {
+                return;
+            }
+
+            // после открытия поля - фон не меняется
+            if (isUnknown == false && type != TileType.Unknown)
+            {
+                return;
+            }
+            if (isUnknown && type != TileType.Unknown)
+            {
+                isUnknown = false;
+            }
+
+            string relativePath = "";
+            switch (type)
+            {
+                case TileType.Unknown:
+                    isUnknown = true;
+                    relativePath = @"Content\Fields\back.png";
+                    break;
+                case TileType.Water:
+                    relativePath = @"Content\Fields\water.png";
+                    break;
+                case TileType.Grass:
+                    relativePath = @"Content\Fields\empty1.png";
+                    break;
+                case TileType.Chest1:
+                    relativePath = @"Content\Fields\chest1.png";
+                    break;
+                case TileType.Chest2:
+                    relativePath = @"Content\Fields\chest2.png";
+                    break;
+                case TileType.Chest3:
+                    relativePath = @"Content\Fields\chest3.png";
+                    break;
+                case TileType.Chest4:
+                    relativePath = @"Content\Fields\chest4.png";
+                    break;
+                case TileType.Chest5:
+                    relativePath = @"Content\Fields\chest5.png";
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
+
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            BackgroundImage = Image.FromFile(baseDir + relativePath);
         }
 
         public static Color GetTeamColor(int teamId)
