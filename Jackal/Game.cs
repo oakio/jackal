@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Jackal.Actions;
 
 namespace Jackal
@@ -46,6 +47,8 @@ namespace Jackal
 
             GetAvailableMoves(teamId);
 
+            this.NeedSubTurnPirate = null;
+
             GameState gameState = new GameState();
             gameState.AvailableMoves = _availableMoves.ToArray();
             gameState.Board = Board;
@@ -57,9 +60,27 @@ namespace Jackal
 
             IGameAction action = _actions[moveNo];
             action.Act(this);
-            TurnNo++;
+            if (this.NeedSubTurnPirate == null)
+            {
+                //также протрезвляем всех пиратов, которые начали бухать раньше текущего хода
+                foreach (Pirate pirate in Board.Teams[teamId].Pirates.Where(x=>x.IsDrunk && x.DrunkSinceTurnNo<TurnNo))
+                {
+                    pirate.DrunkSinceTurnNo = null;
+                    pirate.IsDrunk = false;
+                }
+
+                TurnNo++;
+                SubTurnNo = 0;
+            }
+            else
+            {
+                SubTurnNo++;
+            }
+
             return _availableMoves[moveNo];
         }
+
+        public Pirate NeedSubTurnPirate { get; private set; }
 
         private void GetAvailableMoves(int teamId)
         {
@@ -69,7 +90,14 @@ namespace Jackal
             Team team = Board.Teams[teamId];
             Ship ship = team.Ship;
 
-            foreach (var pirate in team.Pirates)
+
+            IEnumerable<Pirate> activePirates;
+            if (NeedSubTurnPirate != null)
+                activePirates = new[] {NeedSubTurnPirate};
+            else
+                activePirates = team.Pirates.Where(x => x.IsDrunk == false);
+
+            foreach (var pirate in activePirates)
             {
                 Position position = pirate.Position;
 
@@ -77,7 +105,7 @@ namespace Jackal
                 {
                     Step(position.X, position.Y - 1, pirate, ship, team);
                 }
-                if (position.X < (Board.Size-1) && position.Y > 0) // NE
+                if (position.X < (Board.Size - 1) && position.Y > 0) // NE
                 {
                     Step(position.X + 1, position.Y - 1, pirate, ship, team);
                 }
@@ -85,7 +113,7 @@ namespace Jackal
                 {
                     Step(position.X + 1, position.Y, pirate, ship, team);
                 }
-                if (position.X < (Board.Size - 1) && position.Y < (Board.Size-1)) // SE
+                if (position.X < (Board.Size - 1) && position.Y < (Board.Size - 1)) // SE
                 {
                     Step(position.X + 1, position.Y + 1, pirate, ship, team);
                 }
@@ -135,7 +163,8 @@ namespace Jackal
                                 GameActionList.Create(
                                     //new DropCoin(pirate),
                                     new Explore(target),
-                                    new Landing(pirate, ship)));
+                                    new Landing(pirate, ship),
+                                    new Walk(pirate, target)));
                         }
                     }
                     else
@@ -194,13 +223,17 @@ namespace Jackal
                 case TileType.Grass:
                 case TileType.Fort:
                 case TileType.RespawnFort:
+                case TileType.RumBarrel:
                 {
                     var attack = targetTile.OccupationTeamId.HasValue && targetTile.OccupationTeamId.Value != pirate.TeamId;
-                    bool isFort = targetTile.Type.IsFort();
+                    bool targetIsFort = targetTile.Type.IsFort();
+
+                    bool targetIsRumbar = targetTile.Type == TileType.RumBarrel;
+                    
 
                     if (attack)
                     {
-                        if (isFort == false)
+                        if (targetIsFort == false)
                         {
                             // attack
                             if (onShip)
@@ -211,7 +244,8 @@ namespace Jackal
                                         GameActionList.Create(
                                             //new DropCoin(pirate),
                                             new Attack(target),
-                                            new Landing(pirate, ship)));
+                                            new Landing(pirate, ship),
+                                            new Walk(pirate, target)));
                                 }
                             }
                             else
@@ -232,7 +266,8 @@ namespace Jackal
                             {
                                 AddMoveAndActions(new Move(pirate, target, false),
                                     GameActionList.Create(
-                                        new Landing(pirate, ship)));
+                                        new Landing(pirate, ship),
+                                        new Walk(pirate, target)));
                             }
                         }
                         else
@@ -242,7 +277,7 @@ namespace Jackal
                                     //new DropCoin(pirate),
                                     new Walk(pirate, target)));
 
-                            if (sourceTile.Coins > 0 && isFort == false)
+                            if (sourceTile.Coins > 0 && targetIsFort == false)
                             {
                                 AddMoveAndActions(new Move(pirate, target, true),
                                     GameActionList.Create(
@@ -277,6 +312,7 @@ namespace Jackal
         }
 
         public int TurnNo { get; private set; }
+        public int SubTurnNo { get; private set; }
         public int LastActionTurnNo { get; internal set; }
 
         public int CurrentTeamId

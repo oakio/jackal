@@ -43,6 +43,10 @@ namespace Jackal
             }
             tiles.Add(new Tile(TileType.RespawnFort));
 
+            for (int i = 0; i < 4; i++)
+            {
+                tiles.Add(new Tile(TileType.RumBarrel));
+            }
 
             while (tiles.Count < totalUnknown)
             {

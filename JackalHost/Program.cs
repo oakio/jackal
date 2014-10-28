@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using Jackal;
+using Jackal.Players;
 using JackalHost.Monitors;
 
 namespace JackalHost
@@ -28,10 +29,10 @@ namespace JackalHost
 		{
 			IPlayer[] players =
 			{
-				new SmartPlayer(), 
+				new MikePlayer(), 
 				new SmartPlayer(),
 				new SmartPlayer(),
-				new SmartPlayer(),
+				new SmartPlayer2(),
 			};
 			int mapId = 987412+1;
             board = new Board(mapId);

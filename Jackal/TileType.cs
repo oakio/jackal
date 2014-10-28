@@ -11,7 +11,8 @@
 		Chest4,
 		Chest5,
         Fort,
-        RespawnFort
+        RespawnFort,
+        RumBarrel
 	}
 
 	public static class TileTypeExtension

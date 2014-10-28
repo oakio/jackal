@@ -39,11 +39,7 @@ namespace Jackal.Actions
             }
 
             _ship.Crew.Remove(_pirate);
-            _pirate.Position = landingPosition;
-
-            var tile = game.Board.Map[landingPosition.X, landingPosition.Y];
-            tile.OccupationTeamId = _pirate.TeamId;
-            tile.Pirates.Add(_pirate);
+            _pirate.Position = _ship.Position;
         }
     }
 }

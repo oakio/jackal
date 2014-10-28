@@ -39,20 +39,28 @@ namespace JackalHost.Monitors
             DrawTileBackground(tile.Type, ship);
         }
 
-        private void DrawPirates(HashSet<Pirate> pirates)
-        {
-            if (pirates == null || pirates.Count == 0)
-            {
-                lblPirates.Visible = false;
-                return;
-            }
+	    private void DrawPirates(HashSet<Pirate> pirates)
+	    {
+	        if (pirates == null || pirates.Count == 0)
+	        {
+	            lblPirates.Visible = false;
+	            return;
+	        }
 
-            lblPirates.Visible = true;
-            lblPirates.BackColor = GetTeamColor(pirates.First().TeamId);
-            lblPirates.Text = pirates.Count > 1 ? pirates.Count.ToString() + "P" : "P";
-        }
+	        lblPirates.Visible = true;
+	        lblPirates.BackColor = GetTeamColor(pirates.First().TeamId);
+	        string str = "";
+	        const char drunkChar = '☺';
+	        int drunkCount = pirates.Count(x => x.IsDrunk);
+	        if (drunkCount > 0)
+	            str += (drunkCount > 1 ? drunkCount.ToString() : "") + drunkChar;
+	        int normalCount = pirates.Count(x => x.IsDrunk == false);
+	        if (normalCount>0)
+	            str += (normalCount > 1 ? normalCount.ToString() : "") + "P";
+	        lblPirates.Text = str;
+	    }
 
-        private void DrawGold(int goldCount)
+	    private void DrawGold(int goldCount)
         {
             if (goldCount == 0)
             {
@@ -115,6 +123,9 @@ namespace JackalHost.Monitors
                     break;
                 case TileType.RespawnFort:
                     relativePath = @"Content\Fields\respawn.png";
+                    break;
+                case TileType.RumBarrel:
+                    relativePath = @"Content\Fields\rumbar.png";
                     break;
                 default:
                     throw new NotSupportedException();

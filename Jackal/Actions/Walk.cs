@@ -21,7 +21,7 @@ namespace Jackal.Actions
 
             var from = _pirate.Position;
 
-            var fromTile = map[@from.X, @from.Y];
+            var fromTile = map[from.X, from.Y];
             fromTile.Pirates.Remove(_pirate);
             if (fromTile.Pirates.Count == 0)
             {
@@ -38,6 +38,12 @@ namespace Jackal.Actions
                 if (fromTile.Coins == 0) throw new Exception("No coins");
                 fromTile.Coins--;
                 toTile.Coins++;
+            }
+
+            if (toTile.Type == TileType.RumBarrel)
+            {
+                _pirate.DrunkSinceTurnNo = game.TurnNo;
+                _pirate.IsDrunk = true;
             }
         }
     }
