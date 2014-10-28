@@ -126,7 +126,6 @@ namespace Jackal
                 case TileType.Unknown:
                 {
                     // exploration
-
                     if (onShip)
                     {
                         if (CanLanding(pirate, target))
@@ -193,29 +192,36 @@ namespace Jackal
                 case TileType.Chest4:
                 case TileType.Chest5:
                 case TileType.Grass:
+                case TileType.Fort:
+                case TileType.RespawnFort:
                 {
                     var attack = targetTile.OccupationTeamId.HasValue && targetTile.OccupationTeamId.Value != pirate.TeamId;
+                    bool isFort = targetTile.Type.IsFort();
+
                     if (attack)
                     {
-                        // attack
-                        if (onShip)
+                        if (isFort == false)
                         {
-                            if (CanLanding(pirate, target))
+                            // attack
+                            if (onShip)
+                            {
+                                if (CanLanding(pirate, target))
+                                {
+                                    AddMoveAndActions(new Move(pirate, target, false),
+                                        GameActionList.Create(
+                                            //new DropCoin(pirate),
+                                            new Attack(target),
+                                            new Landing(pirate, ship)));
+                                }
+                            }
+                            else
                             {
                                 AddMoveAndActions(new Move(pirate, target, false),
                                     GameActionList.Create(
                                         //new DropCoin(pirate),
                                         new Attack(target),
-                                        new Landing(pirate, ship)));
+                                        new Walk(pirate, target)));
                             }
-                        }
-                        else
-                        {
-                            AddMoveAndActions(new Move(pirate, target, false),
-                                GameActionList.Create(
-                                    //new DropCoin(pirate),
-                                    new Attack(target),
-                                    new Walk(pirate, target)));
                         }
                     }
                     else
@@ -236,7 +242,7 @@ namespace Jackal
                                     //new DropCoin(pirate),
                                     new Walk(pirate, target)));
 
-                            if (sourceTile.Coins > 0)
+                            if (sourceTile.Coins > 0 && isFort == false)
                             {
                                 AddMoveAndActions(new Move(pirate, target, true),
                                     GameActionList.Create(

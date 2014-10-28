@@ -110,6 +110,12 @@ namespace JackalHost.Monitors
                 case TileType.Chest5:
                     relativePath = @"Content\Fields\chest5.png";
                     break;
+                case TileType.Fort:
+                    relativePath = @"Content\Fields\fort.png";
+                    break;
+                case TileType.RespawnFort:
+                    relativePath = @"Content\Fields\respawn.png";
+                    break;
                 default:
                     throw new NotSupportedException();
             }

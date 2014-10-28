@@ -37,6 +37,13 @@ namespace Jackal
 
             tiles.Add(new Tile(TileType.Chest5, 5));
 
+            for (int i = 0; i < 2; i++)
+            {
+                tiles.Add(new Tile(TileType.Fort));
+            }
+            tiles.Add(new Tile(TileType.RespawnFort));
+
+
             while (tiles.Count < totalUnknown)
             {
                 tiles.Add(new Tile(TileType.Grass));
