@@ -53,7 +53,7 @@ namespace JackalHost
                 mapId = new Random().Next(1000000);
                 board = new Board(mapId);
                 game = new Game(players, board);
-                _form.InitDraw(game, mapId);
+                _form.InitBoardPanel(game, mapId);
                 isPause = false;
             };
 

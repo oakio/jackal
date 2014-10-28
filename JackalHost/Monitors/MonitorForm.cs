@@ -33,12 +33,6 @@ namespace JackalHost.Monitors
 
 		private void MonitorForm_Load(object sender, EventArgs e)
 		{
-            InitDraw(_game, _mapId);
-        }
-
-        public void InitDraw(Game game, int mapId)
-        {
-            Random random = new Random(_mapId);
             ToolTip toolTip = new ToolTip();
             toolTip.AutoPopDelay = 5000;
             toolTip.InitialDelay = 1000;
@@ -53,18 +47,14 @@ namespace JackalHost.Monitors
                 {
                     var tileControl = new TileControl
                     {
-                        Name = GetTileKey(x, y),
-                        RandomValue = random.NextDouble()
+                        Name = GetTileKey(x, y)
                     };
                     string positionText = string.Format("{0},{1}", x, y);
                     toolTip.SetToolTip(tileControl, positionText);
                     boardPanel.Controls.Add(tileControl);
-
-                    var board = game.Board;
-                    var tile = board.Map[x, y];
-                    Draw(tile, board.Teams.Select(item => item.Ship).ToList());
                 }
             }
+            InitBoardPanel(_game, _mapId);
 
             var statPanel = statSplitContainer.Panel1;
             statPanel.Controls.Clear();
@@ -80,6 +70,29 @@ namespace JackalHost.Monitors
 
             gameSplitContainer_Panel1_Resize(this, EventArgs.Empty);
             statSplitContainer_Panel1_Resize(this, EventArgs.Empty);
+        }
+
+        public void InitBoardPanel(Game game, int mapId)
+        {
+            Random random = new Random(mapId);
+            var boardPanel = gameSplitContainer.Panel1;
+
+            for (int y = 0; y < Board.Size; y++)
+            {
+                for (int x = 0; x < Board.Size; x++)
+                {
+                    var tileControl = boardPanel.Controls[GetTileKey(x, Board.Size - 1 - y)] as TileControl;
+                    if (tileControl == null)
+                    {
+                        continue;
+                    }
+                    tileControl.RandomValue = random.NextDouble();
+
+                    var board = game.Board;
+                    var tile = board.Map[x, y];
+                    Draw(tile, board.Teams.Select(item => item.Ship).ToList());
+                }
+            }
         }
 
         private void gameSplitContainer_Panel1_Resize(object sender, EventArgs e)
