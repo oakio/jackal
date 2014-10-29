@@ -39,6 +39,10 @@ namespace JackalHost
             game = new Game(players, board);
 
             _form = new MonitorForm(game, mapId);
+            _form.OnCloseBtnClick += (s, e) =>
+            {
+                Environment.Exit(0);
+            };
             _form.OnPauseBtnClick += (s, e) =>
             {
                 isPause = !isPause;
