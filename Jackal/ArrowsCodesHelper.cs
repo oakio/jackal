@@ -25,14 +25,14 @@ namespace Jackal
 
         public static ArrowSearchResult Search(int code)
         {
-            for (int rotateCount = 0; rotateCount <= 3; rotateCount++)
+            for (int arrowType = 0; arrowType < ArrowsCodesHelper.ArrowsTypes.Length; arrowType++)
             {
-                for (int arrowType = 0; arrowType < ArrowsCodesHelper.ArrowsTypes.Length; arrowType++)
+                int arrowsCode = ArrowsCodesHelper.ArrowsTypes[arrowType];
+                for (int rotateCount = 0; rotateCount <= 3; rotateCount++)
                 {
-                    int arrowsCode = ArrowsCodesHelper.ArrowsTypes[arrowType];
                     if (arrowsCode == code) return new ArrowSearchResult() {ArrowType = arrowType, RotateCount = rotateCount};
+                    arrowsCode = DoRotate(arrowsCode);
                 }
-                code = DoRotate(code);
             }
             throw new Exception("Unknown arrow type");
         }
