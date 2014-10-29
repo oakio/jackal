@@ -370,19 +370,23 @@ namespace Jackal
             List<Position> goodTargets=new List<Position>();
 
             IEnumerable<Position> positionsForCheck;
-            if (sourceTile.Type == TileType.Horse)
+            switch (sourceTile.Type)
             {
-                alreadyCheckedList.Add(source);
-                positionsForCheck = GetHorseDeltas(source);
-            }
-            else if (sourceTile.Type == TileType.Water) //мы на корабле
-            {
-                goodTargets.AddRange(GetShipPosibleNavaigations(source)); //мы всегда можем сдвинуть свой корабль
-                positionsForCheck = new[] {GetShipLanding(source)}; //или попробовать высадиться
-            }
-            else
-            {
-                positionsForCheck = GetNearDeltas(source);
+                case TileType.Horse:
+                    alreadyCheckedList.Add(source);
+                    positionsForCheck = GetHorseDeltas(source);
+                    break;
+                case TileType.Arrow:
+                    alreadyCheckedList.Add(source);
+                    positionsForCheck = GetArrowsDeltas(sourceTile.ArrowsCode, source);
+                    break;
+                case TileType.Water:
+                    goodTargets.AddRange(GetShipPosibleNavaigations(source)); //мы всегда можем сдвинуть свой корабль
+                    positionsForCheck = new[] {GetShipLanding(source)}; //или попробовать высадиться
+                    break;
+                default:
+                    positionsForCheck = GetNearDeltas(source);
+                    break;
             }
             foreach (var newPosition in positionsForCheck)
             {
@@ -419,10 +423,21 @@ namespace Jackal
                         case TileType.Horse:
                             goodTargets.AddRange(GetAllAvaliableMoves(teamId, newPosition, alreadyCheckedList));
                             break;
+                        case TileType.Arrow:
+                            goodTargets.AddRange(GetAllAvaliableMoves(teamId, newPosition, alreadyCheckedList));
+                            break;
                     }
                 }
             }
             return goodTargets;
+        }
+
+        private IEnumerable<Position> GetArrowsDeltas(int arrowsCode, Position source)
+        {
+            foreach (var delta in ArrowsCodesHelper.GetExitDeltas(arrowsCode))
+            {
+                yield return new Position(source.X + delta.X, source.Y + delta.Y);
+            }
         }
 
         private Position GetShipLanding(Position pos)

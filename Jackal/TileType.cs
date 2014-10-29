@@ -13,7 +13,8 @@
         Fort,
         RespawnFort,
         RumBarrel,
-        Horse
+        Horse,
+        Arrow
 	}
 
 	public static class TileTypeExtension

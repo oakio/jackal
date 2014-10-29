@@ -54,12 +54,42 @@ namespace Jackal
                 tiles.Add(new Tile(TileType.Horse));
             }
 
+            //arrows
+            for (int i = 0; i < 3; i++)
+            {
+                for (int arrowType = 0; arrowType < ArrowsCodesHelper.ArrowsTypes.Length; arrowType++)
+                {
+                    int arrowsCode = ArrowsCodesHelper.ArrowsTypes[arrowType];
+                    int rotatesCount = _rand.Next(4);
+                    for (int j = 1; j <= rotatesCount; j++)
+                    {
+                        arrowsCode = ArrowsCodesHelper.DoRotate(arrowsCode);
+                    }
+                    var tile = new Tile(TileType.Arrow);
+                    tile.ArrowsCode = arrowsCode;
+                    tiles.Add(tile);
+                }
+            }
+
             while (tiles.Count < totalUnknown)
             {
                 tiles.Add(new Tile(TileType.Grass));
             }
 
             _tiles = Shuffle(tiles);
+        }
+
+        Tile NewArrow(string str)
+        {
+            int arrowsCode = ArrowsCodesHelper.GetCodeFromString(str);
+            int rotatesCount= _rand.Next(4);
+            for (int i = 1; i <= rotatesCount; i++)
+            {
+                arrowsCode = ArrowsCodesHelper.DoRotate(arrowsCode);
+            }
+            var tile=new Tile(TileType.Arrow);
+            tile.ArrowsCode = arrowsCode;
+            return tile;
         }
 
         private List<Tile> Shuffle( List<Tile> tiles)

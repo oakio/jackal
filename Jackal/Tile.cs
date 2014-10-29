@@ -8,6 +8,8 @@ namespace Jackal
         public TileType Type;
         public int Coins;
 
+        public int ArrowsCode;
+
         public int? OccupationTeamId;
         public HashSet<Pirate> Pirates;
 

@@ -20,9 +20,9 @@
 
             game.LastActionTurnNo = game.TurnNo;
 
-            if (newTile.Type == TileType.Horse)
+            if (newTile.Type == TileType.Horse || newTile.Type == TileType.Arrow)
             {
-                var targets = game.GetAllAvaliableMoves(_pirate.TeamId,_position);
+                var targets = game.GetAllAvaliableMoves(_pirate.TeamId, _position);
                 if (targets.Count == 0)
                 {
                     game.KillPirate(_pirate);

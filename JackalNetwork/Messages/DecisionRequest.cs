@@ -12,6 +12,7 @@ namespace JackalNetwork
 
         public TileType[,] TileTypes;
         public int[,] TileCoins;
+        public int[,] TileArrowsCodes;
 
         public Team[] Teams;
         public Move[] AvailableMoves;
@@ -36,6 +37,7 @@ namespace JackalNetwork
             SubTurnNumber = gameState.SubTurnNumber;
             TileTypes=new TileType[Size,Size];
             TileCoins=new int[Size,Size];
+            TileArrowsCodes=new int[Size,Size];
             for (int x = 0; x < Size; x++)
             {
                 for (int y = 0; y < Size; y++)
@@ -43,6 +45,7 @@ namespace JackalNetwork
                     var tile = gameState.Board.Map[x, y];
                     TileTypes[x, y] = tile.Type;
                     TileCoins[x, y] = tile.Coins;
+                    TileArrowsCodes[x, y] = tile.ArrowsCode;
                 }
             }
         }
@@ -65,12 +68,11 @@ namespace JackalNetwork
                 for (int y = 0; y < Size; y++)
                 {
                     var tile = new Tile();
-
                     tile.Coins = TileCoins[x, y];
                     tile.Position = new Position(x, y);
                     tile.Type = TileTypes[x, y];
+                    tile.ArrowsCode = TileArrowsCodes[x, y];
                     tile.Pirates = new HashSet<Pirate>();
-
                     gameState.Board.Map[x, y] = tile;
                 }
             }

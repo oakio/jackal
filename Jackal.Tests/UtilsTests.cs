@@ -28,5 +28,20 @@ namespace Jackal.Tests
             var set2 = Utils.GetPermutation(Utils.Factorial(4), new[] {"1", "2", "3", "4"});
             Assert.IsTrue(set1.SequenceEqual(set2));
         }
+
+        [TestMethod]
+        public void TestArrowsHelper()
+        {
+            var rez = ArrowsCodesHelper.DoRotate(255);
+            Assert.IsTrue(rez==255);
+
+            for (int code = 0; code <= 255; code++)
+            {
+                int test = code;
+                for (int i = 1; i <= 4; i++)
+                    test = ArrowsCodesHelper.DoRotate(test);
+                Assert.IsTrue(code == test);
+            }
+        }
     }
 }
