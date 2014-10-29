@@ -12,7 +12,8 @@
 		Chest5,
         Fort,
         RespawnFort,
-        RumBarrel
+        RumBarrel,
+        Horse
 	}
 
 	public static class TileTypeExtension

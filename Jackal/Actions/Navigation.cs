@@ -11,13 +11,14 @@
             _to = to;
         }
 
-        public void Act(Game game)
+        public GameActionResult Act(Game game)
         {
             _ship.Position = _to;
             foreach (var pirate in _ship.Crew)
             {
                 pirate.Position = _to;
             }
+            return GameActionResult.Live;
         }
     }
 }

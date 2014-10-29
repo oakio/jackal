@@ -48,18 +48,32 @@ namespace Jackal
             GetAvailableMoves(teamId);
 
             this.NeedSubTurnPirate = null;
+            Move selectedMove = null;
 
-            GameState gameState = new GameState();
-            gameState.AvailableMoves = _availableMoves.ToArray();
-            gameState.Board = Board;
-            gameState.GameId = GameId;
-            gameState.TurnNumber = TurnNo;
-            gameState.SubTurnNumber = 1;
-            gameState.TeamId = teamId;
-            int moveNo = me.OnMove(gameState);
+            if (_availableMoves.Count > 0) //есть возможные ходы
+            {
+                int moveNo;
+                if (_availableMoves.Count == 1) //только один ход, сразу выбираем его
+                {
+                    moveNo = 0;
+                }
+                else //запрашиваем ход у игрока
+                {
+                    GameState gameState = new GameState();
+                    gameState.AvailableMoves = _availableMoves.ToArray();
+                    gameState.Board = Board;
+                    gameState.GameId = GameId;
+                    gameState.TurnNumber = TurnNo;
+                    gameState.SubTurnNumber = SubTurnNo;
+                    gameState.TeamId = teamId;
+                    moveNo = me.OnMove(gameState);
+                }
 
-            IGameAction action = _actions[moveNo];
-            action.Act(this);
+                IGameAction action = _actions[moveNo];
+                selectedMove= _availableMoves[moveNo];
+                action.Act(this);
+            }
+
             if (this.NeedSubTurnPirate == null)
             {
                 //также протрезвляем всех пиратов, которые начали бухать раньше текущего хода
@@ -77,10 +91,10 @@ namespace Jackal
                 SubTurnNo++;
             }
 
-            return _availableMoves[moveNo];
+            return selectedMove;
         }
 
-        public Pirate NeedSubTurnPirate { get; private set; }
+        public Pirate NeedSubTurnPirate { private get; set; }
 
         private void GetAvailableMoves(int teamId)
         {
@@ -101,6 +115,12 @@ namespace Jackal
             {
                 Position position = pirate.Position;
 
+                var targets = GetAllAvaliableMoves(teamId,position);
+                foreach (Position target in targets)
+                {
+                    Step(target.X, target.Y, pirate, ship, team);
+                }
+                /*
                 if (position.Y > 0) // N
                 {
                     Step(position.X, position.Y - 1, pirate, ship, team);
@@ -133,6 +153,7 @@ namespace Jackal
                 {
                     Step(position.X - 1, position.Y - 1, pirate, ship, team);
                 }
+                */ 
             }
         }
 
@@ -162,7 +183,7 @@ namespace Jackal
                             AddMoveAndActions(new Move(pirate, target, false),
                                 GameActionList.Create(
                                     //new DropCoin(pirate),
-                                    new Explore(target),
+                                    new Explore(target,pirate),
                                     new Landing(pirate, ship),
                                     new Walk(pirate, target)));
                         }
@@ -172,7 +193,7 @@ namespace Jackal
                         AddMoveAndActions(new Move(pirate, target, false),
                             GameActionList.Create(
                                 //new DropCoin(pirate),
-                                new Explore(target),
+                                new Explore(target, pirate),
                                 new Walk(pirate, target)));
                     }
 
@@ -318,6 +339,170 @@ namespace Jackal
         public int CurrentTeamId
         {
             get { return TurnNo%4; }
+        }
+
+        public void KillPirate(Pirate pirate)
+        {
+            int teamId = pirate.TeamId;
+            Board.Teams[teamId].Pirates = Board.Teams[teamId].Pirates.Where(x => x != pirate).ToArray();
+            Board.Teams[teamId].Ship.Crew.Remove(pirate);
+            var tile = Board.Map[pirate.Position.X, pirate.Position.Y];
+            tile.Pirates.Remove(pirate);
+        }
+
+        /// <summary>
+        /// Возвращаем список всех полей, в которые можно попасть из исходной
+        /// </summary>
+        /// <param name="teamId"></param>
+        /// <param name="source"></param>
+        /// <param name="alreadyCheckedList"></param>
+        /// <returns></returns>
+        public List<Position> GetAllAvaliableMoves(int teamId,Position source,List<Position> alreadyCheckedList=null)
+        {
+            if (alreadyCheckedList == null)
+                alreadyCheckedList = new List<Position>() {};
+
+            var sourceTile = Board.Map[source.X, source.Y];
+
+            var ourShip = Board.Teams[teamId].Ship;
+            bool fromShip = (ourShip.Position == source);
+
+            List<Position> goodTargets=new List<Position>();
+
+            IEnumerable<Position> positionsForCheck;
+            if (sourceTile.Type == TileType.Horse)
+            {
+                alreadyCheckedList.Add(source);
+                positionsForCheck = GetHorseDeltas(source);
+            }
+            else if (sourceTile.Type == TileType.Water) //мы на корабле
+            {
+                goodTargets.AddRange(GetShipPosibleNavaigations(source)); //мы всегда можем сдвинуть свой корабль
+                positionsForCheck = new[] {GetShipLanding(source)}; //или попробовать высадиться
+            }
+            else
+            {
+                positionsForCheck = GetNearDeltas(source);
+            }
+            foreach (var newPosition in positionsForCheck)
+            {
+                if (IsMapPosition(newPosition))
+                {
+                    if (alreadyCheckedList.Contains(newPosition)) //мы попали по рекурсии в ранее просмотренную клетку
+                    {
+                        continue;
+                    }
+
+                    //проверяем, что на этой клетке
+                    var newPositionTile = Board.Map[newPosition.X, newPosition.Y];
+                    switch (newPositionTile.Type)
+                    {
+                        case TileType.Water:
+                            if (ourShip.Position == newPosition) //заходим на свой корабль
+                                goodTargets.Add(newPosition);
+                            break;
+                        case TileType.RespawnFort:
+                        case TileType.Fort:
+                            if (newPositionTile.OccupationTeamId.HasValue == false || newPositionTile.OccupationTeamId == teamId)
+                                goodTargets.Add(newPosition);
+                            break;
+                        case TileType.Grass:
+                        case TileType.Chest1:
+                        case TileType.Chest2:
+                        case TileType.Chest3:
+                        case TileType.Chest4:
+                        case TileType.Chest5:
+                        case TileType.RumBarrel:
+                        case TileType.Unknown:
+                            goodTargets.Add(newPosition);
+                            break;
+                        case TileType.Horse:
+                            goodTargets.AddRange(GetAllAvaliableMoves(teamId, newPosition, alreadyCheckedList));
+                            break;
+                    }
+                }
+            }
+            return goodTargets;
+        }
+
+        private Position GetShipLanding(Position pos)
+        {
+            if (pos.X == 0)
+            {
+                 return new Position(1, pos.Y );
+            }
+            else if (pos.X == 12)
+            {
+                return new Position(11, pos.Y);
+            }
+            else if (pos.Y == 0)
+            {
+                return new Position(pos.X,1);
+            }
+            else if (pos.Y == 12)
+            {
+                return new Position(pos.X, 11);
+            }
+            else
+            {
+                throw new Exception("wrong ship position");
+            }
+        }
+
+        private IEnumerable<Position> GetShipPosibleNavaigations(Position pos)
+        {
+            if (pos.X == 0 || pos.X==12)
+            {
+                if (pos.Y>2)
+                    yield return new Position(pos.X,pos.Y-1);
+                if (pos.Y<10)
+                    yield return new Position(pos.X,pos.Y+1);
+            }
+            else if (pos.Y == 0 || pos.Y==12)
+            {
+                if (pos.X>2)
+                    yield return new Position(pos.X-1,pos.Y);
+                if (pos.X<10)
+                    yield return new Position(pos.X+1,pos.Y);
+            }
+            else
+            {
+                throw new Exception("wrong ship position");
+            }
+        }
+
+        private IEnumerable<Position> GetShipDeltas(Position source)
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool IsMapPosition(Position pos)
+        {
+            return (pos.X >= 0 && pos.X < Board.Size
+                    && pos.Y >= 0 && pos.Y < Board.Size);
+        }
+
+        private IEnumerable<Position> GetNearDeltas(Position pos)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+                for (int y = -1; y <= 1; y++)
+                {
+                    if (x == 0 && y == 0) continue;
+                    yield return new Position(pos.X+x,pos.Y+y);
+                }
+            }
+        }
+
+        private IEnumerable<Position> GetHorseDeltas(Position pos)
+        {
+            for (int x = -2; x <= 2; x++)
+            {
+                if (x == 0) continue;
+                int deltaY = (Math.Abs(x) == 2) ? 1 : 2;
+                yield return new Position(pos.X + x, pos.Y - deltaY);
+                yield return new Position(pos.X + x, pos.Y + deltaY);
+            }
         }
     }
 }

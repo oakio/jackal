@@ -1,4 +1,6 @@
-﻿namespace Jackal
+﻿using System;
+
+namespace Jackal
 {
 	public class Move
 	{
@@ -28,6 +30,8 @@
 
 		public bool Equals(Move other)
 		{
+            if (other == null) return false;
+
 			return this.Pirate.Position == other.Pirate.Position
 				   && this.To == other.To
 				   && this.WithCoins == other.WithCoins;
@@ -41,11 +45,29 @@
 
 		public static bool operator ==(Move left, Move right)
 		{
+            if ((Object)left == (Object)right)
+            {
+                return true;
+            }
+
+            if ((Object)left == null || (Object)right == null)
+            {
+                return false;
+            }
 			return left.Equals(right);
 		}
 
 		public static bool operator !=(Move left, Move right)
 		{
+            if ((Object)left == (Object)right)
+            {
+                return false;
+            }
+
+            if ((Object)left == null || (Object)right == null)
+            {
+                return true;
+            }
 			return !left.Equals(right);
 		}
 

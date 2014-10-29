@@ -11,7 +11,7 @@
             _ship = ship;
         }
 
-        public void Act(Game game)
+        public GameActionResult Act(Game game)
         {
             Position position = _pirate.Position;
             Board board = game.Board;
@@ -30,6 +30,8 @@
 
             //game.Scores[_pirate.TeamId] += coins;
             //game.CoinsLeft -= coins;
+
+            return GameActionResult.Live;
         }
     }
 }

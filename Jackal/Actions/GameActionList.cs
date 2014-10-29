@@ -11,12 +11,15 @@ namespace Jackal.Actions
             _actions = new List<IGameAction>(actions);
         }
 
-        public void Act(Game game)
+        public GameActionResult Act(Game game)
         {
             foreach (var action in _actions)
             {
-                action.Act(game);
+                var rez=action.Act(game);
+                if (rez == GameActionResult.Die)
+                    return GameActionResult.Die;
             }
+            return GameActionResult.Live;
         }
 
         public static GameActionList Create(params IGameAction[] actions)

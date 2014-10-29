@@ -1,4 +1,6 @@
-﻿namespace Jackal
+﻿using System;
+
+namespace Jackal
 {
     public class Position
     {
@@ -17,6 +19,8 @@
 
         public bool Equals(Position other)
         {
+            if (other == null) return false;
+
             return X == other.X && Y == other.Y;
         }
 
@@ -28,11 +32,30 @@
 
         public static bool operator ==(Position left, Position right)
         {
+            if ((Object)left == (Object)right)
+            {
+                return true;
+            }
+
+            if ((Object)left == null || (Object)right == null)
+            {
+                return false;
+            }
             return left.Equals(right);
         }
 
         public static bool operator !=(Position left, Position right)
         {
+            if ((Object)left == (Object)right)
+            {
+                return false;
+            }
+
+            if ((Object)left == null || (Object)right == null)
+            {
+                return true;
+            }
+
             return !left.Equals(right);
         }
 

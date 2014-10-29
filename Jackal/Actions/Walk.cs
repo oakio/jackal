@@ -15,7 +15,7 @@ namespace Jackal.Actions
             _withCoin = withCoin;
         }
 
-        public void Act(Game game)
+        public GameActionResult Act(Game game)
         {
             Tile[,] map = game.Board.Map;
 
@@ -45,6 +45,8 @@ namespace Jackal.Actions
                 _pirate.DrunkSinceTurnNo = game.TurnNo;
                 _pirate.IsDrunk = true;
             }
+
+            return GameActionResult.Live;
         }
     }
 }

@@ -88,13 +88,15 @@ namespace JackalHost
                     }
 
                     var move = game.Turn();
+                    if (move != null)
+                    {
+                        var ships = board.Teams.Select(item => item.Ship).ToList();
+                        var fromTile = board.Map[move.From.X, move.From.Y];
+                        var toTile = board.Map[move.To.X, move.To.Y];
 
-                    var ships = board.Teams.Select(item => item.Ship).ToList();
-                    var fromTile = board.Map[move.From.X, move.From.Y];
-                    var toTile = board.Map[move.To.X, move.To.Y];
-
-                    _form.Draw(fromTile, ships);
-                    _form.Draw(toTile, ships);
+                        _form.Draw(fromTile, ships);
+                        _form.Draw(toTile, ships);
+                    }
                     _form.DrawStats(game);
 
                     Thread.Sleep(TimeSpan.FromMilliseconds(turnTimeOutInMS));

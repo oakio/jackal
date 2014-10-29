@@ -48,6 +48,12 @@ namespace Jackal
                 tiles.Add(new Tile(TileType.RumBarrel));
             }
 
+
+            for (int i = 0; i < 2; i++)
+            {
+                tiles.Add(new Tile(TileType.Horse));
+            }
+
             while (tiles.Count < totalUnknown)
             {
                 tiles.Add(new Tile(TileType.Grass));

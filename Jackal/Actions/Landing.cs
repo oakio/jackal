@@ -13,7 +13,7 @@ namespace Jackal.Actions
             _ship = ship;
         }
 
-        public void Act(Game game)
+        public GameActionResult Act(Game game)
         {
             Position shipPosition = _ship.Position;
             Position landingPosition;
@@ -40,6 +40,8 @@ namespace Jackal.Actions
 
             _ship.Crew.Remove(_pirate);
             _pirate.Position = _ship.Position;
+            
+            return GameActionResult.Live;
         }
     }
 }

@@ -2,6 +2,12 @@
 {
     interface IGameAction
     {
-        void Act(Game game);
+        GameActionResult Act(Game game);
+    }
+
+    internal enum GameActionResult
+    {
+        Live,
+        Die
     }
 }

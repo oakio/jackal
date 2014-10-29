@@ -127,6 +127,9 @@ namespace JackalHost.Monitors
                 case TileType.RumBarrel:
                     relativePath = @"Content\Fields\rumbar.png";
                     break;
+                case TileType.Horse:
+                    relativePath = @"Content\Fields\horse.png";
+                    break;
                 default:
                     throw new NotSupportedException();
             }

@@ -13,7 +13,7 @@ namespace Jackal.Actions
             _ship = ship;
         }
 
-        public void Act(Game game)
+        public GameActionResult Act(Game game)
         {
             Board board = game.Board;
             Position position = _pirate.Position;
@@ -31,6 +31,7 @@ namespace Jackal.Actions
             game.CoinsLeft --;
 
             game.LastActionTurnNo = game.TurnNo;
+            return GameActionResult.Live;
         }
     }
 }

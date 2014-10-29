@@ -8,8 +8,8 @@
         {
             _to = to;
         }
-        
-        public void Act(Game game)
+
+        public GameActionResult Act(Game game)
         {
             Board board = game.Board;
             Tile tile = board.Map[_to.X, _to.Y];
@@ -24,6 +24,8 @@
             }
             tile.OccupationTeamId = null;
             tile.Pirates.Clear();
+
+            return GameActionResult.Live;
         }
     }
 }
