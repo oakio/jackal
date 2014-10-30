@@ -52,10 +52,10 @@
     <Compile Include="ArrowsCodesHelper.cs" />
     <Compile Include="Board.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="GameOrginizer\ResultRec.cs" />
-    <Compile Include="GameOrginizer\GameOrganizer.cs" />
-    <Compile Include="GameOrginizer\IdentifiedPlayer.cs" />
-    <Compile Include="GameOrginizer\Results.cs" />
+    <Compile Include="GameOrganizer\ResultRec.cs" />
+    <Compile Include="GameOrganizer\GameOrganizer.cs" />
+    <Compile Include="GameOrganizer\IdentifiedPlayer.cs" />
+    <Compile Include="GameOrganizer\Results.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="IPlayer.cs" />
     <Compile Include="MapGenerator.cs" />

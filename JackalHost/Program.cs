@@ -30,8 +30,8 @@ namespace JackalHost
 			IPlayer[] players =
 			{
 				new MikePlayer(), 
-				new SmartPlayer(),
-				new SmartPlayer(),
+				new SmartPlayer2(),
+				new SmartPlayer2(),
 				new SmartPlayer2(),
 			};
 			int mapId = 987412+1;

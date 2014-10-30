@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Jackal;
-using Jackal.GameOrginizer;
+using Jackal.GameOrganizer;
 using JackalNetwork;
 
 namespace JackalNetworkServer
@@ -37,7 +37,7 @@ namespace JackalNetworkServer
 
                         List<IPlayer> players = playerList.ConvertAll<IPlayer>(x => new NetworkPlayer(x));
                         while (players.Count < 4)
-                            players.Add(new SmartPlayer());
+                            players.Add(new SmartPlayer2());
 
                         List<IdentifiedPlayer> identifiedPlayers = new List<IdentifiedPlayer>();
                         foreach (var client in playerList)
@@ -47,7 +47,7 @@ namespace JackalNetworkServer
                         }
                         while (identifiedPlayers.Count < 4)
                         {
-                            var player = new SmartPlayer();
+                            var player = new SmartPlayer2();
                             identifiedPlayers.Add(new IdentifiedPlayer(player, player.GetType().Name));
                         }
 
