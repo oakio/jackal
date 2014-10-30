@@ -62,7 +62,7 @@ namespace JackalNetwork
 
             gameState.Board=new Board();
             gameState.Board.Teams = Teams;
-            gameState.Board.Map = new Tile[Size, Size];
+            gameState.Board.Map = new Map();
             for (int x = 0; x < Size; x++)
             {
                 for (int y = 0; y < Size; y++)

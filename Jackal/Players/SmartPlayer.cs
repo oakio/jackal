@@ -126,7 +126,7 @@ namespace Jackal
 
         private bool IsEnemyPosition(Position to, Board board, int teamId)
         {
-            var occupationTeamId = board.Map[to.X, to.Y].OccupationTeamId;
+            var occupationTeamId = board.Map[to].OccupationTeamId;
             if (occupationTeamId.HasValue && board.Teams[teamId].Enemies.ToList().Exists(x => x == occupationTeamId.Value)) return true;
             return false;
         }
@@ -145,4 +145,7 @@ namespace Jackal
             return (ship.Position == move.To);
         }
     }
+
+
+  
 }

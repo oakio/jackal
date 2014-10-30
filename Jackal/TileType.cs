@@ -14,20 +14,10 @@
         RespawnFort,
         RumBarrel,
         Horse,
-        Arrow
-	}
-
-	public static class TileTypeExtension
-	{
-		public static bool IsGold(this TileType source)
-		{
-			return source == TileType.Chest1 || source == TileType.Chest2 || source == TileType.Chest3 || source == TileType.Chest4 || source == TileType.Chest5;
-		}
-
-
-        public static bool IsFort(this TileType source)
-        {
-            return source == TileType.Fort || source == TileType.RespawnFort;
-        }
+        Arrow,
+        Baloon,
+	    Ice,
+        Airplane,
+        Croc
 	}
 }

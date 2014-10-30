@@ -12,7 +12,7 @@
         public GameActionResult Act(Game game)
         {
             Board board = game.Board;
-            Tile tile = board.Map[_to.X, _to.Y];
+            Tile tile = board.Map[_to];
 
             foreach (var enemyPirate in tile.Pirates)
             {

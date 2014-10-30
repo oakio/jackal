@@ -4,8 +4,10 @@ namespace Jackal
 {
     public class Position
     {
-        public  int X;
+
+        public int X;
         public int Y;
+
 
         public Position()
         {
@@ -17,46 +19,27 @@ namespace Jackal
             Y = y;
         }
 
-        public bool Equals(Position other)
+        protected bool Equals(Position other)
         {
-            if (other == null) return false;
-
             return X == other.X && Y == other.Y;
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return obj is Position && Equals((Position) obj);
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Position)obj);
         }
 
         public static bool operator ==(Position left, Position right)
         {
-            if ((Object)left == (Object)right)
-            {
-                return true;
-            }
-
-            if ((Object)left == null || (Object)right == null)
-            {
-                return false;
-            }
-            return left.Equals(right);
+            return Equals(left, right);
         }
 
         public static bool operator !=(Position left, Position right)
         {
-            if ((Object)left == (Object)right)
-            {
-                return false;
-            }
-
-            if ((Object)left == null || (Object)right == null)
-            {
-                return true;
-            }
-
-            return !left.Equals(right);
+            return !Equals(left, right);
         }
 
         public override int GetHashCode()
@@ -65,6 +48,16 @@ namespace Jackal
             {
                 return (X*397) ^ Y;
             }
+        }
+
+        public static Position GetDelta(Position from, Position to)
+        {
+            return new Position(to.X - from.X, to.Y - from.Y);
+        }
+
+        public static Position AddDelta(Position pos, Position delta)
+        {
+            return new Position(pos.X + delta.X, pos.Y + delta.Y);
         }
 
         public override string ToString()

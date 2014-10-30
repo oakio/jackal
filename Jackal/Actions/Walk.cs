@@ -17,7 +17,7 @@ namespace Jackal.Actions
 
         public GameActionResult Act(Game game)
         {
-            Tile[,] map = game.Board.Map;
+            var map = game.Board.Map;
 
             var from = _pirate.Position;
 

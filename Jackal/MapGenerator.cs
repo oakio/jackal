@@ -54,6 +54,14 @@ namespace Jackal
                 tiles.Add(new Tile(TileType.Horse));
             }
 
+            for (int i = 0; i < 2; i++)
+            {
+                tiles.Add(new Tile(TileType.Baloon));
+            }
+
+            tiles.Add(new Tile(TileType.Airplane));
+            tiles.Add(new Tile(TileType.Croc));
+
             //arrows
             for (int i = 0; i < 3; i++)
             {

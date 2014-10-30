@@ -32,7 +32,7 @@ namespace Jackal
                 List<Tuple<int, Move>> list = new List<Tuple<int, Move>>();
                 foreach (Move move in availableMoves
                     .Where(x => x.WithCoins)
-                    .Where(x => IsEnemyNear(x.To, board, teamId)==false))
+                    .Where(x => IsEnemyNear(x.To, board, teamId) == false))
                 {
                     //int currentDistance = Distance(ship.Position, move.Pirate.Position);
                     int newDistance = Distance(ship.Position, move.To);
@@ -94,7 +94,7 @@ namespace Jackal
 
                     foreach (Move move in availableMoves
                         .Where(x => x.WithCoins == false)
-                        .Where(x => IsEnemyNear(x.To, board, teamId)==false))
+                        .Where(x => IsEnemyNear(x.To, board, teamId) == false))
                     {
                         int newMinDistance = MinDistance(tilesWithUnknown.ConvertAll(x => x.Position), move.To);
                         list.Add(new Tuple<int, Move>(newMinDistance, move));
@@ -124,7 +124,7 @@ namespace Jackal
 
         private bool IsEnemyNear(Position to, Board board, int ourTeamId)
         {
-            if (board.Map[to.X, to.Y].Type == TileType.Water) return false;
+            if (board.Map[to].Type == TileType.Water) return false;
 
             List<int> enemyList = board.Teams[ourTeamId].Enemies.ToList();
             for (int deltaX = -1; deltaX <= 1; deltaX++)
@@ -135,7 +135,7 @@ namespace Jackal
 
                     var target = new Position(to.X + deltaX, to.Y + deltaY);
 
-                    var occupationTeamId = board.Map[target.X, target.Y].OccupationTeamId;
+                    var occupationTeamId = board.Map[target].OccupationTeamId;
                     if (occupationTeamId.HasValue && enemyList.Exists(x => x == occupationTeamId.Value)) return true;
                 }
             }
@@ -149,7 +149,7 @@ namespace Jackal
 
         private bool IsEnemyPosition(Position to, Board board, int teamId)
         {
-            var occupationTeamId = board.Map[to.X, to.Y].OccupationTeamId;
+            var occupationTeamId = board.Map[to].OccupationTeamId;
             if (occupationTeamId.HasValue && board.Teams[teamId].Enemies.ToList().Exists(x => x == occupationTeamId.Value)) return true;
             return false;
         }

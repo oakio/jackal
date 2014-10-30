@@ -17,7 +17,7 @@ namespace Jackal.Actions
         {
             Board board = game.Board;
             Position position = _pirate.Position;
-            Tile tile = board.Map[position.X, position.Y];
+            Tile tile = board.Map[position];
             if (tile.Coins == 0 /* || _pirate.Coins > 0 */)
             {
                 throw new Exception("No coins to ship");

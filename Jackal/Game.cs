@@ -48,6 +48,7 @@ namespace Jackal
             GetAvailableMoves(teamId);
 
             this.NeedSubTurnPirate = null;
+            this.PreviosSubTurnDirection = null;
             Move selectedMove = null;
 
             if (_availableMoves.Count > 0) //есть возможные ходы
@@ -77,7 +78,7 @@ namespace Jackal
             if (this.NeedSubTurnPirate == null)
             {
                 //также протрезвляем всех пиратов, которые начали бухать раньше текущего хода
-                foreach (Pirate pirate in Board.Teams[teamId].Pirates.Where(x=>x.IsDrunk && x.DrunkSinceTurnNo<TurnNo))
+                foreach (Pirate pirate in Board.Teams[teamId].Pirates.Where(x => x.IsDrunk && x.DrunkSinceTurnNo < TurnNo))
                 {
                     pirate.DrunkSinceTurnNo = null;
                     pirate.IsDrunk = false;
@@ -106,69 +107,49 @@ namespace Jackal
 
 
             IEnumerable<Pirate> activePirates;
+            Direction previosDirection = null;
             if (NeedSubTurnPirate != null)
+            {
                 activePirates = new[] {NeedSubTurnPirate};
+                previosDirection = PreviosSubTurnDirection;
+            }
             else
+            {
                 activePirates = team.Pirates.Where(x => x.IsDrunk == false);
+            }
 
             foreach (var pirate in activePirates)
             {
                 Position position = pirate.Position;
 
-                var targets = GetAllAvaliableMoves(teamId,position);
-                foreach (Position target in targets)
+                var targets = Board.GetAllAvaliableMoves(teamId, position, new List<CheckedPosition>(), previosDirection);
+
+                //если есть ходы, которые не приводят к попаданию в воду, то выбираем только их
+                if (targets.Any(x => x.Type != PossibleMoveType.JumpToWater))
+                    targets = targets.Where(x => x.Type != PossibleMoveType.JumpToWater).ToList();
+
+                foreach (Position target in targets.Select(x => x.Target))
                 {
-                    Step(target.X, target.Y, pirate, ship, team);
+                    Step(target, pirate, ship, team);
                 }
-                /*
-                if (position.Y > 0) // N
-                {
-                    Step(position.X, position.Y - 1, pirate, ship, team);
-                }
-                if (position.X < (Board.Size - 1) && position.Y > 0) // NE
-                {
-                    Step(position.X + 1, position.Y - 1, pirate, ship, team);
-                }
-                if (position.X < (Board.Size - 1)) // E
-                {
-                    Step(position.X + 1, position.Y, pirate, ship, team);
-                }
-                if (position.X < (Board.Size - 1) && position.Y < (Board.Size - 1)) // SE
-                {
-                    Step(position.X + 1, position.Y + 1, pirate, ship, team);
-                }
-                if (position.Y < (Board.Size - 1)) // S
-                {
-                    Step(position.X, position.Y + 1, pirate, ship, team);
-                }
-                if (position.X > 0 && position.Y < (Board.Size - 1)) // SW
-                {
-                    Step(position.X - 1, position.Y + 1, pirate, ship, team);
-                }
-                if (position.X > 0) // W
-                {
-                    Step(position.X - 1, position.Y, pirate, ship, team);
-                }
-                if (position.X > 0 && position.Y > 0) // NW
-                {
-                    Step(position.X - 1, position.Y - 1, pirate, ship, team);
-                }
-                */ 
             }
         }
 
-        private void Step(int toX, int toY, Pirate pirate, Ship ship, Team team)
+        private void Step(Position target, Pirate pirate, Ship ship, Team team)
         {
             //var moves = _availableMoves;
             //var actions = _actions;
 
-            var target = new Position(toX, toY);
-            Tile targetTile = Board.Map[toX, toY];
+            Tile targetTile = Board.Map[target];
 
             var source = pirate.Position;
-            Tile sourceTile = Board.Map[source.X, source.Y];
+            Tile sourceTile = Board.Map[source];
 
             bool onShip = (ship.Position == pirate.Position);
+
+            Direction direction=new Direction();
+            direction.From = pirate.Position;
+            direction.To = target;
 
             switch (targetTile.Type)
             {
@@ -183,7 +164,7 @@ namespace Jackal
                             AddMoveAndActions(new Move(pirate, target, false),
                                 GameActionList.Create(
                                     //new DropCoin(pirate),
-                                    new Explore(target,pirate),
+                                    new Explore(target,pirate,direction),
                                     new Landing(pirate, ship),
                                     new Walk(pirate, target)));
                         }
@@ -193,7 +174,7 @@ namespace Jackal
                         AddMoveAndActions(new Move(pirate, target, false),
                             GameActionList.Create(
                                 //new DropCoin(pirate),
-                                new Explore(target, pirate),
+                                new Explore(target, pirate, direction),
                                 new Walk(pirate, target)));
                     }
 
@@ -221,8 +202,8 @@ namespace Jackal
                     else if (pirate.Position == ship.Position)
                     {
                         if (((ship.Position.X == 0 || ship.Position.X == Board.Size - 1) &&
-                             (target.Y <= 1 || target.Y >= Board.Size - 2)) 
-                             ||
+                             (target.Y <= 1 || target.Y >= Board.Size - 2))
+                            ||
                             ((ship.Position.Y == 0 || ship.Position.Y == Board.Size - 1) &&
                              (target.X <= 1 || target.X >= Board.Size - 2)))
                         {
@@ -233,6 +214,13 @@ namespace Jackal
                         AddMoveAndActions(new Move(pirate, target, false),
                             GameActionList.Create(
                                 new Navigation(ship, target)));
+                    }
+                    else //падение пирата в воду
+                    {
+                        AddMoveAndActions(new Move(pirate, target, false),
+                            GameActionList.Create(
+                                //new DropCoin(pirate),
+                                new Walk(pirate, target)));
                     }
                     break;
                 }
@@ -341,183 +329,15 @@ namespace Jackal
             get { return TurnNo%4; }
         }
 
+        public Direction PreviosSubTurnDirection;
+
         public void KillPirate(Pirate pirate)
         {
             int teamId = pirate.TeamId;
             Board.Teams[teamId].Pirates = Board.Teams[teamId].Pirates.Where(x => x != pirate).ToArray();
             Board.Teams[teamId].Ship.Crew.Remove(pirate);
-            var tile = Board.Map[pirate.Position.X, pirate.Position.Y];
+            var tile = Board.Map[pirate.Position];
             tile.Pirates.Remove(pirate);
-        }
-
-        /// <summary>
-        /// Возвращаем список всех полей, в которые можно попасть из исходной
-        /// </summary>
-        /// <param name="teamId"></param>
-        /// <param name="source"></param>
-        /// <param name="alreadyCheckedList"></param>
-        /// <returns></returns>
-        public List<Position> GetAllAvaliableMoves(int teamId,Position source,List<Position> alreadyCheckedList=null)
-        {
-            if (alreadyCheckedList == null)
-                alreadyCheckedList = new List<Position>() {};
-
-            var sourceTile = Board.Map[source.X, source.Y];
-
-            var ourShip = Board.Teams[teamId].Ship;
-            bool fromShip = (ourShip.Position == source);
-
-            List<Position> goodTargets=new List<Position>();
-
-            IEnumerable<Position> positionsForCheck;
-            switch (sourceTile.Type)
-            {
-                case TileType.Horse:
-                    alreadyCheckedList.Add(source);
-                    positionsForCheck = GetHorseDeltas(source);
-                    break;
-                case TileType.Arrow:
-                    alreadyCheckedList.Add(source);
-                    positionsForCheck = GetArrowsDeltas(sourceTile.ArrowsCode, source);
-                    break;
-                case TileType.Water:
-                    goodTargets.AddRange(GetShipPosibleNavaigations(source)); //мы всегда можем сдвинуть свой корабль
-                    positionsForCheck = new[] {GetShipLanding(source)}; //или попробовать высадиться
-                    break;
-                default:
-                    positionsForCheck = GetNearDeltas(source);
-                    break;
-            }
-            foreach (var newPosition in positionsForCheck)
-            {
-                if (IsMapPosition(newPosition))
-                {
-                    if (alreadyCheckedList.Contains(newPosition)) //мы попали по рекурсии в ранее просмотренную клетку
-                    {
-                        continue;
-                    }
-
-                    //проверяем, что на этой клетке
-                    var newPositionTile = Board.Map[newPosition.X, newPosition.Y];
-                    switch (newPositionTile.Type)
-                    {
-                        case TileType.Water:
-                            if (ourShip.Position == newPosition) //заходим на свой корабль
-                                goodTargets.Add(newPosition);
-                            break;
-                        case TileType.RespawnFort:
-                        case TileType.Fort:
-                            if (newPositionTile.OccupationTeamId.HasValue == false || newPositionTile.OccupationTeamId == teamId)
-                                goodTargets.Add(newPosition);
-                            break;
-                        case TileType.Grass:
-                        case TileType.Chest1:
-                        case TileType.Chest2:
-                        case TileType.Chest3:
-                        case TileType.Chest4:
-                        case TileType.Chest5:
-                        case TileType.RumBarrel:
-                        case TileType.Unknown:
-                            goodTargets.Add(newPosition);
-                            break;
-                        case TileType.Horse:
-                            goodTargets.AddRange(GetAllAvaliableMoves(teamId, newPosition, alreadyCheckedList));
-                            break;
-                        case TileType.Arrow:
-                            goodTargets.AddRange(GetAllAvaliableMoves(teamId, newPosition, alreadyCheckedList));
-                            break;
-                    }
-                }
-            }
-            return goodTargets;
-        }
-
-        private IEnumerable<Position> GetArrowsDeltas(int arrowsCode, Position source)
-        {
-            foreach (var delta in ArrowsCodesHelper.GetExitDeltas(arrowsCode))
-            {
-                yield return new Position(source.X + delta.X, source.Y + delta.Y);
-            }
-        }
-
-        private Position GetShipLanding(Position pos)
-        {
-            if (pos.X == 0)
-            {
-                 return new Position(1, pos.Y );
-            }
-            else if (pos.X == 12)
-            {
-                return new Position(11, pos.Y);
-            }
-            else if (pos.Y == 0)
-            {
-                return new Position(pos.X,1);
-            }
-            else if (pos.Y == 12)
-            {
-                return new Position(pos.X, 11);
-            }
-            else
-            {
-                throw new Exception("wrong ship position");
-            }
-        }
-
-        private IEnumerable<Position> GetShipPosibleNavaigations(Position pos)
-        {
-            if (pos.X == 0 || pos.X==12)
-            {
-                if (pos.Y>2)
-                    yield return new Position(pos.X,pos.Y-1);
-                if (pos.Y<10)
-                    yield return new Position(pos.X,pos.Y+1);
-            }
-            else if (pos.Y == 0 || pos.Y==12)
-            {
-                if (pos.X>2)
-                    yield return new Position(pos.X-1,pos.Y);
-                if (pos.X<10)
-                    yield return new Position(pos.X+1,pos.Y);
-            }
-            else
-            {
-                throw new Exception("wrong ship position");
-            }
-        }
-
-        private IEnumerable<Position> GetShipDeltas(Position source)
-        {
-            throw new NotImplementedException();
-        }
-
-        private bool IsMapPosition(Position pos)
-        {
-            return (pos.X >= 0 && pos.X < Board.Size
-                    && pos.Y >= 0 && pos.Y < Board.Size);
-        }
-
-        private IEnumerable<Position> GetNearDeltas(Position pos)
-        {
-            for (int x = -1; x <= 1; x++)
-            {
-                for (int y = -1; y <= 1; y++)
-                {
-                    if (x == 0 && y == 0) continue;
-                    yield return new Position(pos.X+x,pos.Y+y);
-                }
-            }
-        }
-
-        private IEnumerable<Position> GetHorseDeltas(Position pos)
-        {
-            for (int x = -2; x <= 2; x++)
-            {
-                if (x == 0) continue;
-                int deltaY = (Math.Abs(x) == 2) ? 1 : 2;
-                yield return new Position(pos.X + x, pos.Y - deltaY);
-                yield return new Position(pos.X + x, pos.Y + deltaY);
-            }
         }
     }
 }

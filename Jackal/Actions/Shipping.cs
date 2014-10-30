@@ -15,7 +15,7 @@
         {
             Position position = _pirate.Position;
             Board board = game.Board;
-            Tile tile = board.Map[position.X, position.Y];
+            Tile tile = board.Map[position];
             tile.Pirates.Remove(_pirate);
             if (tile.Pirates.Count == 0)
             {
