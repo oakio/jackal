@@ -238,7 +238,18 @@ namespace Jackal
                     bool targetIsFort = targetTile.Type.IsFort();
 
                     bool targetIsRumbar = targetTile.Type == TileType.RumBarrel;
-                    
+
+                    if (targetTile.Type == TileType.RespawnFort && sourceTile.Type == TileType.RespawnFort)
+                    {
+                        if (team.Pirates.Count() < 3)
+                        {
+                            AddMoveAndActions(new Move(pirate, target, false) {WithRespawn = true},
+                                GameActionList.Create(
+                                    //new DropCoin(pirate),
+                                    new Respawn(team, target)));
+                        }
+                    }
+
 
                     if (attack)
                     {

@@ -238,6 +238,9 @@ namespace Jackal
                         rez = new[] {target};
                     }
                     break;
+                case TileType.RespawnFort:
+                    rez= GetNearDeltas(source).Concat(new[]{source});
+                    break;
                 default:
                     rez = GetNearDeltas(source);
                     break;

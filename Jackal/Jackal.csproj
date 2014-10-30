@@ -46,6 +46,7 @@
     <Compile Include="Actions\IGameAction.cs" />
     <Compile Include="Actions\Landing.cs" />
     <Compile Include="Actions\Navigation.cs" />
+    <Compile Include="Actions\Respawn.cs" />
     <Compile Include="Actions\Shipping.cs" />
     <Compile Include="Actions\TakeCoinToShip.cs" />
     <Compile Include="Actions\Walk.cs" />
