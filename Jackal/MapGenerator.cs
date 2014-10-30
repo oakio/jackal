@@ -56,11 +56,19 @@ namespace Jackal
 
             for (int i = 0; i < 2; i++)
             {
-                tiles.Add(new Tile(TileType.Baloon));
+                tiles.Add(new Tile(TileType.Balloon));
             }
 
             tiles.Add(new Tile(TileType.Airplane));
-            tiles.Add(new Tile(TileType.Croc));
+            for (int i = 0; i < 4; i++)
+            {
+                tiles.Add(new Tile(TileType.Croc));
+            }
+
+            for (int i = 0; i < 6; i++)
+            {
+                tiles.Add(new Tile(TileType.Ice));
+            }
 
             //arrows
             for (int i = 0; i < 3; i++)
@@ -87,22 +95,10 @@ namespace Jackal
             _tiles = Shuffle(tiles);
         }
 
-        Tile NewArrow(string str)
-        {
-            int arrowsCode = ArrowsCodesHelper.GetCodeFromString(str);
-            int rotatesCount= _rand.Next(4);
-            for (int i = 1; i <= rotatesCount; i++)
-            {
-                arrowsCode = ArrowsCodesHelper.DoRotate(arrowsCode);
-            }
-            var tile=new Tile(TileType.Arrow);
-            tile.ArrowsCode = arrowsCode;
-            return tile;
-        }
 
         private List<Tile> Shuffle( List<Tile> tiles)
         {
-            return tiles.Select(x => new {Tile = x, Number = _rand.Next()}).OrderBy(x => x.Number).Select(x => x.Tile).ToList();
+            return tiles.Select(x => new {Tile = x, Number = _rand.NextDouble()}).OrderBy(x => x.Number).Select(x => x.Tile).ToList();
         }
 
         public Tile GetNext(Position position)

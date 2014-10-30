@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Actions\Attack.cs" />
     <Compile Include="Actions\DropCoin.cs" />
+    <Compile Include="Actions\Dying.cs" />
     <Compile Include="Actions\Explore.cs" />
     <Compile Include="Actions\GameActionList.cs" />
     <Compile Include="Actions\IGameAction.cs" />

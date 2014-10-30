@@ -142,6 +142,13 @@ namespace Jackal
 
                 var newMove = new Move() {From = source, To = newPosition};
 
+                if (sourceTile.Type == TileType.Water && newPositionTile.Type != TileType.Water) //выходим из воды
+                {
+                    if (source == ourShip.Position && GetShipLanding(ourShip.Position) == newPosition) //только высадка из корабля
+                        goodTargets.Add(new PossibleMove(newPosition));
+                    continue;
+                }
+
                 switch (newPositionTile.Type)
                 {
                     case TileType.Water:
@@ -156,9 +163,10 @@ namespace Jackal
                             if (source == ourShip.Position && GetShipPosibleNavaigations(source).Contains(newPosition)) //корабль плавает
                                 goodTargets.Add(new PossibleMove(newPosition));
                         }
-                        else //с земли в воду мы можем попасть только если будем топиться
+                        else //с земли в воду мы можем попасть только если ранее попали на клетку, требующую действия
                         {
-                            goodTargets.Add(new PossibleMove(newPosition, PossibleMoveType.JumpToWater));
+                            if (sourceTile.Type.RequreImmediateMove())
+                                goodTargets.Add(new PossibleMove(newPosition, PossibleMoveType.JumpToWater));
                         }
                         break;
                     case TileType.RespawnFort:
@@ -177,9 +185,9 @@ namespace Jackal
                         goodTargets.Add(new PossibleMove(newPosition));
                         break;
                     case TileType.Horse:
-                        goodTargets.AddRange(GetAllAvaliableMoves(teamId, newPosition, alreadyCheckedList, newMove));
-                        break;
                     case TileType.Arrow:
+                    case TileType.Airplane:
+                    case TileType.Balloon:
                         goodTargets.AddRange(GetAllAvaliableMoves(teamId, newPosition, alreadyCheckedList, newMove));
                         break;
                 }
@@ -208,14 +216,18 @@ namespace Jackal
                 case TileType.Arrow:
                     rez = GetArrowsDeltas(sourceTile.ArrowsCode, source);
                     break;
-                case TileType.Baloon:
+                case TileType.Balloon:
                     rez = Teams.Select(x => x.Ship.Position); //на корабль
                     break;
                 case TileType.Airplane:
                     if (Map.AirplaneUsed == false)
                     {
                         rez = Teams.Select(x => x.Ship.Position); //на корабль
-                        rez = rez.Concat(AllTiles(x => x.Type != TileType.Water).Select(x => x.Position));
+                        var airplaneTargets = AllTiles(x => x.Type != TileType.Water
+                                                            && x.Type.RequreImmediateMove() == false
+                                                            && x.Type != TileType.Airplane)
+                            .Select(x => x.Position);
+                        rez = rez.Concat(airplaneTargets);
                     }
                     else
                     {
@@ -233,6 +245,7 @@ namespace Jackal
                     }
                     else //повторяем предыдущий ход
                     {
+                        //TODO - проверка на использование самолета на предыдущем ходу - тогда мы должны повторить ход самолета
                         var previosDelta = Position.GetDelta(previosMove.From, previosMove.To);
                         Position target = Position.AddDelta(source, previosDelta);
                         rez = new[] {target};

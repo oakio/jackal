@@ -163,8 +163,7 @@ namespace Jackal
                             // landing
                             AddMoveAndActions(new Move(pirate, target, false),
                                 GameActionList.Create(
-                                    //new DropCoin(pirate),
-                                    new Explore(target,pirate,direction),
+                                   new Explore(target,pirate,direction),
                                     new Landing(pirate, ship),
                                     new Walk(pirate, target)));
                         }
@@ -173,7 +172,6 @@ namespace Jackal
                     {
                         AddMoveAndActions(new Move(pirate, target, false),
                             GameActionList.Create(
-                                //new DropCoin(pirate),
                                 new Explore(target, pirate, direction),
                                 new Walk(pirate, target)));
                     }
@@ -182,7 +180,7 @@ namespace Jackal
                 }
                 case TileType.Water:
                 {
-                    if (target == ship.Position)
+                    if (target == ship.Position) //на свой корабль
                     {
                         if (sourceTile.Coins > 0)
                         {
@@ -199,7 +197,7 @@ namespace Jackal
                                 //new DropCoin(pirate),
                                 new Shipping(pirate, ship)));
                     }
-                    else if (pirate.Position == ship.Position)
+                    else if (pirate.Position == ship.Position) //двигаем корабль
                     {
                         if (((ship.Position.X == 0 || ship.Position.X == Board.Size - 1) &&
                              (target.Y <= 1 || target.Y >= Board.Size - 2))
@@ -215,12 +213,18 @@ namespace Jackal
                             GameActionList.Create(
                                 new Navigation(ship, target)));
                     }
-                    else //падение пирата в воду
+                    else if (Board.Teams.Where(x => x.Id != CurrentTeamId).Select(x => x.Ship.Position).Contains(target))
+                    {
+                        //столкновение с чужим кораблем
+                        AddMoveAndActions(new Move(pirate, target, false),
+                              GameActionList.Create(
+                                  new Dying(pirate)));
+                    }
+                    else //падение пирата в воду и плавание в воде
                     {
                         AddMoveAndActions(new Move(pirate, target, false),
                             GameActionList.Create(
-                                //new DropCoin(pirate),
-                                new Walk(pirate, target)));
+                                 new Walk(pirate, target)));
                     }
                     break;
                 }
@@ -237,19 +241,16 @@ namespace Jackal
                     var attack = targetTile.OccupationTeamId.HasValue && targetTile.OccupationTeamId.Value != pirate.TeamId;
                     bool targetIsFort = targetTile.Type.IsFort();
 
-                    bool targetIsRumbar = targetTile.Type == TileType.RumBarrel;
-
+                    //Respawn
                     if (targetTile.Type == TileType.RespawnFort && sourceTile.Type == TileType.RespawnFort)
                     {
                         if (team.Pirates.Count() < 3)
                         {
                             AddMoveAndActions(new Move(pirate, target, false) {WithRespawn = true},
                                 GameActionList.Create(
-                                    //new DropCoin(pirate),
                                     new Respawn(team, target)));
                         }
                     }
-
 
                     if (attack)
                     {
@@ -262,7 +263,6 @@ namespace Jackal
                                 {
                                     AddMoveAndActions(new Move(pirate, target, false),
                                         GameActionList.Create(
-                                            //new DropCoin(pirate),
                                             new Attack(target),
                                             new Landing(pirate, ship),
                                             new Walk(pirate, target)));
@@ -272,7 +272,6 @@ namespace Jackal
                             {
                                 AddMoveAndActions(new Move(pirate, target, false),
                                     GameActionList.Create(
-                                        //new DropCoin(pirate),
                                         new Attack(target),
                                         new Walk(pirate, target)));
                             }
@@ -294,15 +293,13 @@ namespace Jackal
                         {
                             AddMoveAndActions(new Move(pirate, target, false),
                                 GameActionList.Create(
-                                    //new DropCoin(pirate),
                                     new Walk(pirate, target)));
 
                             if (sourceTile.Coins > 0 && targetIsFort == false)
                             {
                                 AddMoveAndActions(new Move(pirate, target, true),
                                     GameActionList.Create(
-                                        //new MoveCoin(pirate,to),
-                                        new Walk(pirate, target,true)));
+                                       new Walk(pirate, target,true)));
                             }
                         }
                     }
@@ -349,6 +346,8 @@ namespace Jackal
             Board.Teams[teamId].Ship.Crew.Remove(pirate);
             var tile = Board.Map[pirate.Position];
             tile.Pirates.Remove(pirate);
+            if (tile.Pirates.Count() == 0)
+                tile.OccupationTeamId = null;
         }
     }
 }

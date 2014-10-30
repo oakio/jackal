@@ -49,11 +49,13 @@ namespace JackalHost
             };
             _form.OnSlowerBtnClick += (s, e) =>
             {
-                turnTimeOutInMS = turnTimeOutInMS < 2048 ? turnTimeOutInMS * 2 : 2048;
+                turnTimeOutInMS = (int) (turnTimeOutInMS*1.5);
+                turnTimeOutInMS = Math.Min(turnTimeOutInMS, 2048);
             };
             _form.OnFasterBtnClick += (s, e) =>
             {
-                turnTimeOutInMS = turnTimeOutInMS > 2 ? turnTimeOutInMS / 2 : 2;
+                turnTimeOutInMS = (int)(turnTimeOutInMS / 1.5);
+                turnTimeOutInMS = Math.Max(turnTimeOutInMS, 2);
             };
             _form.OnNewGameBtnClick += (s, e) => {
                 mapId = new Random().Next(1000000);

@@ -15,7 +15,7 @@
         RumBarrel,
         Horse,
         Arrow,
-        Baloon,
+        Balloon,
 	    Ice,
         Airplane,
         Croc

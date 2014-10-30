@@ -141,8 +141,11 @@ namespace JackalHost.Monitors
                 case TileType.Airplane:
                     filename = @"airplane";
                     break;
-                case TileType.Baloon:
-                    filename = @"baloon";
+                case TileType.Balloon:
+                    filename = @"balloon";
+                    break;
+                case TileType.Ice:
+                    filename = @"ice";
                     break;
 	            case TileType.Arrow:
 	                var search = ArrowsCodesHelper.Search(tile.ArrowsCode);
