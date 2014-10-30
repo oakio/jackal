@@ -63,6 +63,7 @@
     <Compile Include="Pirate.cs" />
     <Compile Include="Players\BlankPlayer.cs" />
     <Compile Include="Players\MikePlayer.cs" />
+    <Compile Include="Players\SmartPlayer2.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Players\RandomPlayer.cs" />
