@@ -65,10 +65,6 @@ namespace Jackal
                         SetUnknown(x, y);
                 }
             }
-            //SetStone(0, 0);
-            //SetStone(Size - 1, 0);
-            //SetStone(Size - 1, Size - 1);
-            //SetStone(0, Size - 1);
         }
 
         void SetWater(int x, int y)

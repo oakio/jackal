@@ -147,6 +147,31 @@ namespace JackalHost.Monitors
                 case TileType.Ice:
                     filename = @"ice";
                     break;
+                case TileType.Trap:
+                    filename = @"trap";
+                    break;
+                case TileType.Canibal:
+                    filename = @"canibal";
+                    break;
+                case TileType.Spinning:
+	                switch (tile.SpinningCount)
+	                {
+	                    case 2:
+	                        filename = "forest";
+	                        break;
+	                    case 3:
+	                        filename = "desert";
+	                        break;
+	                    case 4:
+	                        filename = "swamp";
+	                        break;
+	                    case 5:
+	                        filename = "mount";
+	                        break;
+	                    default:
+	                        throw new NotSupportedException();
+	                }
+	                break;
 	            case TileType.Arrow:
 	                var search = ArrowsCodesHelper.Search(tile.ArrowsCode);
 	                rotateCount = search.RotateCount;

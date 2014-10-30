@@ -12,7 +12,7 @@ namespace Jackal
 		{
 		}
 
-        protected bool Equals(Move other)
+        public bool Equals(Move other)
         {
             return base.Equals(other) && WithCoins.Equals(other.WithCoins) && WithRespawn.Equals(other.WithRespawn);
         }

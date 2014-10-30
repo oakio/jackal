@@ -14,7 +14,7 @@ namespace Jackal
 
         public MapGenerator(int mapId)
         {
-            _rand = new Random(mapId);
+            _rand = new Random(mapId+5000000);
 
             const int totalUnknown = Size*Size - 4;
             List<Tile> tiles = new List<Tile>(totalUnknown);
@@ -60,6 +60,7 @@ namespace Jackal
             }
 
             tiles.Add(new Tile(TileType.Airplane));
+
             for (int i = 0; i < 4; i++)
             {
                 tiles.Add(new Tile(TileType.Croc));
@@ -86,6 +87,26 @@ namespace Jackal
                     tiles.Add(tile);
                 }
             }
+
+            for (int i = 0; i < 5; i++)
+            {
+                tiles.Add(new Tile(TileType.Spinning){SpinningCount = 2});
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                tiles.Add(new Tile(TileType.Spinning) { SpinningCount = 3 });
+            }
+            for (int i = 0; i < 2; i++)
+            {
+                tiles.Add(new Tile(TileType.Spinning) { SpinningCount = 4 });
+            }
+            tiles.Add(new Tile(TileType.Spinning) {SpinningCount = 5});
+
+            for (int i = 0; i < 3; i++)
+            {
+                tiles.Add(new Tile(TileType.Trap));
+            }
+
 
             while (tiles.Count < totalUnknown)
             {

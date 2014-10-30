@@ -10,6 +10,8 @@ namespace Jackal
 
         public int ArrowsCode;
 
+        public int SpinningCount;
+
         public int? OccupationTeamId;
         public HashSet<Pirate> Pirates;
 
