@@ -20,7 +20,6 @@ namespace Jackal.Actions
         {
             Board board = game.Board;
             var newTile = board.Generator.GetNext(_position);
-            newTile.Position = new Position(_position.X, _position.Y);
             board.Map[_position] = newTile;
 
             game.LastActionTurnNo = game.TurnNo;

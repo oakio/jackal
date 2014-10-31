@@ -1,20 +1,20 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace Jackal
 {
-    public class Move : Direction
+    public class Move : TileDirection
 	{
-		public Pirate Pirate;
-		public bool WithCoins;
-	    public bool WithRespawn;
+        [JsonProperty]
+        public readonly MoveType Type;
 
-		public Move()
-		{
-		}
+        //public Pirate Pirate;
+        public bool WithCoins { get { return Type == MoveType.WithCoin; } }
+	    public bool WithRespawn{ get { return Type == MoveType.WithRespawn; } }
 
         public bool Equals(Move other)
         {
-            return base.Equals(other) && WithCoins.Equals(other.WithCoins) && WithRespawn.Equals(other.WithRespawn);
+            return base.Equals(other) && Type.Equals(other.Type);
         }
 
         public override bool Equals(object obj)
@@ -30,8 +30,7 @@ namespace Jackal
             unchecked
             {
                 int hashCode = base.GetHashCode();
-                hashCode = (hashCode*397) ^ WithCoins.GetHashCode();
-                hashCode = (hashCode*397) ^ WithRespawn.GetHashCode();
+                hashCode = (hashCode * 397) ^ Type.GetHashCode();
                 return hashCode;
             }
         }
@@ -46,24 +45,34 @@ namespace Jackal
             return !Equals(left, right);
         }
 
-        public Move(Pirate pirate, Position to, bool withCoin)
-		{
-			Pirate = pirate;
-			To = to;
-			WithCoins = withCoin;
+        public Move():base()
+        {
+        }
 
-			// используется для отрисовки предыдущей позиции пирата
-			From = new Position(pirate.Position.X, pirate.Position.Y);
-		}
+        public Move(TilePosition from, TilePosition to, MoveType type = MoveType.Usual)
+            : base(from, to)
+        {
+            Type = type;
+        }
 
-		public override string ToString()
-		{
-		    char code = 'o';
-		    if (WithCoins)
-		        code = '+';
-            else if (WithRespawn)
-                code = '❤';
-		    return string.Format("{0},{1},{2}", From, To, code);
-		}
+        public Move(Position from, Position to, MoveType type = MoveType.Usual)
+            : this(new TilePosition(from), new TilePosition(to), type)
+        {
+        }
+
+        public override string ToString()
+        {
+            string str = string.Format("{0},{1}", From, To);
+            switch (Type)
+            {
+                case MoveType.WithCoin:
+                    str += '+';
+                    break;
+                case MoveType.WithRespawn:
+                    str += '❤';
+                    break;
+            }
+            return str;
+        }
 	}
 }

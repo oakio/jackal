@@ -38,8 +38,8 @@ namespace Jackal.Actions
                 throw new NotSupportedException();
             }
 
-            _ship.Crew.Remove(_pirate);
-            _pirate.Position = _ship.Position;
+            _ship.Crew(game.Board).Remove(_pirate);
+            _pirate.Position = new TilePosition(_ship.Position);
             
             return GameActionResult.Live;
         }

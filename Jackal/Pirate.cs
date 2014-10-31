@@ -1,15 +1,19 @@
-﻿namespace Jackal
+﻿using Newtonsoft.Json;
+
+namespace Jackal
 {
     public class Pirate
     {
-        public int TeamId;
-        public Position Position;
+        [JsonProperty]
+        public readonly int TeamId;
+        [JsonProperty]
+        public TilePosition Position;
+        [JsonProperty]
         public bool IsDrunk;
 
         internal int? DrunkSinceTurnNo;
-
         
-        public Pirate(int teamId, Position position)
+        public Pirate(int teamId, TilePosition position)
         {
             TeamId = teamId;
             Position = position;

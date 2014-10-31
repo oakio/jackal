@@ -21,26 +21,22 @@ namespace Jackal.Actions
 
             var from = _pirate.Position;
 
-            var fromTile = map[from.X, from.Y];
+            var fromTile = map[from];
             fromTile.Pirates.Remove(_pirate);
-            if (fromTile.Pirates.Count == 0)
-            {
-                fromTile.OccupationTeamId = null;
-            }
 
-            _pirate.Position = _to;
-            var toTile = map[_to.X, _to.Y];
-            toTile.OccupationTeamId = _pirate.TeamId;
-            toTile.Pirates.Add(_pirate);
+            _pirate.Position =  new TilePosition(_to);
+            var targetTile = map[_pirate.Position.Position];
+            var targetTileLevel = map[_pirate.Position];
+            targetTileLevel.Pirates.Add(_pirate);
 
             if (_withCoin)
             {
                 if (fromTile.Coins == 0) throw new Exception("No coins");
                 fromTile.Coins--;
-                toTile.Coins++;
+                targetTileLevel.Coins++;
             }
 
-            if (toTile.Type == TileType.RumBarrel)
+            if (targetTile.Type == TileType.RumBarrel)
             {
                 _pirate.DrunkSinceTurnNo = game.TurnNo;
                 _pirate.IsDrunk = true;

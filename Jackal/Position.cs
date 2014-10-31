@@ -1,12 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Jackal
 {
     public class Position
     {
+        [JsonProperty] 
+        public readonly int X;
 
-        public int X;
-        public int Y;
+        [JsonProperty] 
+        public readonly int Y;
 
 
         public Position()
@@ -19,7 +22,11 @@ namespace Jackal
             Y = y;
         }
 
-        protected bool Equals(Position other)
+        public Position(Position position):this(position.X,position.Y)
+        {
+        }
+
+        public bool Equals(Position other)
         {
             return X == other.X && Y == other.Y;
         }

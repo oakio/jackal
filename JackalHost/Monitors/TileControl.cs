@@ -19,7 +19,7 @@ namespace JackalHost.Monitors
 			InitializeComponent();
 		}
 
-        public void Draw(Tile tile, List<Ship> ships)
+        public void Draw(Tile tile, List<Ship> ships, Board board)
         {
             var ship = ships.FirstOrDefault(item => item.Position == tile.Position);
             if(ship != null)
@@ -35,7 +35,7 @@ namespace JackalHost.Monitors
                 BackColor = SystemColors.Control;
             }
 
-            DrawPirates(ship == null ? tile.Pirates : ship.Crew);
+            DrawPirates(ship == null ? tile.Pirates : ship.Crew(board));
             DrawGold(ship == null ? tile.Coins : ship.Coins);
             DrawTileBackground(tile, ship);
         }

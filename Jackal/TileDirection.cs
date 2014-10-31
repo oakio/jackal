@@ -1,17 +1,16 @@
 ﻿using System;
-using System.ComponentModel.Design.Serialization;
 using Newtonsoft.Json;
 
 namespace Jackal
 {
-    public class Direction
+    public class TileDirection
     {
-        [JsonProperty]
-        public readonly Position From;
-        [JsonProperty]
-        public readonly Position To;
+        [JsonProperty] 
+        public readonly TilePosition From;
+        [JsonProperty] 
+        public readonly TilePosition To;
 
-        public Direction(Position from, Position to)
+        public TileDirection(TilePosition from, TilePosition to)
         {
             if (from == null) throw new ArgumentNullException("from");
             if (to == null) throw new ArgumentNullException("to");
@@ -19,7 +18,11 @@ namespace Jackal
             To = to;
         }
 
-        protected bool Equals(Direction other)
+        public TileDirection()
+        {
+        }
+
+        public bool Equals(TileDirection other)
         {
             return Equals(From, other.From) && Equals(To, other.To);
         }
@@ -29,7 +32,7 @@ namespace Jackal
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Direction) obj);
+            return Equals((TileDirection) obj);
         }
 
         public override int GetHashCode()
@@ -40,19 +43,14 @@ namespace Jackal
             }
         }
 
-        public static bool operator ==(Direction left, Direction right)
+        public static bool operator ==(TileDirection left, TileDirection right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(Direction left, Direction right)
+        public static bool operator !=(TileDirection left, TileDirection right)
         {
             return !Equals(left, right);
-        }
-
-        public Position GetDelta()
-        {
-            return Position.GetDelta(From, To);
         }
     }
 }

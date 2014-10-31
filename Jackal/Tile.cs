@@ -1,36 +1,64 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Jackal
 {
     public class Tile
     {
-        public Position Position;
-        public TileType Type;
-        public int Coins;
+        [JsonProperty]
+        public readonly Position Position;
+        [JsonProperty]
+        public readonly TileType Type;
 
-        public int ArrowsCode;
+        public int Coins
+        {
+            get
+            {
+                return Levels[0].Coins;
+            }
+        }
+        [JsonProperty]
+        public readonly int ArrowsCode;
+        [JsonProperty]
+        public readonly int SpinningCount;
 
-        public int SpinningCount;
+        public int? OccupationTeamId
+        {
+            get
+            {
+                return Levels[0].OccupationTeamId;
+            }
+        }
 
-        public int? OccupationTeamId;
-        public HashSet<Pirate> Pirates;
+        public HashSet<Pirate> Pirates
+        {
+            get
+            {
+                return Levels[0].Pirates;
+            }
+        }
+
+        /// <summary>
+        /// Уровни клетки (0 - обычный уровень/уровень выхода с клетки)
+        /// </summary>
+        public readonly List<TileLevel> Levels = new List<TileLevel>();
 
         public Tile()
         {
         }
 
-        public Tile(Position position,TileType type, int coins = 0):this(type,coins)
+        public Tile(TileParams tileParams)
         {
-            Position = position;
-        }
-
-        public Tile(TileType type, int coins = 0)
-        {
-            Type = type;
-            Coins = coins;
-
-            OccupationTeamId = null; // free
-            Pirates = new HashSet<Pirate>();
+            Position = tileParams.Position;
+            Type = tileParams.Type;
+            int levelsCount = (tileParams.Type == TileType.Spinning) ? tileParams.SpinningCount : 1;
+            for (int level = 0; level < levelsCount; level++)
+            {
+                var tileLevel = new TileLevel(new TilePosition(tileParams.Position, level));
+                Levels.Add(tileLevel);
+            }
+            ArrowsCode = tileParams.ArrowsCode;
+            SpinningCount = tileParams.SpinningCount;
         }
     }
 }

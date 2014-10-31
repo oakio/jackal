@@ -38,6 +38,18 @@ namespace Jackal
             }
         }
 
+        /// <summary>
+        /// Попадание в углы участка 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public static bool InCorners(Position value, int min, int max)
+        {
+            return (value.X == min || value.X == max) && (value.Y == min || value.Y == max);
+        }
+
         public static IEnumerable<T> GetPermutation<T>(int index, T[] array) where T : class
         {
             int N = array.Length;

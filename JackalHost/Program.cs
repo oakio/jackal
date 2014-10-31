@@ -97,11 +97,11 @@ namespace JackalHost
                     if (move != null)
                     {
                         var ships = board.Teams.Select(item => item.Ship).ToList();
-                        var fromTile = board.Map[move.From.X, move.From.Y];
-                        var toTile = board.Map[move.To.X, move.To.Y];
+                        var fromTile = board.Map[move.From.Position.X, move.From.Position.Y];
+                        var toTile = board.Map[move.To.Position.X, move.To.Position.Y];
 
-                        _form.Draw(fromTile, ships);
-                        _form.Draw(toTile, ships);
+                        _form.Draw(fromTile, ships,board);
+                        _form.Draw(toTile, ships, board);
                     }
                     _form.DrawStats(game);
 

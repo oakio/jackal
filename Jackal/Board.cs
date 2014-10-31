@@ -1,6 +1,7 @@
 ﻿﻿using System;
 using System.Collections.Generic;
 ﻿using System.Linq;
+﻿using Jackal.Actions;
 
 namespace Jackal
 {
@@ -15,12 +16,14 @@ namespace Jackal
         public IEnumerable<Tile> AllTiles(Predicate<Tile> selector)
         {
             for (int i = 0; i < Size; i++)
+            {
                 for (int j = 0; j < Size; j++)
                 {
                     var tile = Map[i, j];
                     if (selector(tile))
                         yield return tile;
                 }
+            }
         }
 
         public Board()
@@ -69,11 +72,14 @@ namespace Jackal
 
         void SetWater(int x, int y)
         {
-            Map[x, y] = new Tile(new Position(x,y),TileType.Water);
+            var tile = new Tile(new TileParams {Type = TileType.Water, Position = new Position(x, y)});
+            Map[x, y] = tile;
         }
-        void SetUnknown(int x, int y)
+
+        private void SetUnknown(int x, int y)
         {
-            Map[x, y] = new Tile(new Position(x, y), TileType.Unknown);
+            var tile = new Tile(new TileParams {Type = TileType.Unknown, Position = new Position(x, y)});
+            Map[x, y] = tile;
         }
 
         private void InitTeam(int teamId, int x, int y)
@@ -82,11 +88,89 @@ namespace Jackal
             var pirates = new Pirate[3];
             for (int i = 0; i < pirates.Length; i++)
             {
-                pirates[i] = new Pirate(teamId, startPosition);
+                pirates[i] = new Pirate(teamId, new TilePosition( startPosition));
             }
-            var ship = new Ship(teamId, startPosition, new HashSet<Pirate>(pirates));
+            var ship = new Ship(teamId, startPosition);
+            foreach (var pirate in pirates)
+            {
+                ship.Crew(this).Add(pirate);
+            }
             Teams[teamId] = new Team(teamId, ship, pirates);
         }
+
+
+        /*
+        public enum SubTurnMoveType
+        {
+            Usual,
+            Horse,
+            Air
+        }
+
+        public class SubTurnMove : Direction
+        {
+            public SubTurnMoveType Type;
+        }
+
+        public class BuildMoveRec
+        {
+            public Position Source;
+            public Position Target;
+            public bool WithCoin;
+            public bool WithRespawn;
+            public bool WithAirplane;
+
+            public GameActionResult ActionResult;
+
+            /// <summary>
+            /// Клетки, которые поменялись за ход
+            /// </summary>
+            public List<Position> ChangedTiles;
+            /// <summary>
+            /// Действия
+            /// </summary>
+            public List<IGameAction> Actions;
+
+            public List<SubTurnMove> SubTurnMoves;
+        }
+
+        public class BuildMovesResult
+        {
+            List<BuildMoveRec> rez=new List<BuildMoveRec>();
+        }
+
+        public BuildMovesResult BuildMoves(int teamId, Position source, SubTurnMove previosMove)
+        {
+            BuildMovesResult rez = new BuildMovesResult();
+            var sourceTile = Map[source];
+            if (sourceTile.Type.RequreImmediateMove())
+            {
+                if (previosMove == null)
+                    throw new ArgumentNullException("previosMove");
+            }
+
+            var ourShip = Teams[teamId].Ship;
+
+            var current = source;
+            List<SubTurnMove> currentSubTurnMoves=new List<SubTurnMove>();
+
+            while (true)
+            {
+                var currentTile = Map[current];
+                switch (currentTile.Type)
+                {
+                    case TileType.Water: //ход из воды
+                        if (current == ourShip.Position) //с нашего корабля
+                        {
+                            var target = GetShipLanding(current);
+                            currentSubTurnMoves.Add(new SubTurnMove() {From = current, To = target, Type = SubTurnMoveType.Usual});
+                            current = target;
+                            continue;
+                        }
+                }
+            }
+        }
+        */
 
         /// <summary>
         /// Возвращаем список всех полей, в которые можно попасть из исходного поля
@@ -113,7 +197,7 @@ namespace Jackal
             {
                 Position previosMoveDelta = null;
                 if (sourceTile.Type == TileType.Ice)
-                    previosMoveDelta = Position.GetDelta(previosDirection.From, previosDirection.To);
+                    previosMoveDelta = previosDirection.GetDelta();
                 alreadyCheckedList.Add(new CheckedPosition(source, previosMoveDelta)); //запоминаем, что эту клетку просматривать уже не надо
             }
 
@@ -136,7 +220,7 @@ namespace Jackal
                 //проверяем, что на этой клетке
                 var newPositionTile = Map[newPosition];
 
-                var newMove = new Move() {From = source, To = newPosition};
+                var newMove = new Move(new TilePosition(source), new TilePosition(newPosition), MoveType.Usual);
 
                 if (sourceTile.Type == TileType.Water && newPositionTile.Type != TileType.Water) //выходим из воды
                 {
@@ -184,7 +268,7 @@ namespace Jackal
                     case TileType.Arrow:
                     case TileType.Airplane:
                     case TileType.Balloon:
-                        goodTargets.AddRange(GetAllAvaliableMoves(teamId, newPosition, alreadyCheckedList, newMove));
+                        goodTargets.AddRange(GetAllAvaliableMoves(teamId, newPosition, alreadyCheckedList, new Direction(newMove.From.Position, newMove.To.Position)));
                         break;
                 }
 
@@ -242,7 +326,7 @@ namespace Jackal
                     else //повторяем предыдущий ход
                     {
                         //TODO - проверка на использование самолета на предыдущем ходу - тогда мы должны повторить ход самолета
-                        var previosDelta = Position.GetDelta(previosMove.From, previosMove.To);
+                        var previosDelta = previosMove.GetDelta();
                         Position target = Position.AddDelta(source, previosDelta);
                         rez = new[] {target};
                     }
@@ -257,7 +341,7 @@ namespace Jackal
             return rez.Where(x => IsValidMapPosition(x)).ToList();
         }
 
-        public IEnumerable<Position> GetHorseDeltas(Position pos)
+        public static IEnumerable<Position> GetHorseDeltas(Position pos)
         {
             for (int x = -2; x <= 2; x++)
             {
@@ -268,7 +352,7 @@ namespace Jackal
             }
         }
 
-        public IEnumerable<Position> GetNearDeltas(Position pos)
+        public static IEnumerable<Position> GetNearDeltas(Position pos)
         {
             for (int x = -1; x <= 1; x++)
             {
@@ -280,19 +364,16 @@ namespace Jackal
             }
         }
 
-        public bool IsValidMapPosition(Position pos)
+        public static bool IsValidMapPosition(Position pos)
         {
             return (
                 pos.X >= 0 && pos.X < Board.Size
                 && pos.Y >= 0 && pos.Y < Board.Size //попадаем в карту
-                && (pos.X != 0 || pos.Y != 0) //не попадаем в углы карты
-                && (pos.X != 0 || pos.Y != Board.Size - 1)
-                && (pos.X != Board.Size - 1 || pos.Y != 0)
-                && (pos.X != Board.Size - 1 || pos.Y != Board.Size - 1)
+                && Utils.InCorners(pos, 0, Board.Size - 1) == false //не попадаем в углы карты
                 );
         }
 
-        public IEnumerable<Position> GetShipPosibleNavaigations(Position pos)
+        public static IEnumerable<Position> GetShipPosibleNavaigations(Position pos)
         {
             if (pos.X == 0 || pos.X==12)
             {
@@ -314,7 +395,7 @@ namespace Jackal
             }
         }
 
-        public Position GetShipLanding(Position pos)
+        public static Position GetShipLanding(Position pos)
         {
             if (pos.X == 0)
             {
@@ -367,5 +448,22 @@ namespace Jackal
             }
             return false;
         }
+
+
+        public static IEnumerable<Position> GetAllEarth()
+        {
+            for (int x = 1; x <= 11; x++)
+            {
+                for (int y = 1; y <= 11; y++)
+                {
+                    Position val = new Position(x, y);
+                    if (Utils.InCorners(val, 1, 11) == false)
+                    {
+                        yield return val;
+                    }
+                }
+            }
+        }
+
     }
 }

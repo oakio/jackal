@@ -14,9 +14,9 @@
         public GameActionResult Act(Game game)
         {
             _ship.Position = _to;
-            foreach (var pirate in _ship.Crew)
+            foreach (var pirate in _ship.Crew(game.Board))
             {
-                pirate.Position = _to;
+                pirate.Position = new TilePosition(_to);
             }
             return GameActionResult.Live;
         }

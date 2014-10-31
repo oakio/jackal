@@ -100,7 +100,7 @@ namespace JackalHost.Monitors
                         {
                             foreground = ConsoleColor.White;
                             background = GetTeamColor(team.Id);
-                            int crewCount = ship.Crew.Count;
+                            int crewCount = ship.Crew(_board).Count;
                             symbol = crewCount == 0 ? "S" : crewCount.ToString();
                         }
                         else

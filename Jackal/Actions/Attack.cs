@@ -19,10 +19,9 @@
                 Team enemyTeam = board.Teams[enemyPirate.TeamId];
                 //tile.Coins += enemyPirate.Coins;
                 //enemyPirate.Coins = 0;
-                enemyPirate.Position = enemyTeam.Ship.Position;
-                enemyTeam.Ship.Crew.Add(enemyPirate);
+                enemyPirate.Position = new TilePosition(enemyTeam.Ship.Position);
+                enemyTeam.Ship.Crew(game.Board).Add(enemyPirate);
             }
-            tile.OccupationTeamId = null;
             tile.Pirates.Clear();
 
             return GameActionResult.Live;

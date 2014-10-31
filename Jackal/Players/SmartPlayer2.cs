@@ -32,10 +32,10 @@ namespace Jackal
                 List<Tuple<int, Move>> list = new List<Tuple<int, Move>>();
                 foreach (Move move in availableMoves
                     .Where(x => x.WithCoins)
-                    .Where(x => IsEnemyNear(x.To, board, teamId) == false))
+                    .Where(x => IsEnemyNear(x.To.Position, board, teamId) == false))
                 {
                     //int currentDistance = Distance(ship.Position, move.Pirate.Position);
-                    int newDistance = Distance(ship.Position, move.To);
+                    int newDistance = Distance(ship.Position, move.To.Position);
                     list.Add(new Tuple<int, Move>(newDistance, move));
                 }
                 if (list.Count > 0)
@@ -48,7 +48,7 @@ namespace Jackal
             {
                 foreach (Move move in availableMoves)
                 {
-                    if (IsEnemyPosition(move.To, board, teamId)) goodMoves.Add(move);
+                    if (IsEnemyPosition(move.To.Position, board, teamId)) goodMoves.Add(move);
                 }
             }
             if (goodMoves.Count == 0)
@@ -65,9 +65,9 @@ namespace Jackal
 
                     foreach (Move move in availableMoves
                         .Where(x => x.WithCoins == false)
-                        .Where(x => IsEnemyNear(x.To, board, teamId) == false))
+                        .Where(x => IsEnemyNear(x.To.Position, board, teamId) == false))
                     {
-                        int newMinDistance = MinDistance(tilesWithGold.ConvertAll(x => x.Position), move.To);
+                        int newMinDistance = MinDistance(tilesWithGold.ConvertAll(x => x.Position), move.To.Position);
                         list.Add(new Tuple<int, Move>(newMinDistance, move));
                     }
 
@@ -94,9 +94,9 @@ namespace Jackal
 
                     foreach (Move move in availableMoves
                         .Where(x => x.WithCoins == false)
-                        .Where(x => IsEnemyNear(x.To, board, teamId) == false))
+                        .Where(x => IsEnemyNear(x.To.Position, board, teamId) == false))
                     {
-                        int newMinDistance = MinDistance(tilesWithUnknown.ConvertAll(x => x.Position), move.To);
+                        int newMinDistance = MinDistance(tilesWithUnknown.ConvertAll(x => x.Position), move.To.Position);
                         list.Add(new Tuple<int, Move>(newMinDistance, move));
                     }
                     if (list.Count > 0)
@@ -165,7 +165,7 @@ namespace Jackal
         private bool TargetIsShip(Board board, int teamId, Move move)
         {
             var ship = board.Teams[teamId].Ship;
-            return (ship.Position == move.To);
+            return (ship.Position == move.To.Position);
         }
     }
 }

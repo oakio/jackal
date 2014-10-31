@@ -1,0 +1,16 @@
+﻿namespace Jackal
+{
+    public class TileParams : IClonable<TileParams>
+    {
+        public Position Position;
+        public TileType Type;
+        public int ArrowsCode;
+        public int SpinningCount;
+
+
+        public TileParams Clone()
+        {
+            return (TileParams)this.MemberwiseClone();
+        }
+    }
+}

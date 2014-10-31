@@ -35,7 +35,7 @@ namespace Jackal
                     if (move.WithCoins)
                     {
                         //int currentDistance = Distance(ship.Position, move.Pirate.Position);
-                        int newDistance = Distance(ship.Position, move.To);
+                        int newDistance = Distance(ship.Position, move.To.Position);
                         list.Add(new Tuple<int, Move>(newDistance, move));
                     }
                 }
@@ -49,7 +49,7 @@ namespace Jackal
             {
                 foreach (Move move in availableMoves)
                 {
-                    if (IsEnemyPosition(move.To, board, teamId)) goodMoves.Add(move);
+                    if (IsEnemyPosition(move.To.Position, board, teamId)) goodMoves.Add(move);
                 }
             }
             if (goodMoves.Count == 0)
@@ -66,7 +66,7 @@ namespace Jackal
 
                     foreach (Move move in availableMoves)
                     {
-                        int newMinDistance = MinDistance(tilesWithGold.ConvertAll(x => x.Position), move.To);
+                        int newMinDistance = MinDistance(tilesWithGold.ConvertAll(x => x.Position), move.To.Position);
                         list.Add(new Tuple<int, Move>(newMinDistance, move));
                     }
 
@@ -93,7 +93,7 @@ namespace Jackal
 
                     foreach (Move move in availableMoves)
                     {
-                        int newMinDistance = MinDistance(tilesWithUnknown.ConvertAll(x => x.Position), move.To);
+                        int newMinDistance = MinDistance(tilesWithUnknown.ConvertAll(x => x.Position), move.To.Position);
                         list.Add(new Tuple<int, Move>(newMinDistance, move));
                     }
                     if (list.Count > 0)
@@ -142,7 +142,7 @@ namespace Jackal
         private bool TargetIsShip(Board board, int teamId, Move move)
         {
             var ship = board.Teams[teamId].Ship;
-            return (ship.Position == move.To);
+            return (ship.Position == move.To.Position);
         }
     }
 

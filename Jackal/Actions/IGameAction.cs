@@ -1,11 +1,11 @@
 ﻿namespace Jackal.Actions
 {
-    interface IGameAction
+    public interface IGameAction
     {
         GameActionResult Act(Game game);
     }
 
-    internal enum GameActionResult
+    public enum GameActionResult
     {
         Live,
         Die

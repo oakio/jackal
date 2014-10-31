@@ -10,9 +10,7 @@ namespace JackalNetwork
 
         public Guid GameId;
 
-        public TileType[,] TileTypes;
-        public int[,] TileCoins;
-        public int[,] TileArrowsCodes;
+        public Map Map;
 
         public Team[] Teams;
         public Move[] AvailableMoves;
@@ -35,19 +33,7 @@ namespace JackalNetwork
             TeamId = gameState.TeamId;
             TurnNumber = gameState.TurnNumber;
             SubTurnNumber = gameState.SubTurnNumber;
-            TileTypes=new TileType[Size,Size];
-            TileCoins=new int[Size,Size];
-            TileArrowsCodes=new int[Size,Size];
-            for (int x = 0; x < Size; x++)
-            {
-                for (int y = 0; y < Size; y++)
-                {
-                    var tile = gameState.Board.Map[x, y];
-                    TileTypes[x, y] = tile.Type;
-                    TileCoins[x, y] = tile.Coins;
-                    TileArrowsCodes[x, y] = tile.ArrowsCode;
-                }
-            }
+            Map = gameState.Board.Map;
         }
 
         public GameState GetGameState()
@@ -62,30 +48,23 @@ namespace JackalNetwork
 
             gameState.Board=new Board();
             gameState.Board.Teams = Teams;
-            gameState.Board.Map = new Map();
-            for (int x = 0; x < Size; x++)
-            {
-                for (int y = 0; y < Size; y++)
-                {
-                    var tile = new Tile();
-                    tile.Coins = TileCoins[x, y];
-                    tile.Position = new Position(x, y);
-                    tile.Type = TileTypes[x, y];
-                    tile.ArrowsCode = TileArrowsCodes[x, y];
-                    tile.Pirates = new HashSet<Pirate>();
-                    gameState.Board.Map[x, y] = tile;
-                }
-            }
+            gameState.Board.Map =Map;
 
             foreach (var team in Teams)
             {
                 foreach (var pirate in team.Pirates)
                 {
                     var pos = pirate.Position;
-                    var tile = gameState.Board.Map[pos.X, pos.Y];
-                    if (tile.Type == TileType.Water) continue;
-                    tile.Pirates.Add(pirate);
-                    tile.OccupationTeamId = pirate.TeamId;
+                    if (team.Ship.Position == pos.Position)
+                    {
+                        team.Ship.Crew(gameState.Board).Add(pirate);
+                    }
+                    else
+                    {
+                        var tile = gameState.Board.Map[pos.Position];
+                        if (tile.Type == TileType.Water) continue;
+                        tile.Pirates.Add(pirate);
+                    }
                 }
             }
 

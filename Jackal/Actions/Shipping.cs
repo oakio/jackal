@@ -13,17 +13,13 @@
 
         public GameActionResult Act(Game game)
         {
-            Position position = _pirate.Position;
+            var position = _pirate.Position;
             Board board = game.Board;
-            Tile tile = board.Map[position];
+            TileLevel tile = board.Map[position];
             tile.Pirates.Remove(_pirate);
-            if (tile.Pirates.Count == 0)
-            {
-                tile.OccupationTeamId = null;
-            }
 
-            _pirate.Position = _ship.Position;
-            _ship.Crew.Add(_pirate);
+            _pirate.Position = new TilePosition(_ship.Position);
+            _ship.Crew(game.Board).Add(_pirate);
             //var coins = _pirate.Coins;
             //_ship.Coins += coins;
             //_pirate.Coins = 0;

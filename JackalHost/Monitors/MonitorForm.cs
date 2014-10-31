@@ -94,7 +94,7 @@ namespace JackalHost.Monitors
 
                     var board = game.Board;
                     var tile = board.Map[x, y];
-                    Draw(tile, board.Teams.Select(item => item.Ship).ToList());
+                    Draw(tile, board.Teams.Select(item => item.Ship).ToList(),board);
                 }
             }
         }
@@ -138,7 +138,7 @@ namespace JackalHost.Monitors
             }
         }
 
-        public void Draw(Tile tile, List<Ship> ships)
+        public void Draw(Tile tile, List<Ship> ships, Board board)
         {
             try
             {
@@ -154,12 +154,12 @@ namespace JackalHost.Monitors
                 {
                     tileControl.Invoke(new Action(() =>
                     {
-                        tileControl.Draw(tile, ships);
+                        tileControl.Draw(tile, ships,board);
                     }));
                 }
                 else
                 {
-                    tileControl.Draw(tile, ships);
+                    tileControl.Draw(tile, ships, board);
                 }
             }
             catch (Exception)

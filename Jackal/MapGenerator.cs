@@ -10,127 +10,52 @@ namespace Jackal
         public const int TotalCoins = 37;
 
         private readonly Random _rand;
-        private readonly List<Tile> _tiles;
+        private readonly Dictionary<Position,Tile> _tiles;
 
         public MapGenerator(int mapId)
         {
-            _rand = new Random(mapId+5000000);
+            _rand = new Random(mapId + 5000000);
 
-            const int totalUnknown = Size*Size - 4;
-            List<Tile> tiles = new List<Tile>(totalUnknown);
+            var pack = Shuffle(TilesPack.Instance.List);
+            var positions = Board.GetAllEarth().ToList();
 
-            for (int i = 0; i < 5; i++)
+            if (pack.Count != positions.Count)
+                throw new Exception("wrong tiles pack count");
+
+            _tiles = new Dictionary<Position, Tile>();
+
+            foreach (var info in pack.Zip(positions, (def, position) => new {Def = def, Position = position}))
             {
-                tiles.Add(new Tile(TileType.Chest1, 1));
-                tiles.Add(new Tile(TileType.Chest2, 2));
-            }
-
-            for (int i = 0; i < 3; i++)
-            {
-                tiles.Add(new Tile(TileType.Chest3, 3));
-            }
-
-            for (int i = 0; i < 2; i++)
-            {
-                tiles.Add(new Tile(TileType.Chest4, 4));
-            }
-
-            tiles.Add(new Tile(TileType.Chest5, 5));
-
-            for (int i = 0; i < 2; i++)
-            {
-                tiles.Add(new Tile(TileType.Fort));
-            }
-            tiles.Add(new Tile(TileType.RespawnFort));
-
-            for (int i = 0; i < 4; i++)
-            {
-                tiles.Add(new Tile(TileType.RumBarrel));
-            }
-
-
-            for (int i = 0; i < 2; i++)
-            {
-                tiles.Add(new Tile(TileType.Horse));
-            }
-
-            for (int i = 0; i < 2; i++)
-            {
-                tiles.Add(new Tile(TileType.Balloon));
-            }
-
-            tiles.Add(new Tile(TileType.Airplane));
-
-            for (int i = 0; i < 4; i++)
-            {
-                tiles.Add(new Tile(TileType.Croc));
-            }
-
-            for (int i = 0; i < 6; i++)
-            {
-                tiles.Add(new Tile(TileType.Ice));
-            }
-
-            //arrows
-            for (int i = 0; i < 3; i++)
-            {
-                for (int arrowType = 0; arrowType < ArrowsCodesHelper.ArrowsTypes.Length; arrowType++)
+                var tempDef = info.Def.Clone();
+                int rotatesCount = _rand.Next(4);
+                for (int j = 1; j <= rotatesCount; j++)
                 {
-                    int arrowsCode = ArrowsCodesHelper.ArrowsTypes[arrowType];
-                    int rotatesCount = _rand.Next(4);
-                    for (int j = 1; j <= rotatesCount; j++)
-                    {
-                        arrowsCode = ArrowsCodesHelper.DoRotate(arrowsCode);
-                    }
-                    var tile = new Tile(TileType.Arrow);
-                    tile.ArrowsCode = arrowsCode;
-                    tiles.Add(tile);
+                    tempDef.ArrowsCode = ArrowsCodesHelper.DoRotate(tempDef.ArrowsCode);
                 }
-            }
+                tempDef.Position = info.Position;
 
-            for (int i = 0; i < 5; i++)
-            {
-                tiles.Add(new Tile(TileType.Spinning){SpinningCount = 2});
-            }
-            for (int i = 0; i < 4; i++)
-            {
-                tiles.Add(new Tile(TileType.Spinning) { SpinningCount = 3 });
-            }
-            for (int i = 0; i < 2; i++)
-            {
-                tiles.Add(new Tile(TileType.Spinning) { SpinningCount = 4 });
-            }
-            tiles.Add(new Tile(TileType.Spinning) {SpinningCount = 5});
+                //создаем клетку
+                var tile = new Tile(tempDef);
 
-            for (int i = 0; i < 3; i++)
-            {
-                tiles.Add(new Tile(TileType.Trap));
+                //добавляем золото
+                tile.Levels[0].Coins = tile.Type.CoinsCount();
+
+                _tiles.Add(info.Position, tile);
             }
-
-
-            while (tiles.Count < totalUnknown)
-            {
-                tiles.Add(new Tile(TileType.Grass));
-            }
-
-            _tiles = Shuffle(tiles);
         }
 
-
-        private List<Tile> Shuffle( List<Tile> tiles)
+        private List<TileParams> Shuffle(IEnumerable<TileParams> defs)
         {
-            return tiles.Select(x => new {Tile = x, Number = _rand.NextDouble()}).OrderBy(x => x.Number).Select(x => x.Tile).ToList();
+            return defs
+                .Select(x => new {Def = x, Number = _rand.NextDouble()})
+                .OrderBy(x => x.Number)
+                .Select(x => x.Def)
+                .ToList();
         }
 
         public Tile GetNext(Position position)
         {
-            int index = (position.Y - 1)*11 + position.X - 3;
-            if (position.Y == 1)
-                index++;
-            if (position.Y == 11)
-                index--;
-
-            return _tiles[index];
+            return _tiles[position];
         }
     }
 }

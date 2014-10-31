@@ -18,7 +18,7 @@ namespace Jackal.Actions
             Board board = game.Board;
             Tile tile = board.Map[_to];
 
-            Pirate pirate = new Pirate(_team.Id, _to);
+            Pirate pirate = new Pirate(_team.Id, new TilePosition(_to));
             _team.Pirates = _team.Pirates.Concat(new[] {pirate}).ToArray();
             tile.Pirates.Add(pirate);
             
