@@ -7,14 +7,23 @@ namespace Jackal
     {
         [JsonProperty]
         public readonly Position Position;
+
         [JsonProperty]
         public readonly TileType Type;
 
         [JsonProperty]
         public readonly int ArrowsCode;
+
         [JsonProperty]
         public readonly int SpinningCount;
 
+        /// <summary>
+        /// Уровни клетки (0 - обычный уровень/уровень выхода с клетки)
+        /// </summary>
+        [JsonProperty]
+        public readonly List<TileLevel> Levels = new List<TileLevel>();
+
+        [JsonIgnore]
         public int Coins
         {
             get
@@ -23,6 +32,7 @@ namespace Jackal
             }
         }
 
+        [JsonIgnore]
         public int? OccupationTeamId
         {
             get
@@ -31,6 +41,7 @@ namespace Jackal
             }
         }
 
+        [JsonIgnore]
         public HashSet<Pirate> Pirates
         {
             get
@@ -38,11 +49,6 @@ namespace Jackal
                 return Levels[0].Pirates;
             }
         }
-
-        /// <summary>
-        /// Уровни клетки (0 - обычный уровень/уровень выхода с клетки)
-        /// </summary>
-        public readonly List<TileLevel> Levels = new List<TileLevel>();
 
         public Tile()
         {

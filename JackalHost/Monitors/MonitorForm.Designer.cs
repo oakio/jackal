@@ -36,6 +36,8 @@
             this.fastTurnesBtn = new System.Windows.Forms.Button();
             this.pauseGameBtn = new System.Windows.Forms.Button();
             this.newGameBtn = new System.Windows.Forms.Button();
+            this.prevOneBtn = new System.Windows.Forms.Button();
+            this.prevTurnesBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.gameSplitContainer)).BeginInit();
             this.gameSplitContainer.Panel2.SuspendLayout();
             this.gameSplitContainer.SuspendLayout();
@@ -78,6 +80,8 @@
             // 
             // statSplitContainer.Panel2
             // 
+            this.statSplitContainer.Panel2.Controls.Add(this.prevTurnesBtn);
+            this.statSplitContainer.Panel2.Controls.Add(this.prevOneBtn);
             this.statSplitContainer.Panel2.Controls.Add(this.nextTurnesBtn);
             this.statSplitContainer.Panel2.Controls.Add(this.nextOneBtn);
             this.statSplitContainer.Panel2.Controls.Add(this.slowTurnesBtn);
@@ -91,10 +95,10 @@
             // nextTurnesBtn
             // 
             this.nextTurnesBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
-            this.nextTurnesBtn.Location = new System.Drawing.Point(132, 168);
+            this.nextTurnesBtn.Location = new System.Drawing.Point(192, 168);
             this.nextTurnesBtn.Margin = new System.Windows.Forms.Padding(4);
             this.nextTurnesBtn.Name = "nextTurnesBtn";
-            this.nextTurnesBtn.Size = new System.Drawing.Size(120, 47);
+            this.nextTurnesBtn.Size = new System.Drawing.Size(60, 47);
             this.nextTurnesBtn.TabIndex = 7;
             this.nextTurnesBtn.Text = "+4";
             this.nextTurnesBtn.UseVisualStyleBackColor = true;
@@ -103,10 +107,10 @@
             // nextOneBtn
             // 
             this.nextOneBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
-            this.nextOneBtn.Location = new System.Drawing.Point(4, 168);
+            this.nextOneBtn.Location = new System.Drawing.Point(132, 168);
             this.nextOneBtn.Margin = new System.Windows.Forms.Padding(4);
             this.nextOneBtn.Name = "nextOneBtn";
-            this.nextOneBtn.Size = new System.Drawing.Size(120, 47);
+            this.nextOneBtn.Size = new System.Drawing.Size(60, 47);
             this.nextOneBtn.TabIndex = 6;
             this.nextOneBtn.Text = "+1";
             this.nextOneBtn.UseVisualStyleBackColor = true;
@@ -160,6 +164,30 @@
             this.newGameBtn.UseVisualStyleBackColor = true;
             this.newGameBtn.Click += new System.EventHandler(this.newGameBtn_Click);
             // 
+            // prevOneBtn
+            // 
+            this.prevOneBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.prevOneBtn.Location = new System.Drawing.Point(64, 168);
+            this.prevOneBtn.Margin = new System.Windows.Forms.Padding(4);
+            this.prevOneBtn.Name = "prevOneBtn";
+            this.prevOneBtn.Size = new System.Drawing.Size(60, 47);
+            this.prevOneBtn.TabIndex = 8;
+            this.prevOneBtn.Text = "-1";
+            this.prevOneBtn.UseVisualStyleBackColor = true;
+            this.prevOneBtn.Click += new System.EventHandler(this.prevOneBtn_Click);
+            // 
+            // prevTurnesBtn
+            // 
+            this.prevTurnesBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.prevTurnesBtn.Location = new System.Drawing.Point(4, 168);
+            this.prevTurnesBtn.Margin = new System.Windows.Forms.Padding(4);
+            this.prevTurnesBtn.Name = "prevTurnesBtn";
+            this.prevTurnesBtn.Size = new System.Drawing.Size(60, 47);
+            this.prevTurnesBtn.TabIndex = 9;
+            this.prevTurnesBtn.Text = "-4";
+            this.prevTurnesBtn.UseVisualStyleBackColor = true;
+            this.prevTurnesBtn.Click += new System.EventHandler(this.prevTurnesBtn_Click);
+            // 
             // MonitorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -191,6 +219,8 @@
         private System.Windows.Forms.Button slowTurnesBtn;
         private System.Windows.Forms.Button nextTurnesBtn;
         private System.Windows.Forms.Button nextOneBtn;
+        private System.Windows.Forms.Button prevTurnesBtn;
+        private System.Windows.Forms.Button prevOneBtn;
 
 	}
 }

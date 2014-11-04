@@ -6,16 +6,15 @@ namespace Jackal
     public class TileLevel
     {
         [JsonProperty]
+        public int Coins;
+
+        [JsonProperty]
         public readonly TilePosition Position;
 
         [JsonProperty]
         public readonly HashSet<Pirate> Pirates = new HashSet<Pirate>();
 
-        public TileLevel(TilePosition position)
-        {
-            Position = position;
-        }
-
+        [JsonIgnore]
         public int? OccupationTeamId
         {
             get
@@ -30,7 +29,10 @@ namespace Jackal
                 return null;
             }
         }
-        [JsonProperty]
-        public int Coins;
+
+        public TileLevel(TilePosition position)
+        {
+            Position = position;
+        }
     }
 }

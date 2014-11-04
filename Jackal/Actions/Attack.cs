@@ -20,7 +20,7 @@
                 //tile.Coins += enemyPirate.Coins;
                 //enemyPirate.Coins = 0;
                 enemyPirate.Position = new TilePosition(enemyTeam.Ship.Position);
-                enemyTeam.Ship.Crew(game.Board).Add(enemyPirate);
+                board.Map[enemyTeam.Ship.Position].Pirates.Add(enemyPirate);
             }
             tile.Pirates.Clear();
 

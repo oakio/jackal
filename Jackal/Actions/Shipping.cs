@@ -19,7 +19,7 @@
             tile.Pirates.Remove(_pirate);
 
             _pirate.Position = new TilePosition(_ship.Position);
-            _ship.Crew(game.Board).Add(_pirate);
+            board.Map[_ship.Position].Pirates.Add(_pirate);
             //var coins = _pirate.Coins;
             //_ship.Coins += coins;
             //_pirate.Coins = 0;

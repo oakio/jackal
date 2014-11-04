@@ -340,7 +340,6 @@ namespace Jackal
         {
             int teamId = pirate.TeamId;
             Board.Teams[teamId].Pirates = Board.Teams[teamId].Pirates.Where(x => x != pirate).ToArray();
-            Board.Teams[teamId].Ship.Crew(Board).Remove(pirate);
             var tile = Board.Map[pirate.Position];
             tile.Pirates.Remove(pirate);
         }

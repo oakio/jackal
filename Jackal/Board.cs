@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 ﻿using System.Linq;
 ﻿using Jackal.Actions;
+using Newtonsoft.Json;
 
 namespace Jackal
 {
@@ -9,8 +10,11 @@ namespace Jackal
     {
         public const int Size = 13;
 
+        [JsonIgnore]
         internal MapGenerator Generator;
+
         public Map Map;
+
         public Team[] Teams;
 
         public IEnumerable<Tile> AllTiles(Predicate<Tile> selector)
@@ -93,7 +97,7 @@ namespace Jackal
             var ship = new Ship(teamId, startPosition);
             foreach (var pirate in pirates)
             {
-                ship.Crew(this).Add(pirate);
+                Map[ship.Position].Pirates.Add(pirate);
             }
             Teams[teamId] = new Team(teamId, ship, pirates);
         }

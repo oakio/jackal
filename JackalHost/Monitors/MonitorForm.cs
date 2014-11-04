@@ -25,6 +25,8 @@ namespace JackalHost.Monitors
         public event EventHandler OnFasterBtnClick;
         public event EventHandler OnNewGameBtnClick;
 
+        public event EventHandler OnPrevOneBtnClick;
+        public event EventHandler OnPrevTurnesBtnClick;
         public event EventHandler OnNextOneBtnClick;
         public event EventHandler OnNextTurnesBtnClick;
 
@@ -151,6 +153,7 @@ namespace JackalHost.Monitors
                     var prevPirates = prevTile.Pirates;
 
                     if (pirates.Count != prevPirates.Count ||
+                        tile.Type != prevTile.Type ||
                         tile.Coins != prevTile.Coins ||
                         tile.OccupationTeamId != prevTile.OccupationTeamId)
                     {
@@ -284,6 +287,18 @@ namespace JackalHost.Monitors
             OnNewGameBtnClick(this, EventArgs.Empty);
             pauseGameBtn.Text = "Pause game";
 		}
+
+        private void prevTurnesBtn_Click(object sender, EventArgs e)
+        {
+            OnPrevTurnesBtnClick(this, EventArgs.Empty);
+            pauseGameBtn.Text = "Start game";
+        }
+
+        private void prevOneBtn_Click(object sender, EventArgs e)
+        {
+            OnPrevOneBtnClick(this, EventArgs.Empty);
+            pauseGameBtn.Text = "Start game";
+        }
 
         private void nextOneBtn_Click(object sender, EventArgs e)
         {

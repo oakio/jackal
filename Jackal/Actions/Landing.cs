@@ -17,15 +17,13 @@ namespace Jackal.Actions
         {
             Board board = game.Board;
             Position shipPosition = _ship.Position;
-            Position landingPosition = GetLandingPosition(shipPosition);
-            _pirate.Position = new TilePosition(landingPosition);
 
             Tile shipTile = board.Map[shipPosition];
             shipTile.Pirates.Remove(_pirate);
 
-            Tile landingTile = board.Map[landingPosition];
-            landingTile.Pirates.Add(_pirate);
-            
+            Position landingPosition = GetLandingPosition(shipPosition);
+            _pirate.Position = new TilePosition(landingPosition);
+
             return GameActionResult.Live;
         }
 

@@ -17,6 +17,7 @@ namespace JackalHost
 
         private static bool isPause = true;
         private static int turnTimeOutInMS = 128;
+        private static int prevTurnes = 0;
         private static int nextTurnes = 0;
 
         private static void formStart()
@@ -64,6 +65,16 @@ namespace JackalHost
                 _form.InitBoardPanel(game, mapId);
                 isPause = false;
             };
+            _form.OnPrevTurnesBtnClick += (s, e) =>
+            {
+                isPause = true;
+                prevTurnes = 4;
+            };
+            _form.OnPrevOneBtnClick += (s, e) =>
+            {
+                isPause = true;
+                prevTurnes = 1;
+            };
             _form.OnNextOneBtnClick += (s, e) =>
             {
                 isPause = true;
@@ -80,10 +91,17 @@ namespace JackalHost
 
             while (true)
             {
-                while (!game.IsGameOver)
+                var boardStrHistory = new Dictionary<long, string>();
+                for (long i = 0, prev_i = 0; !game.IsGameOver; prev_i = i, i++)
                 {
                     while (isPause)
                     {
+                        if (prevTurnes > 0)
+                        {                        
+                            i -= i >= 2 ? 2 : 0;
+                            prevTurnes--;
+                            break;
+                        }
                         if (nextTurnes > 0)
                         {
                             nextTurnes--;
@@ -92,11 +110,29 @@ namespace JackalHost
                         Thread.Sleep(TimeSpan.FromMilliseconds(250));
                     }
 
-                    var prevBoardStr = JsonHelper.SerialiazeWithType(board);
-                    game.Turn();
-                    var prevBoard = JsonHelper.DeserialiazeWithType<Board>(prevBoardStr);
-                    
-                    _form.Draw(board, prevBoard);
+                    string prevBoardStr = JsonHelper.SerialiazeWithType(board);
+                    if (i >= boardStrHistory.Count)
+                    {                    
+                        boardStrHistory.Add(i, prevBoardStr);
+                        game.Turn();
+
+                        var prevBoard = JsonHelper.DeserialiazeWithType<Board>(prevBoardStr);
+                        _form.Draw(board, prevBoard);
+                    }
+                    else
+                    {
+                        string historyStr = boardStrHistory[i];
+                        var history = JsonHelper.DeserialiazeWithType<Board>(historyStr);
+                        
+                        var prevBoard = board;
+                        if(i > prev_i)
+                        {
+                            string prevHistoryStr = boardStrHistory[0];
+                            prevBoard = JsonHelper.DeserialiazeWithType<Board>(prevHistoryStr);
+                        }
+                        _form.Draw(history, prevBoard);         
+                    }
+
                     _form.DrawStats(game);
                     Thread.Sleep(TimeSpan.FromMilliseconds(turnTimeOutInMS));
                 }
