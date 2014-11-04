@@ -15,12 +15,6 @@ namespace Jackal
         [JsonProperty]
         public int Coins;
 
-        //[Obsolete]
-        //public HashSet<Pirate> Crew(Board board)
-        //{
-        //    return  board.Map[Position].Pirates;
-        //}
-
         public Ship(int teamId, Position position)
         {
             TeamId = teamId;

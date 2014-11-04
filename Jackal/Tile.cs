@@ -41,6 +41,11 @@ namespace Jackal
             }
         }
 
+        /// <summary>
+        /// Предлагаю выкинуть пиратов из тайлов,
+        /// для отрисовки на задерживающих клетках ввести в
+        /// Team->Pirates->Position зачение z
+        /// </summary>
         [JsonIgnore]
         public HashSet<Pirate> Pirates
         {
