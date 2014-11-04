@@ -15,17 +15,32 @@ namespace Jackal.Actions
 
         public GameActionResult Act(Game game)
         {
+            Board board = game.Board;
             Position shipPosition = _ship.Position;
+            Position landingPosition = GetLandingPosition(shipPosition);
+            _pirate.Position = new TilePosition(landingPosition);
+
+            Tile shipTile = board.Map[shipPosition];
+            shipTile.Pirates.Remove(_pirate);
+
+            Tile landingTile = board.Map[landingPosition];
+            landingTile.Pirates.Add(_pirate);
+            
+            return GameActionResult.Live;
+        }
+
+        private Position GetLandingPosition(Position shipPosition)
+        {
             Position landingPosition;
             if (shipPosition.X == 0)
             {
                 landingPosition = new Position(shipPosition.X + 1, shipPosition.Y);
             }
-            else if(shipPosition.X == (Board.Size-1))
+            else if (shipPosition.X == (Board.Size - 1))
             {
                 landingPosition = new Position(shipPosition.X - 1, shipPosition.Y);
             }
-            else if(shipPosition.Y == 0)
+            else if (shipPosition.Y == 0)
             {
                 landingPosition = new Position(shipPosition.X, shipPosition.Y + 1);
             }
@@ -38,10 +53,7 @@ namespace Jackal.Actions
                 throw new NotSupportedException();
             }
 
-            _ship.Crew(game.Board).Remove(_pirate);
-            _pirate.Position = new TilePosition(_ship.Position);
-            
-            return GameActionResult.Live;
+            return landingPosition;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace JackalHost
 
         private static bool isPause = true;
         private static int turnTimeOutInMS = 128;
-        private static int nextTurnesCount = 0;
+        private static int nextTurnes = 0;
 
         private static void formStart()
         {
@@ -67,12 +67,12 @@ namespace JackalHost
             _form.OnNextOneBtnClick += (s, e) =>
             {
                 isPause = true;
-                nextTurnesCount = 1;
+                nextTurnes = 1;
             };
             _form.OnNextTurnesBtnClick += (s, e) =>
             {
                 isPause = true;
-                nextTurnesCount = 4;
+                nextTurnes = 4;
             };
 
             var thread = new Thread(formStart);
@@ -84,30 +84,22 @@ namespace JackalHost
                 {
                     while (isPause)
                     {
-                        if (nextTurnesCount > 0)
+                        if (nextTurnes > 0)
                         {
-                            nextTurnesCount--;
+                            nextTurnes--;
                             break;
                         }
-
                         Thread.Sleep(TimeSpan.FromMilliseconds(250));
                     }
 
-                    var move = game.Turn();
-                    if (move != null)
-                    {
-                        var ships = board.Teams.Select(item => item.Ship).ToList();
-                        var fromTile = board.Map[move.From.Position.X, move.From.Position.Y];
-                        var toTile = board.Map[move.To.Position.X, move.To.Position.Y];
-
-                        _form.Draw(fromTile, ships,board);
-                        _form.Draw(toTile, ships, board);
-                    }
+                    var prevBoardStr = JsonHelper.SerialiazeWithType(board);
+                    game.Turn();
+                    var prevBoard = JsonHelper.DeserialiazeWithType<Board>(prevBoardStr);
+                    
+                    _form.Draw(board, prevBoard);
                     _form.DrawStats(game);
-
                     Thread.Sleep(TimeSpan.FromMilliseconds(turnTimeOutInMS));
                 }
-
                 Thread.Sleep(TimeSpan.FromMilliseconds(250));
             }
 		}

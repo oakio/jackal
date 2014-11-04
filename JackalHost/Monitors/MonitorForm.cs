@@ -90,11 +90,10 @@ namespace JackalHost.Monitors
                     {
                         continue;
                     }
-                    tileControl.RandomValue = random.NextDouble();
 
                     var board = game.Board;
                     var tile = board.Map[x, y];
-                    Draw(tile, board.Teams.Select(item => item.Ship).ToList(),board);
+                    Draw(tile, board.Teams.Select(item => item.Ship).ToList());
                 }
             }
         }
@@ -138,7 +137,30 @@ namespace JackalHost.Monitors
             }
         }
 
-        public void Draw(Tile tile, List<Ship> ships, Board board)
+        public void Draw(Board board, Board prevBoard)
+        {
+            var ships = board.Teams.Select(item => item.Ship).ToList();
+
+            for (int y = 0; y < Board.Size; y++)
+            {
+                for (int x = 0; x < Board.Size; x++)
+                {
+                    var tile = board.Map[x, y];
+                    var pirates = tile.Pirates;
+                    var prevTile = prevBoard.Map[x, y];
+                    var prevPirates = prevTile.Pirates;
+
+                    if (pirates.Count != prevPirates.Count ||
+                        tile.Coins != prevTile.Coins ||
+                        tile.OccupationTeamId != prevTile.OccupationTeamId)
+                    {
+                        Draw(tile, ships);
+                    }         
+                }
+            }
+        }
+
+        private void Draw(Tile tile, List<Ship> ships)
         {
             try
             {
@@ -154,12 +176,12 @@ namespace JackalHost.Monitors
                 {
                     tileControl.Invoke(new Action(() =>
                     {
-                        tileControl.Draw(tile, ships,board);
+                        tileControl.Draw(tile, ships);
                     }));
                 }
                 else
                 {
-                    tileControl.Draw(tile, ships, board);
+                    tileControl.Draw(tile, ships);
                 }
             }
             catch (Exception)

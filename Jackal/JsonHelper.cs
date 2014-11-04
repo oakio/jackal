@@ -1,10 +1,9 @@
 using Newtonsoft.Json;
 
-namespace JackalNetwork
+namespace Jackal
 {
     public static class JsonHelper
     {
-
         private static readonly JsonSerializerSettings _typeNameSerializer = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Objects };
 
         public static string SerialiazeWithType<T>(T obj, Formatting formatting = Formatting.None)
@@ -16,6 +15,5 @@ namespace JackalNetwork
         {
             return JsonConvert.DeserializeObject<T>(str, _typeNameSerializer);
         }
-
     }
 }

@@ -40,7 +40,7 @@ namespace Jackal
             }
         }
 
-        public Move Turn()
+        public void Turn()
         {
             int teamId = CurrentTeamId;
             IPlayer me = _players[teamId];
@@ -49,7 +49,6 @@ namespace Jackal
 
             this.NeedSubTurnPirate = null;
             this.PreviosSubTurnDirection = null;
-            Move selectedMove = null;
 
             if (_availableMoves.Count > 0) //есть возможные ходы
             {
@@ -71,7 +70,6 @@ namespace Jackal
                 }
 
                 IGameAction action = _actions[moveNo];
-                selectedMove= _availableMoves[moveNo];
                 action.Act(this);
             }
 
@@ -91,8 +89,6 @@ namespace Jackal
             {
                 SubTurnNo++;
             }
-
-            return selectedMove;
         }
 
         public Pirate NeedSubTurnPirate { private get; set; }

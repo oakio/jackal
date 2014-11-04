@@ -51,7 +51,6 @@
     <Compile Include="Messages\CheckAnswer.cs" />
     <Compile Include="Messages\CheckRequest.cs" />
     <Compile Include="Messages\GameReport.cs" />
-    <Compile Include="JsonHelper.cs" />
     <Compile Include="Messages\NetworkCommunication.cs" />
     <Compile Include="Messages\NetworkMessage.cs" />
     <Compile Include="Messages\DecisionAnswer.cs" />

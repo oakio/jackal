@@ -69,6 +69,7 @@
     <Compile Include="GameState.cs" />
     <Compile Include="IClonable.cs" />
     <Compile Include="IPlayer.cs" />
+    <Compile Include="JsonHelper.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapGenerator.cs" />
     <Compile Include="Move.cs" />

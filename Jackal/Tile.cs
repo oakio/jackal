@@ -10,6 +10,11 @@ namespace Jackal
         [JsonProperty]
         public readonly TileType Type;
 
+        [JsonProperty]
+        public readonly int ArrowsCode;
+        [JsonProperty]
+        public readonly int SpinningCount;
+
         public int Coins
         {
             get
@@ -17,10 +22,6 @@ namespace Jackal
                 return Levels[0].Coins;
             }
         }
-        [JsonProperty]
-        public readonly int ArrowsCode;
-        [JsonProperty]
-        public readonly int SpinningCount;
 
         public int? OccupationTeamId
         {
