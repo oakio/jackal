@@ -95,7 +95,8 @@ namespace JackalHost.Monitors
 
                     var board = game.Board;
                     var tile = board.Map[x, y];
-                    Draw(tile, board.Teams.Select(item => item.Ship).ToList());
+                    var ships = board.Teams.Select(item => item.Ship).ToList();
+                    Draw(tile, ships, board.AllPirates);
                 }
             }
         }
@@ -142,28 +143,39 @@ namespace JackalHost.Monitors
         public void Draw(Board board, Board prevBoard)
         {
             var ships = board.Teams.Select(item => item.Ship).ToList();
+            var diffPiratesList =
+                from curr in board.AllPirates
+                join prev in prevBoard.AllPirates on curr.Id equals prev.Id
+                where curr.Position != prev.Position
+                select new List<Pirate> { curr, prev };
+            var diffPositions = new List<Position>();
+            foreach (var pirates in diffPiratesList)
+            {
+                diffPositions.AddRange(pirates.Select(item => item.Position.Position).ToList());
+            }
 
             for (int y = 0; y < Board.Size; y++)
             {
                 for (int x = 0; x < Board.Size; x++)
                 {
                     var tile = board.Map[x, y];
-                    var pirates = tile.Pirates;
                     var prevTile = prevBoard.Map[x, y];
-                    var prevPirates = prevTile.Pirates;
+                    bool isDiffPosition = diffPositions.Any(
+                        item => item == tile.Position ||
+                        item == prevTile.Position
+                    );
 
-                    if (pirates.Count != prevPirates.Count ||
+                    if (isDiffPosition ||
                         tile.Type != prevTile.Type ||
-                        tile.Coins != prevTile.Coins ||
-                        tile.OccupationTeamId != prevTile.OccupationTeamId)
+                        tile.Coins != prevTile.Coins)
                     {
-                        Draw(tile, ships);
+                        Draw(tile, ships, board.AllPirates);
                     }         
                 }
             }
         }
 
-        private void Draw(Tile tile, List<Ship> ships)
+        private void Draw(Tile tile, List<Ship> ships, List<Pirate> pirates)
         {
             try
             {
@@ -179,12 +191,12 @@ namespace JackalHost.Monitors
                 {
                     tileControl.Invoke(new Action(() =>
                     {
-                        tileControl.Draw(tile, ships);
+                        tileControl.Draw(tile, ships, pirates);
                     }));
                 }
                 else
                 {
-                    tileControl.Draw(tile, ships);
+                    tileControl.Draw(tile, ships, pirates);
                 }
             }
             catch (Exception)

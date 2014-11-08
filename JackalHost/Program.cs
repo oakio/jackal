@@ -97,10 +97,13 @@ namespace JackalHost
                     while (isPause)
                     {
                         if (prevTurnes > 0)
-                        {                        
-                            i -= i >= 2 ? 2 : 0;
+                        {        
                             prevTurnes--;
-                            break;
+                            if (i >= 2)
+                            {
+                                i -= 2;
+                                break;
+                            }
                         }
                         if (nextTurnes > 0)
                         {
@@ -124,12 +127,9 @@ namespace JackalHost
                         string historyStr = boardStrHistory[i];
                         var history = JsonHelper.DeserialiazeWithType<Board>(historyStr);
                         
-                        var prevBoard = board;
-                        if(i > prev_i)
-                        {
-                            string prevHistoryStr = boardStrHistory[0];
-                            prevBoard = JsonHelper.DeserialiazeWithType<Board>(prevHistoryStr);
-                        }
+                        string prevHistoryStr = boardStrHistory[prev_i];
+                        var prevBoard = JsonHelper.DeserialiazeWithType<Board>(prevHistoryStr);
+
                         _form.Draw(history, prevBoard);         
                     }
 
