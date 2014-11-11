@@ -17,6 +17,21 @@ namespace Jackal
 
         public Team[] Teams;
 
+        [JsonIgnore]
+        public List<Pirate> AllPirates
+        {
+            get
+            {
+                var allPirates = new List<Pirate>();
+                foreach (var teamPirates in Teams.Select(item => item.Pirates.ToList<Pirate>()))
+                {
+                    allPirates.AddRange(teamPirates);
+                }
+
+                return allPirates;
+            }
+        }
+
         public IEnumerable<Tile> AllTiles(Predicate<Tile> selector)
         {
             for (int i = 0; i < Size; i++)

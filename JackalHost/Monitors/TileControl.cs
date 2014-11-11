@@ -17,13 +17,13 @@ namespace JackalHost.Monitors
 			InitializeComponent();
 		}
 
-        public void Draw(Tile tile, List<Ship> ships)
+        public void Draw(Tile tile, List<Ship> ships, List<Pirate> pirates)
         {
-            var ship = ships.FirstOrDefault(item => item.Position == tile.Position);
-            if(ship != null)
+            var tileShip = ships.FirstOrDefault(item => item.Position == tile.Position);
+            if (tileShip != null)
             {
                 BackgroundImage = null;
-                BackColor = GetTeamColor(ship.TeamId);
+                BackColor = GetTeamColor(tileShip.TeamId);
             }
             else if (tile.Type == TileType.Water && BackgroundImage == null)
             {
@@ -33,12 +33,13 @@ namespace JackalHost.Monitors
                 BackColor = SystemColors.Control;
             }
 
-            DrawPirates(tile.Pirates);
-            DrawGold(ship == null ? tile.Coins : ship.Coins);
-            DrawTileBackground(tile, ship);
+            var tilePirates = pirates.Where(item => item.Position.Position == tile.Position).ToList();
+            DrawPirates(tilePirates);
+            DrawGold(tileShip == null ? tile.Coins : tileShip.Coins);
+            DrawTileBackground(tile, tileShip);
         }
 
-	    private void DrawPirates(HashSet<Pirate> pirates)
+	    private void DrawPirates(List<Pirate> pirates)
 	    {
 	        if (pirates == null || pirates.Count == 0)
 	        {
