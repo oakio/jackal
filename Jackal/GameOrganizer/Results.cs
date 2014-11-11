@@ -12,10 +12,13 @@ namespace Jackal.GameOrganizer
         public volatile int GamesCount;
 
         public string GetState()
-        {
+		{
             String rez = "";
             lock (table)
             {
+	            if (!table.Keys.Any())
+		            return "no data";
+
                 int maxNameLen = table.Keys.Max(x => x.Length);
                 foreach (var pair in table.OrderByDescending(x => x.Value.Total<1?0: x.Value.Position1/x.Value.Total))
                 {

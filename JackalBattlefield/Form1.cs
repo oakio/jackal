@@ -56,7 +56,7 @@ namespace JackalBattlefield
 
         private GameOrganizer gameOrganizer;
 
-        private IPlayer[] _players = new IPlayer[4] { new MikePlayer(), new MikePlayer(), new SmartPlayer(), new SmartPlayer() };
+		private IPlayer[] _players = new IPlayer[4] { new SmartPlayer(), new SmartPlayer2(), new SmartPlayer2(), new SmartPlayerDistCalc() };
 
         void DoBattlefield()
         {

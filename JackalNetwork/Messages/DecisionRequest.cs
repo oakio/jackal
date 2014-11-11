@@ -57,7 +57,7 @@ namespace JackalNetwork
                     var pos = pirate.Position;
                     if (team.Ship.Position == pos.Position)
                     {
-                        team.Ship.Crew(gameState.Board).Add(pirate);
+                        //team.Ship.Crew(gameState.Board).Add(pirate);
                     }
                     else
                     {

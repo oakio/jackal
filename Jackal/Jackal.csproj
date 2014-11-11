@@ -61,6 +61,7 @@
     <Compile Include="Board.cs" />
     <Compile Include="CheckedPosition.cs" />
     <Compile Include="Direction.cs" />
+    <Compile Include="DistanceCalc.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameOrganizer\ResultRec.cs" />
     <Compile Include="GameOrganizer\GameOrganizer.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Players\BlankPlayer.cs" />
     <Compile Include="Players\MikePlayer.cs" />
     <Compile Include="Players\SmartPlayer2.cs" />
+    <Compile Include="Players\SmartPlayerDistCalc.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="PossibleMove.cs" />
     <Compile Include="PossibleMoveType.cs" />

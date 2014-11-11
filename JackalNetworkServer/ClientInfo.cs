@@ -1,5 +1,6 @@
 using System.IO;
 using System.Net.Sockets;
+using Jackal;
 using JackalNetwork;
 
 namespace JackalNetworkServer
