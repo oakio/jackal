@@ -90,6 +90,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jackal.RolloPlayer\Jackal.RolloPlayer.csproj">
+      <Project>{2a356132-7720-4f7e-ae75-6ef40dcced8e}</Project>
+      <Name>Jackal.RolloPlayer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\JackalNetwork\JackalNetwork.csproj">
       <Project>{4BF2DF9D-AE2C-4BA8-ADFD-2D2A7235E145}</Project>
       <Name>JackalNetwork</Name>

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jackal
 {
@@ -13,7 +10,7 @@ namespace Jackal
 	{
 		private readonly Board _board;
 		private readonly double _unknownSteps;
-		private Dictionary<string, Wave> _waves = new Dictionary<string, Wave>();
+		private readonly Dictionary<string, Wave> _waves = new Dictionary<string, Wave>();
 
 		/// <summary>
 		/// 
@@ -38,39 +35,18 @@ namespace Jackal
 		{
 			if (from == to) return 0;
 
-			var wave = BuildWave(from, teamId, withGold);
-			return  wave.Distance(to);
+			var wave = GetWave(from, teamId, withGold);
+			return  wave.DistanceTo(to);
 		}
 
-		private Wave BuildWave(Position from, int teamId, bool withGold = false)
+		private Wave GetWave(Position from, int teamId, bool withGold = false)
 		{
-			var w = new Wave{From = from, TeamId = teamId, WithGold = withGold};
-			Wave res;
+			var wKey = Wave.WaveKey(from, teamId, withGold);
+			Wave w;
+			if (_waves.TryGetValue(wKey, out w))
+				return w;
 
-			if (_waves.TryGetValue(w.ToString(), out res))
-				return res;
-
-			var prevPos = new List<CalcPosition> { new CalcPosition(0, from) };
-
-			do
-			{
-				var newPos = new List<CalcPosition>();
-				foreach (var pos in prevPos)
-				{
-					var position = pos;
-					//TODO: Вызывать правильную функцию GetAllAvaliableMoves с результатами которые отдаются плеерам для хода
-					//TODO: если нужны только ходы с золотом - из результатов убирать ходы без золота
-					newPos.AddRange(_board.GetAllAvaliableMoves(teamId, position.Position, new List<CheckedPosition>())
-									.Select(p => new CalcPosition(position.Distance + position.SelfDistance(_board, _unknownSteps), p.Target))
-									.ToList());	
-				}
-
-				newPos = w.AddStep(newPos);
-
-				if (!newPos.Any()) break;
-				prevPos = newPos;
-			} while (true);
-
+			w = new Wave(_board, teamId, from, withGold, _unknownSteps);
 			_waves[w.ToString()] = w;
 
 			return w;
@@ -81,14 +57,26 @@ namespace Jackal
 		/// </summary>
 		public class CalcPosition
 		{
-			public CalcPosition(double distance, Position pos)
+			public CalcPosition(double distance, Position pos, int stepNumber)
 			{
 				Distance = distance;
 				Position = pos;
+				StepNumber = stepNumber;
 			}
 
 			public double Distance;
 			public Position Position;
+			public int StepNumber;
+
+			/// <summary>
+			/// Самый короткий путь из возмножных?
+			/// </summary>
+			/// <param name="unknownSteps">Оценка закрытого тайла</param>
+			/// <returns></returns>
+			public bool IsShortestDistance(double unknownSteps)
+			{
+				return (Distance < StepNumber + 1) && (Distance < (StepNumber + 1) * unknownSteps);
+			}
 
 			public double SelfDistance(Board board, double unknownSteps)
 			{
@@ -114,22 +102,88 @@ namespace Jackal
 
 		public class Wave
 		{
-			public Position From;
-			public int TeamId;
-			public bool WithGold;
-			private readonly Dictionary<Position, double> _calculated = new Dictionary<Position, double>();
+			private readonly Position _from;
+			private readonly int _teamId;
+			private int _lastCalculatedStepNumber;
+			private readonly Board _board;
+			private readonly bool _withGold;
+			private bool _isComplete;
+			private readonly double _unknownSteps;
+
+			private readonly Dictionary<Position, CalcPosition> _calculated = new Dictionary<Position, CalcPosition>();
+			private List<CalcPosition> _lastCalculatedStep;
+
+			public Wave(Board board, int teamId, Position from, bool withGold, double unknownSteps)
+			{
+				_board = board;
+				_teamId = teamId;
+				_from = from;
+				_withGold = withGold;
+				_unknownSteps = unknownSteps;
+				_lastCalculatedStepNumber = 0;
+				_lastCalculatedStep = new List<CalcPosition> { new CalcPosition(0, _from, _lastCalculatedStepNumber) };
+			}
+
+
+			public static string WaveKey( Position from, int teamId, bool withGold)
+			{
+				return string.Format("{0}:{1}:{2}", from, teamId, withGold);
+			}
 
 			public override string ToString()
 			{
-				return string.Format("{0}:{1}:{2}", From, TeamId, WithGold );
+				return WaveKey(_from, _teamId, _withGold);
+			}
+
+			public double? DistanceTo(Position to)
+			{
+				//Если уже подсчитали
+				CalcPosition res;
+				if (_isComplete || (_calculated.TryGetValue(to, out res) && res.IsShortestDistance(_unknownSteps)))
+				{
+					return Distance(to);
+				}
+
+				do
+				{
+					var newPos = new List<CalcPosition>();
+					foreach (var pos in _lastCalculatedStep)
+					{
+						_lastCalculatedStepNumber++;
+						var position = pos;
+						//TODO: Вызывать правильную функцию GetAllAvaliableMoves с результатами которые отдаются плеерам для хода
+						//TODO: если нужны только ходы с золотом - из результатов убирать ходы без золота
+						//Не проверяем ходы до клеток, до которых уже просчитали самые короткие маршруты
+						newPos.AddRange(_board.GetAllAvaliableMoves(_teamId, position.Position, _calculated.Where(c=>c.Value.IsShortestDistance(_unknownSteps)).Select(c=>new CheckedPosition(c.Value.Position)).ToList())
+										.Select(p => new CalcPosition(position.Distance + position.SelfDistance(_board, _unknownSteps), p.Target, _lastCalculatedStepNumber))
+										.ToList());
+					}
+
+					_lastCalculatedStep = AddStepPositions(newPos);
+
+					if (!_lastCalculatedStep.Any())
+					{
+						_isComplete = true;
+						break;
+					}
+
+					//Если уже нашли дистанцию - останавливаемся
+					if (_calculated.TryGetValue(to, out res) && res.IsShortestDistance(_unknownSteps))
+					{
+						return Distance(to);
+					}
+
+				} while (true);
+
+				return Distance(to);
 			}
 
 			/// <summary>
-			/// Добавить рассчитанные значения следующего шага
+			/// Добавить рассчитанные значения шага волны
 			/// </summary>
 			/// <param name="step"></param>
-			/// <returns></returns>
-			public List<CalcPosition> AddStep(List<CalcPosition> step)
+			/// <returns>Возвращает только те от которых нужно считать волну дальше</returns>
+			private List<CalcPosition> AddStepPositions(IEnumerable<CalcPosition> step)
 			{
 				var res = new List<CalcPosition>();
 				foreach (var pos in step)
@@ -139,15 +193,15 @@ namespace Jackal
 
 					if (_calculated.ContainsKey(pos.Position))
 					{
-						if (pos.Distance < _calculated[pos.Position])
+						if (pos.Distance < _calculated[pos.Position].Distance)
 						{
-							_calculated[pos.Position] = pos.Distance;
+							_calculated[pos.Position] = pos;
 							res.Add(pos);
 						}
 					}
 					else
 					{
-						_calculated.Add(pos.Position, pos.Distance);
+						_calculated.Add(pos.Position, pos);
 						res.Add(pos);
 					}
 				}
@@ -155,26 +209,17 @@ namespace Jackal
 				return res;
 			}
 
-			private readonly List<CheckedPosition> _checkedPositions = new List<CheckedPosition>();
-			public List<CheckedPosition> CheckedPositions
-			{
-				get
-				{
-					return _checkedPositions;
-				}
-			}
-
 			/// <summary>
 			/// Расстояние до
 			/// </summary>
 			/// <param name="to"></param>
 			/// <returns></returns>
-			public double? Distance(Position to)
+			private double? Distance(Position to)
 			{
-				double res;
+				CalcPosition res;
 				if (_calculated.TryGetValue(to, out res))
 				{
-					return res > 1000 ? (double?)null : res;
+					return res.Distance > 1000 ? (double?)null : res.Distance;
 				}
 
 				return null;

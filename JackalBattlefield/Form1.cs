@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using Jackal;
 using Jackal.GameOrganizer;
 using Jackal.Players;
+using Jackal.RolloPlayer;
 
 namespace JackalBattlefield
 {
@@ -56,7 +57,7 @@ namespace JackalBattlefield
 
         private GameOrganizer gameOrganizer;
 
-		private IPlayer[] _players = new IPlayer[4] { new SmartPlayer(), new SmartPlayer2(), new SmartPlayer2(), new SmartPlayerDistCalc() };
+		private IPlayer[] _players = new IPlayer[4] { new SmartPlayer(), new RolloPlayer3(), new SmartPlayer2(), new SmartPlayerDistCalc() };
 
         void DoBattlefield()
         {

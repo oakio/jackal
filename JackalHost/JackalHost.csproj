@@ -76,6 +76,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jackal.RolloPlayer\Jackal.RolloPlayer.csproj">
+      <Project>{2a356132-7720-4f7e-ae75-6ef40dcced8e}</Project>
+      <Name>Jackal.RolloPlayer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Jackal\Jackal.csproj">
       <Project>{f09a6694-a08d-4c94-a6a2-9af9faa6aa6e}</Project>
       <Name>Jackal</Name>
