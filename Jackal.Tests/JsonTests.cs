@@ -53,14 +53,12 @@ namespace Jackal.Tests
         public void JsonTestGame()
         {
             const int mapId = 987412 + 1;
-
-            var board = new Board(mapId);
-
             List<IPlayer> players = new List<IPlayer>();
             players.Add(new TestJsonPlayer());
             while (players.Count < 4)
                 players.Add(new SmartPlayer());
 
+            var board = new Board(players.ToArray(), mapId);
             var game = new Game(players.ToArray(), board);
 
             while (game.IsGameOver == false)
@@ -69,7 +67,7 @@ namespace Jackal.Tests
                 game.Turn();
             }
 
-            Console.WriteLine("Game end, turns count: "+game.TurnNo);
+            Console.WriteLine("Game end, turns count: " + game.TurnNo);
         }
 
         private class TestJsonPlayer : BlankPlayer
