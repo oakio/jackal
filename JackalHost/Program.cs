@@ -36,7 +36,7 @@ namespace JackalHost
 				new SmartPlayerDistCalc(),
 			};
 			int mapId = 987412+1;
-            board = new Board(mapId);
+            board = new Board(players, mapId);
             game = new Game(players, board);
 
             _form = new MonitorForm(game, mapId);
@@ -60,7 +60,7 @@ namespace JackalHost
             };
             _form.OnNewGameBtnClick += (s, e) => {
                 mapId = new Random().Next(1000000);
-                board = new Board(mapId);
+                board = new Board(players, mapId);
                 game = new Game(players, board);
                 _form.InitBoardPanel(game, mapId);
                 isPause = false;

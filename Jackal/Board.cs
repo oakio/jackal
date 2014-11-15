@@ -49,17 +49,17 @@ namespace Jackal
         {
         }
 
-        public Board(int mapId)
+        public Board(IPlayer[] players, int mapId)
         {
             Generator = new MapGenerator(mapId);
             Map = new Map();
             InitMap();
 
             Teams = new Team[4];
-            InitTeam(0, (Size - 1)/2, 0);
-            InitTeam(1, 0, (Size - 1) / 2);
-            InitTeam(2, (Size - 1) / 2, (Size - 1));
-            InitTeam(3, (Size - 1), (Size - 1) / 2);
+            InitTeam(0, players[0].GetType().Name, (Size - 1) / 2, 0);
+            InitTeam(1, players[1].GetType().Name, 0, (Size - 1) / 2);
+            InitTeam(2, players[2].GetType().Name, (Size - 1) / 2, (Size - 1));
+            InitTeam(3, players[3].GetType().Name, (Size - 1), (Size - 1) / 2);
 
             Teams[0].Enemies = new[] {1, 2, 3};
             Teams[1].Enemies = new[] {0, 2, 3};
@@ -101,7 +101,7 @@ namespace Jackal
             Map[x, y] = tile;
         }
 
-        private void InitTeam(int teamId, int x, int y)
+        private void InitTeam(int teamId, string name, int x, int y)
         {
             var startPosition = new Position(x, y);
             var pirates = new Pirate[3];
@@ -114,7 +114,7 @@ namespace Jackal
             {
                 Map[ship.Position].Pirates.Add(pirate);
             }
-            Teams[teamId] = new Team(teamId, ship, pirates);
+            Teams[teamId] = new Team(teamId, name, ship, pirates);
         }
 
 

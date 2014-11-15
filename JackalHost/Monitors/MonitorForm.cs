@@ -230,7 +230,7 @@ namespace JackalHost.Monitors
                     var team = game.Board.Teams[i - 1];
                     int goldCount;
                     game.Scores.TryGetValue(team.Id, out goldCount);
-                    DrawStat(statControl, team.Id, goldCount);
+                    DrawStat(statControl, team, goldCount);
                 }
             }
             catch (Exception)
@@ -253,18 +253,18 @@ namespace JackalHost.Monitors
             }
         }
 
-        private void DrawStat(StatControl statControl, int teamId, int goldCount)
+        private void DrawStat(StatControl statControl, Team team, int goldCount)
         {
             if (statControl.InvokeRequired)
             {
                 statControl.Invoke(new Action(() =>
                 {
-                    statControl.DrawStat(teamId, goldCount);
+                    statControl.DrawStat(team, goldCount);
                 }));
             }
             else
             {
-                statControl.DrawStat(teamId, goldCount);
+                statControl.DrawStat(team, goldCount);
             }
         }
 

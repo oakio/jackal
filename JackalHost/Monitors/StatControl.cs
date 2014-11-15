@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Jackal;
 
 namespace JackalHost.Monitors
 {
@@ -24,10 +25,10 @@ namespace JackalHost.Monitors
             txtBox.Text = "TurnNo: " + turnNo + (isGameOver ? " - game over" : "");
         }
 
-        public void DrawStat(int teamId, int goldCount)
+        public void DrawStat(Team team, int goldCount)
         {
-            txtBox.BackColor = TileControl.GetTeamColor(teamId);
-            txtBox.Text = string.Format("Team {0}: gold = {1}", teamId, goldCount);
+            txtBox.BackColor = TileControl.GetTeamColor(team.Id);
+            txtBox.Text = string.Format("{0}: gold = {1}", team.Name, goldCount);
         }
 	}
 }

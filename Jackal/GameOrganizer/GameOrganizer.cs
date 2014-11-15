@@ -69,8 +69,9 @@ namespace Jackal.GameOrganizer
             Results.PermutationId = _permutationId;
             Results.GamesCount++;
 
-            var _board = new Board(_mapId);
-            var game = new Game(currentPlayers.Select(x => x.Player).ToArray(), _board);
+            var players = currentPlayers.Select(x => x.Player).ToArray();
+            var _board = new Board(players, _mapId);
+            var game = new Game(players, _board);
 
             while (game.IsGameOver == false)
             {
