@@ -30,14 +30,14 @@
 		{
             this.gameSplitContainer = new System.Windows.Forms.SplitContainer();
             this.statSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.prevTurnesBtn = new System.Windows.Forms.Button();
+            this.prevOneBtn = new System.Windows.Forms.Button();
             this.nextTurnesBtn = new System.Windows.Forms.Button();
             this.nextOneBtn = new System.Windows.Forms.Button();
             this.slowTurnesBtn = new System.Windows.Forms.Button();
             this.fastTurnesBtn = new System.Windows.Forms.Button();
             this.pauseGameBtn = new System.Windows.Forms.Button();
             this.newGameBtn = new System.Windows.Forms.Button();
-            this.prevOneBtn = new System.Windows.Forms.Button();
-            this.prevTurnesBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.gameSplitContainer)).BeginInit();
             this.gameSplitContainer.Panel2.SuspendLayout();
             this.gameSplitContainer.SuspendLayout();
@@ -54,16 +54,13 @@
             this.gameSplitContainer.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.gameSplitContainer.Name = "gameSplitContainer";
             // 
-            // gameSplitContainer.Panel1
-            // 
-            this.gameSplitContainer.Panel1.Resize += new System.EventHandler(this.gameSplitContainer_Panel1_Resize);
-            // 
             // gameSplitContainer.Panel2
             // 
             this.gameSplitContainer.Panel2.Controls.Add(this.statSplitContainer);
-            this.gameSplitContainer.Size = new System.Drawing.Size(1261, 894);
+            this.gameSplitContainer.Size = new System.Drawing.Size(1261, 877);
             this.gameSplitContainer.SplitterDistance = 986;
             this.gameSplitContainer.TabIndex = 0;
+            this.gameSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.gameSplitContainer_SplitterMoved);
             // 
             // statSplitContainer
             // 
@@ -73,10 +70,6 @@
             this.statSplitContainer.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.statSplitContainer.Name = "statSplitContainer";
             this.statSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // statSplitContainer.Panel1
-            // 
-            this.statSplitContainer.Panel1.Resize += new System.EventHandler(this.statSplitContainer_Panel1_Resize);
             // 
             // statSplitContainer.Panel2
             // 
@@ -88,9 +81,34 @@
             this.statSplitContainer.Panel2.Controls.Add(this.fastTurnesBtn);
             this.statSplitContainer.Panel2.Controls.Add(this.pauseGameBtn);
             this.statSplitContainer.Panel2.Controls.Add(this.newGameBtn);
-            this.statSplitContainer.Size = new System.Drawing.Size(271, 894);
-            this.statSplitContainer.SplitterDistance = 394;
+            this.statSplitContainer.Size = new System.Drawing.Size(271, 877);
+            this.statSplitContainer.SplitterDistance = 386;
             this.statSplitContainer.TabIndex = 1;
+            this.statSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.statSplitContainer_SplitterMoved);
+            // 
+            // prevTurnesBtn
+            // 
+            this.prevTurnesBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.prevTurnesBtn.Location = new System.Drawing.Point(4, 168);
+            this.prevTurnesBtn.Margin = new System.Windows.Forms.Padding(4);
+            this.prevTurnesBtn.Name = "prevTurnesBtn";
+            this.prevTurnesBtn.Size = new System.Drawing.Size(60, 47);
+            this.prevTurnesBtn.TabIndex = 9;
+            this.prevTurnesBtn.Text = "-4";
+            this.prevTurnesBtn.UseVisualStyleBackColor = true;
+            this.prevTurnesBtn.Click += new System.EventHandler(this.prevTurnesBtn_Click);
+            // 
+            // prevOneBtn
+            // 
+            this.prevOneBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.prevOneBtn.Location = new System.Drawing.Point(64, 168);
+            this.prevOneBtn.Margin = new System.Windows.Forms.Padding(4);
+            this.prevOneBtn.Name = "prevOneBtn";
+            this.prevOneBtn.Size = new System.Drawing.Size(60, 47);
+            this.prevOneBtn.TabIndex = 8;
+            this.prevOneBtn.Text = "-1";
+            this.prevOneBtn.UseVisualStyleBackColor = true;
+            this.prevOneBtn.Click += new System.EventHandler(this.prevOneBtn_Click);
             // 
             // nextTurnesBtn
             // 
@@ -164,41 +182,19 @@
             this.newGameBtn.UseVisualStyleBackColor = true;
             this.newGameBtn.Click += new System.EventHandler(this.newGameBtn_Click);
             // 
-            // prevOneBtn
-            // 
-            this.prevOneBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
-            this.prevOneBtn.Location = new System.Drawing.Point(64, 168);
-            this.prevOneBtn.Margin = new System.Windows.Forms.Padding(4);
-            this.prevOneBtn.Name = "prevOneBtn";
-            this.prevOneBtn.Size = new System.Drawing.Size(60, 47);
-            this.prevOneBtn.TabIndex = 8;
-            this.prevOneBtn.Text = "-1";
-            this.prevOneBtn.UseVisualStyleBackColor = true;
-            this.prevOneBtn.Click += new System.EventHandler(this.prevOneBtn_Click);
-            // 
-            // prevTurnesBtn
-            // 
-            this.prevTurnesBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
-            this.prevTurnesBtn.Location = new System.Drawing.Point(4, 168);
-            this.prevTurnesBtn.Margin = new System.Windows.Forms.Padding(4);
-            this.prevTurnesBtn.Name = "prevTurnesBtn";
-            this.prevTurnesBtn.Size = new System.Drawing.Size(60, 47);
-            this.prevTurnesBtn.TabIndex = 9;
-            this.prevTurnesBtn.Text = "-4";
-            this.prevTurnesBtn.UseVisualStyleBackColor = true;
-            this.prevTurnesBtn.Click += new System.EventHandler(this.prevTurnesBtn_Click);
-            // 
             // MonitorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1261, 894);
+            this.ClientSize = new System.Drawing.Size(1261, 877);
             this.Controls.Add(this.gameSplitContainer);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "MonitorForm";
             this.Text = "Jackal";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MonitorForm_FormClosed);
             this.Load += new System.EventHandler(this.MonitorForm_Load);
+            this.ResizeBegin += new System.EventHandler(this.MonitorForm_ResizeBegin);
+            this.ResizeEnd += new System.EventHandler(this.MonitorForm_ResizeEnd);
             this.gameSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gameSplitContainer)).EndInit();
             this.gameSplitContainer.ResumeLayout(false);

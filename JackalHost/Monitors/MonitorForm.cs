@@ -73,9 +73,7 @@ namespace JackalHost.Monitors
                 statPanel.Controls.Add(statControl);
             }
             DrawStats(_game);
-
-            gameSplitContainer_Panel1_Resize(this, EventArgs.Empty);
-            statSplitContainer_Panel1_Resize(this, EventArgs.Empty);
+            gameSplitContainer_SplitterMoved(this, null);
         }
 
         public void InitBoardPanel(Game game, int mapId)
@@ -101,7 +99,31 @@ namespace JackalHost.Monitors
             }
         }
 
-        private void gameSplitContainer_Panel1_Resize(object sender, EventArgs e)
+        private void MonitorForm_ResizeBegin(object sender, EventArgs e)
+        {
+            gameSplitContainer.SplitterMoved -= gameSplitContainer_SplitterMoved;
+            statSplitContainer.SplitterMoved -= statSplitContainer_SplitterMoved;
+        }
+
+        private void MonitorForm_ResizeEnd(object sender, EventArgs e)
+        {
+            gameSplitContainer_SplitterMoved(this, null);
+            gameSplitContainer.SplitterMoved += gameSplitContainer_SplitterMoved;
+            statSplitContainer.SplitterMoved += statSplitContainer_SplitterMoved;
+        }
+
+        private void gameSplitContainer_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+            gameSplitContainerResize();
+            statSplitContainerResize();
+        }
+
+        private void statSplitContainer_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+            statSplitContainerResize();
+        }
+
+        private void gameSplitContainerResize()
         {
             var boardPanel = gameSplitContainer.Panel1;
             int tileWidth = boardPanel.Width / Board.Size - 2;
@@ -122,7 +144,7 @@ namespace JackalHost.Monitors
             }
         }
 
-        private void statSplitContainer_Panel1_Resize(object sender, EventArgs e)
+        private void statSplitContainerResize()
         {
             var statPanel = statSplitContainer.Panel1;
             int statWidth = statPanel.Width;
