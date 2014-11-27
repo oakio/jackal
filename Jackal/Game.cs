@@ -42,10 +42,7 @@ namespace Jackal
 
         public void Turn()
         {
-            int teamId = CurrentTeamId;
-            IPlayer me = _players[teamId];
-
-            GetAvailableMoves(teamId);
+            GetAvailableMoves(CurrentTeamId);
 
             this.NeedSubTurnPirate = null;
             this.PreviosSubTurnDirection = null;
@@ -65,8 +62,8 @@ namespace Jackal
                     gameState.GameId = GameId;
                     gameState.TurnNumber = TurnNo;
                     gameState.SubTurnNumber = SubTurnNo;
-                    gameState.TeamId = teamId;
-                    moveNo = me.OnMove(gameState);
+                    gameState.TeamId = CurrentTeamId;
+                    moveNo = CurrentPlayer.OnMove(gameState);
                 }
 
                 IGameAction action = _actions[moveNo];
@@ -76,7 +73,7 @@ namespace Jackal
             if (this.NeedSubTurnPirate == null)
             {
                 //также протрезвляем всех пиратов, которые начали бухать раньше текущего хода
-                foreach (Pirate pirate in Board.Teams[teamId].Pirates.Where(x => x.IsDrunk && x.DrunkSinceTurnNo < TurnNo))
+                foreach (Pirate pirate in Board.Teams[CurrentTeamId].Pirates.Where(x => x.IsDrunk && x.DrunkSinceTurnNo < TurnNo))
                 {
                     pirate.DrunkSinceTurnNo = null;
                     pirate.IsDrunk = false;
@@ -100,7 +97,6 @@ namespace Jackal
             
             Team team = Board.Teams[teamId];
             Ship ship = team.Ship;
-
 
             IEnumerable<Pirate> activePirates;
             Direction previosDirection = null;
@@ -133,9 +129,6 @@ namespace Jackal
 
         private void Step(Position target, Pirate pirate, Ship ship, Team team)
         {
-            //var moves = _availableMoves;
-            //var actions = _actions;
-
             Tile targetTile = Board.Map[target];
 
             var source = pirate.Position.Position;
@@ -332,6 +325,11 @@ namespace Jackal
         public int CurrentTeamId
         {
             get { return TurnNo%4; }
+        }
+
+        public IPlayer CurrentPlayer
+        {
+            get { return _players[CurrentTeamId]; }
         }
 
         public Direction PreviosSubTurnDirection;

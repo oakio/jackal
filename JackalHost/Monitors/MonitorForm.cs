@@ -30,6 +30,8 @@ namespace JackalHost.Monitors
         public event EventHandler OnNextOneBtnClick;
         public event EventHandler OnNextTurnesBtnClick;
 
+        public event MouseEventHandler OnTileCtrlBtnClick;
+
         public MonitorForm(Game game, int mapId)
 		{
             _game = game;
@@ -55,6 +57,7 @@ namespace JackalHost.Monitors
                     {
                         Name = GetTileKey(x, y)
                     };
+                    tileControl.MouseClick += OnTileCtrlBtnClick;
                     string positionText = string.Format("{0},{1}", x, y);
                     toolTip.SetToolTip(tileControl, positionText);
                     boardPanel.Controls.Add(tileControl);

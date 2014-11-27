@@ -85,6 +85,9 @@ namespace JackalHost
                 isPause = true;
                 nextTurnes = 4;
             };
+            _form.OnTileCtrlBtnClick += (s, e) =>
+            {
+            };
 
             var thread = new Thread(formStart);
             thread.Start();
@@ -113,10 +116,14 @@ namespace JackalHost
                         Thread.Sleep(TimeSpan.FromMilliseconds(250));
                     }
 
-                    string prevBoardStr = JsonHelper.SerialiazeWithType(board);
                     if (i >= boardStrHistory.Count)
-                    {                    
+                    {
+                        string prevBoardStr = JsonHelper.SerialiazeWithType(board);
                         boardStrHistory.Add(i, prevBoardStr);
+
+                        if(game.CurrentPlayer is HumanPlayer)
+                        {
+                        }
                         game.Turn();
 
                         var prevBoard = JsonHelper.DeserialiazeWithType<Board>(prevBoardStr);
