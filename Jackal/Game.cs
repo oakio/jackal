@@ -139,12 +139,12 @@ namespace Jackal
                 targets = targets.Where(x => x.WithJumpToWater == false).ToList();
 
             foreach (AvaliableMove avaliableMove in targets)
-                {
+            {
                 Move move = new Move(avaliableMove.Source, avaliableMove.Target, avaliableMove.MoveType);
                 GameActionList actionList = avaliableMove.ActionList;
                 AddMoveAndActions(move, actionList);
-                }
             }
+        }
 
 #if false
         private void Step(TilePosition target, Pirate pirate, Ship ship, Team team)

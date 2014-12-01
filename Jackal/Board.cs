@@ -184,11 +184,11 @@ namespace Jackal
                         if (ourShip.Position == newPosition.Position) //заходим на свой корабль
                         {
                             goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition))); //всегда это можем сделать
-                            if (Map[task.FirstSource].Coins > 0)
+                            if (task.AddCoinMoving && Map[task.FirstSource].Coins > 0)
                                 goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition,true))
                                 {
                                     MoveType = MoveType.WithCoin
-                                }); //всегда это можем сделать
+                                }); 
                         }
                         else if (sourceTile.Type == TileType.Water) //из воды в воду 
                         {
@@ -231,7 +231,7 @@ namespace Jackal
                     case TileType.Spinning:
                     case TileType.Trap:
                         goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)));
-                        if (Map[task.FirstSource].Coins > 0)
+                        if (task.AddCoinMoving && Map[task.FirstSource].Coins > 0)
                             goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition, true))
                             {
                                 MoveType = MoveType.WithCoin
