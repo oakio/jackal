@@ -70,7 +70,16 @@ namespace Jackal
                 }
 
                 IGameAction action = _actions[moveNo];
-                action.Act(this);
+                Pirate pirate = Board.Teams[teamId].Pirates.First(x => x.Position == _availableMoves[moveNo].From);
+                action.Act(this, pirate);
+            }
+            else //у нас нет возможных ходов - все трезвые пираты гибнут
+            {
+                var allNotDrunkPirates = Board.Teams[teamId].Pirates.Where(x => x.IsDrunk == false);
+                foreach (var pirate in allNotDrunkPirates)
+                {
+                    KillPirate(pirate);
+                }
             }
 
             if (this.NeedSubTurnPirate == null)
@@ -97,7 +106,7 @@ namespace Jackal
         {
             _availableMoves.Clear();
             _actions.Clear();
-            
+
             Team team = Board.Teams[teamId];
             Ship ship = team.Ship;
 
@@ -111,39 +120,50 @@ namespace Jackal
             }
             else
             {
-                activePirates = team.Pirates.Where(x => x.IsDrunk == false);
+                activePirates = team.Pirates.Where(x => x.IsDrunk == false && x.IsInTrap == false);
             }
+
+            var targets = new List<AvaliableMove>();
 
             foreach (var pirate in activePirates)
             {
-                var position = pirate.Position.Position;
+                var position = pirate.Position;
 
-                var targets = Board.GetAllAvaliableMoves(teamId, position, new List<CheckedPosition>(), previosDirection);
+                GetAllAvaliableMovesTask task=new GetAllAvaliableMovesTask();
+                task.TeamId = teamId;
+                task.FirstSource = position;
+                task.PreviosSource = (previosDirection != null) ? previosDirection.From : null;
 
-                //если есть ходы, которые не приводят к попаданию в воду, то выбираем только их
-                if (targets.Any(x => x.Type != PossibleMoveType.JumpToWater))
-                    targets = targets.Where(x => x.Type != PossibleMoveType.JumpToWater).ToList();
+                List<AvaliableMove> temp = Board.GetAllAvaliableMoves(task);
+                targets.AddRange(temp);
+            }
 
-                foreach (Position target in targets.Select(x => x.Target))
-                {
-                    Step(target, pirate, ship, team);
-                }
+            //если есть ходы, которые не приводят к прыжку в воду, то выбираем только их
+            if (targets.Any(x => x.WithJumpToWater == false))
+                targets = targets.Where(x => x.WithJumpToWater == false).ToList();
+
+            foreach (AvaliableMove avaliableMove in targets)
+            {
+                Move move = new Move(avaliableMove.Source, avaliableMove.Target, avaliableMove.MoveType);
+                GameActionList actionList = avaliableMove.ActionList;
+                AddMoveAndActions(move, actionList);
             }
         }
 
-        private void Step(Position target, Pirate pirate, Ship ship, Team team)
+#if false
+        private void Step(TilePosition target, Pirate pirate, Ship ship, Team team)
         {
             //var moves = _availableMoves;
             //var actions = _actions;
 
-            Tile targetTile = Board.Map[target];
+            Tile targetTile = Board.Map[target.Position];
 
             var source = pirate.Position.Position;
             Tile sourceTile = Board.Map[source];
 
             bool onShip = (ship.Position == pirate.Position.Position);
 
-            Direction direction=new Direction(pirate.Position.Position,target);
+            Direction direction=new Direction(pirate.Position,target);
 
             switch (targetTile.Type)
             {
@@ -159,7 +179,7 @@ namespace Jackal
                                 GameActionList.Create(
                                    new Explore(target,pirate,direction),
                                     new Landing(pirate, ship),
-                                    new Walk(pirate, target)));
+                                    new Moving(pirate, target)));
                         }
                     }
                     else
@@ -167,7 +187,7 @@ namespace Jackal
                         AddMoveAndActions(new Move(pirate.Position.Position, target),
                             GameActionList.Create(
                                 new Explore(target, pirate, direction),
-                                new Walk(pirate, target)));
+                                new Moving(pirate, target)));
                     }
 
                     break;
@@ -218,7 +238,7 @@ namespace Jackal
                     {
                         AddMoveAndActions(new Move(pirate.Position.Position, target),
                             GameActionList.Create(
-                                 new Walk(pirate, target)));
+                                 new Moving(pirate, target)));
                     }
                     break;
                 }
@@ -262,7 +282,7 @@ namespace Jackal
                                         GameActionList.Create(
                                             new Attack(target),
                                             new Landing(pirate, ship),
-                                            new Walk(pirate, target)));
+                                            new Moving(pirate, target)));
                                 }
                             }
                             else
@@ -270,7 +290,7 @@ namespace Jackal
                                 AddMoveAndActions(new Move(pirate.Position.Position, target),
                                     GameActionList.Create(
                                         new Attack(target),
-                                        new Walk(pirate, target)));
+                                        new Moving(pirate, target)));
                             }
                         }
                     }
@@ -283,20 +303,20 @@ namespace Jackal
                                 AddMoveAndActions(new Move(pirate.Position.Position, target),
                                     GameActionList.Create(
                                         new Landing(pirate, ship),
-                                        new Walk(pirate, target)));
+                                        new Moving(pirate, target)));
                             }
                         }
                         else
                         {
                             AddMoveAndActions(new Move(pirate.Position.Position, target),
                                 GameActionList.Create(
-                                    new Walk(pirate, target)));
+                                    new Moving(pirate, target)));
 
                             if (sourceTile.Coins > 0 && targetIsFort == false)
                             {
                                 AddMoveAndActions(new Move(pirate.Position.Position, target, MoveType.WithCoin),
                                     GameActionList.Create(
-                                       new Walk(pirate, target,true)));
+                                       new Moving(pirate, target,true)));
                             }
                         }
                     }
@@ -304,6 +324,7 @@ namespace Jackal
                 }
             }
         }
+#endif
 
         private void AddMoveAndActions(Move move, IGameAction action)
         {

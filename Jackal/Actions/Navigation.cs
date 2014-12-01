@@ -1,5 +1,6 @@
 ﻿namespace Jackal.Actions
 {
+    /*
     class Navigation : IGameAction
     {
         private readonly Ship _ship;
@@ -28,4 +29,5 @@
             return GameActionResult.Live;
         }
     }
+    */ 
 }

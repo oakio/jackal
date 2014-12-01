@@ -50,13 +50,14 @@
     <Compile Include="Actions\Dying.cs" />
     <Compile Include="Actions\Explore.cs" />
     <Compile Include="Actions\GameActionList.cs" />
+    <Compile Include="Actions\GameActionResult.cs" />
     <Compile Include="Actions\IGameAction.cs" />
     <Compile Include="Actions\Landing.cs" />
     <Compile Include="Actions\Navigation.cs" />
     <Compile Include="Actions\Respawn.cs" />
     <Compile Include="Actions\Shipping.cs" />
     <Compile Include="Actions\TakeCoinToShip.cs" />
-    <Compile Include="Actions\Walk.cs" />
+    <Compile Include="Actions\Moving.cs" />
     <Compile Include="ArrowsCodesHelper.cs" />
     <Compile Include="Board.cs" />
     <Compile Include="CheckedPosition.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="GameOrganizer\IdentifiedPlayer.cs" />
     <Compile Include="GameOrganizer\Results.cs" />
     <Compile Include="GameState.cs" />
+    <Compile Include="GetAllAvaliableMovesTask.cs" />
     <Compile Include="IClonable.cs" />
     <Compile Include="IPlayer.cs" />
     <Compile Include="JsonHelper.cs" />
@@ -81,7 +83,7 @@
     <Compile Include="Players\SmartPlayer2.cs" />
     <Compile Include="Players\SmartPlayerDistCalc.cs" />
     <Compile Include="Position.cs" />
-    <Compile Include="PossibleMove.cs" />
+    <Compile Include="AvaliableMove.cs" />
     <Compile Include="PossibleMoveType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Players\RandomPlayer.cs" />

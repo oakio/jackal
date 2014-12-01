@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Jackal.Actions
 {
+    /*
     class Explore : IGameAction
     {
         private readonly Position _position;
@@ -26,7 +27,7 @@ namespace Jackal.Actions
 
             if (newTile.Type.RequreImmediateMove())
             {
-                var targets = game.Board.GetAllAvaliableMoves(_pirate.TeamId, _position, new List<CheckedPosition>(), _direction);
+                var targets = game.Board.GetAllAvaliableMoves(_pirate.TeamId, new TilePosition(_position), new List<CheckedPosition>(), _direction);
                 if (targets.Count == 0)
                 {
                     game.KillPirate(_pirate);
@@ -41,4 +42,5 @@ namespace Jackal.Actions
             return GameActionResult.Live;
         }
     }
+    */ 
 }

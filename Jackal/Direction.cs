@@ -7,11 +7,11 @@ namespace Jackal
     public class Direction
     {
         [JsonProperty]
-        public readonly Position From;
+        public readonly TilePosition From;
         [JsonProperty]
-        public readonly Position To;
+        public readonly TilePosition To;
 
-        public Direction(Position from, Position to)
+        public Direction(TilePosition from, TilePosition to)
         {
             if (from == null) throw new ArgumentNullException("from");
             if (to == null) throw new ArgumentNullException("to");
@@ -52,7 +52,7 @@ namespace Jackal
 
         public Position GetDelta()
         {
-            return Position.GetDelta(From, To);
+            return Position.GetDelta(From.Position, To.Position);
         }
     }
 }

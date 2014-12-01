@@ -15,7 +15,7 @@ namespace Jackal.Tests
         public void JsonJackalObjects()
         {
             CheckSerialization(new Position(1, 2),true);
-            CheckSerialization(new Direction(new Position(1, 2), new Position(3, 4)),true);
+            CheckSerialization(new Direction(new TilePosition(new Position(1, 2)), new TilePosition(new Position(3, 4))));
             CheckSerialization(new TilePosition( new Position(1, 2),3), true);
         }
 
@@ -31,12 +31,12 @@ namespace Jackal.Tests
             var obj2 = JsonHelper.DeserialiazeWithType<T>(json);
             Assert.IsNotNull(obj2);
             var json2 = JsonHelper.SerialiazeWithType<T>(obj2, Formatting.Indented);
-            if (json == json2)
+            if (json != json2)
             {
                 Console.WriteLine(json);
                 Console.WriteLine(json2);
-                Assert.IsTrue(json == json2);
             }
+            Assert.IsTrue(json == json2);
         }
 
         [TestMethod]

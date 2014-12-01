@@ -18,7 +18,8 @@
                     || type == TileType.Horse
                     || type == TileType.Balloon
                     || type == TileType.Ice
-                    || type == TileType.Croc);
+                    || type == TileType.Croc
+                    || type == TileType.Airplane);
         }
 
         public static bool IsFort(this TileType source)

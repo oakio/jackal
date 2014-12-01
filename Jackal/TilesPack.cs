@@ -25,7 +25,7 @@ namespace Jackal
         {
             for (int i = 1; i <= count; i++)
             {
-                var def = new TileParams(){Type=TileType.Arrow,SpinningCount = spirnningCount};
+                var def = new TileParams(){Type=TileType.Spinning,SpinningCount = spirnningCount};
                 _list.Add(def);
             }
         }
@@ -61,15 +61,15 @@ namespace Jackal
 
 
             //arrows
-            //for (int arrowType = 0; arrowType < ArrowsCodesHelper.ArrowsTypes.Length; arrowType++)
-            //{
-            //    int arrowsCode = ArrowsCodesHelper.ArrowsTypes[arrowType];
-            //    AddArrowDef(arrowsCode, 3);
-            //}
-            //AddSpinningDef(2, 5);
-            //AddSpinningDef(3, 4);
-            //AddSpinningDef(4, 2);
-            //AddSpinningDef(5, 1);
+            for (int arrowType = 0; arrowType < ArrowsCodesHelper.ArrowsTypes.Length; arrowType++)
+            {
+                int arrowsCode = ArrowsCodesHelper.ArrowsTypes[arrowType];
+                AddArrowDef(arrowsCode, 3);
+            }
+            AddSpinningDef(2, 5);
+            AddSpinningDef(3, 4);
+            AddSpinningDef(4, 2);
+            AddSpinningDef(5, 1);
 
             AddDef(TileType.Trap, 3);
 

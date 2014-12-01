@@ -16,8 +16,11 @@ namespace Jackal
 
         [JsonProperty]
         public bool IsDrunk;
-
+        
         internal int? DrunkSinceTurnNo;
+
+        [JsonProperty]
+        public bool IsInTrap;
         
         public Pirate(int teamId, TilePosition position)
         {
@@ -25,5 +28,6 @@ namespace Jackal
             TeamId = teamId;
             Position = position;
         }
+
     }
 }

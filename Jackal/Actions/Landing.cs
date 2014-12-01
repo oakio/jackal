@@ -2,6 +2,7 @@
 
 namespace Jackal.Actions
 {
+    /*
     class Landing : IGameAction
     {
         private readonly Pirate _pirate;
@@ -54,4 +55,5 @@ namespace Jackal.Actions
             return landingPosition;
         }
     }
+     */ 
 }

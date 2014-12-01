@@ -33,7 +33,7 @@ namespace JackalHost
 				new SmartPlayer(), 
 				new SmartPlayer2(),
 				new SmartPlayer2(),
-				new SmartPlayerDistCalc(),
+				new SmartPlayer(),
 			};
 			int mapId = 987412+1;
             board = new Board(players, mapId);

@@ -13,14 +13,14 @@ namespace Jackal.Actions
             _team = team;
         }
 
-        public GameActionResult Act(Game game)
+        public GameActionResult Act(Game game,Pirate pirate)
         {
             Board board = game.Board;
             Tile tile = board.Map[_to];
 
-            Pirate pirate = new Pirate(_team.Id, new TilePosition(_to));
-            _team.Pirates = _team.Pirates.Concat(new[] {pirate}).ToArray();
-            tile.Pirates.Add(pirate);
+            Pirate newPirate = new Pirate(_team.Id, new TilePosition(_to));
+            _team.Pirates = _team.Pirates.Concat(new[] { newPirate }).ToArray();
+            tile.Pirates.Add(newPirate);
             
             return GameActionResult.Live;
         }

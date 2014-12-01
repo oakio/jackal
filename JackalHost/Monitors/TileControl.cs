@@ -50,11 +50,19 @@ namespace JackalHost.Monitors
 	        lblPirates.Visible = true;
 	        lblPirates.BackColor = GetTeamColor(pirates.First().TeamId);
 	        string str = "";
-	        const char drunkChar = '☺';
+	      
+            const char drunkChar = '☺';
 	        int drunkCount = pirates.Count(x => x.IsDrunk);
 	        if (drunkCount > 0)
 	            str += (drunkCount > 1 ? drunkCount.ToString() : "") + drunkChar;
-	        int normalCount = pirates.Count(x => x.IsDrunk == false);
+
+            const char inTrapChar = '☹';
+            int inTrapCount = pirates.Count(x => x.IsInTrap);
+            if (inTrapCount > 0)
+                str += (inTrapCount > 1 ? inTrapCount.ToString() : "") + inTrapChar;
+	      
+
+	        int normalCount = pirates.Count(x => x.IsDrunk == false&&x.IsInTrap==false);
 	        if (normalCount>0)
 	            str += (normalCount > 1 ? normalCount.ToString() : "") + "P";
 	        lblPirates.Text = str;

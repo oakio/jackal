@@ -118,160 +118,108 @@ namespace Jackal
         }
 
 
-        /*
-        public enum SubTurnMoveType
+        public List<AvaliableMove> GetAllAvaliableMoves(GetAllAvaliableMovesTask task)
         {
-            Usual,
-            Horse,
-            Air
+            return GetAllAvaliableMoves(task, task.FirstSource, task.PreviosSource);
         }
-
-        public class SubTurnMove : Direction
-        {
-            public SubTurnMoveType Type;
-        }
-
-        public class BuildMoveRec
-        {
-            public Position Source;
-            public Position Target;
-            public bool WithCoin;
-            public bool WithRespawn;
-            public bool WithAirplane;
-
-            public GameActionResult ActionResult;
-
-            /// <summary>
-            /// Клетки, которые поменялись за ход
-            /// </summary>
-            public List<Position> ChangedTiles;
-            /// <summary>
-            /// Действия
-            /// </summary>
-            public List<IGameAction> Actions;
-
-            public List<SubTurnMove> SubTurnMoves;
-        }
-
-        public class BuildMovesResult
-        {
-            List<BuildMoveRec> rez=new List<BuildMoveRec>();
-        }
-
-        public BuildMovesResult BuildMoves(int teamId, Position source, SubTurnMove previosMove)
-        {
-            BuildMovesResult rez = new BuildMovesResult();
-            var sourceTile = Map[source];
-            if (sourceTile.Type.RequreImmediateMove())
-            {
-                if (previosMove == null)
-                    throw new ArgumentNullException("previosMove");
-            }
-
-            var ourShip = Teams[teamId].Ship;
-
-            var current = source;
-            List<SubTurnMove> currentSubTurnMoves=new List<SubTurnMove>();
-
-            while (true)
-            {
-                var currentTile = Map[current];
-                switch (currentTile.Type)
-                {
-                    case TileType.Water: //ход из воды
-                        if (current == ourShip.Position) //с нашего корабля
-                        {
-                            var target = GetShipLanding(current);
-                            currentSubTurnMoves.Add(new SubTurnMove() {From = current, To = target, Type = SubTurnMoveType.Usual});
-                            current = target;
-                            continue;
-                        }
-                }
-            }
-        }
-        */
 
         /// <summary>
         /// Возвращаем список всех полей, в которые можно попасть из исходного поля
         /// </summary>
-        /// <param name="teamId"></param>
+        /// <param name="task"></param>
         /// <param name="source"></param>
-        /// <param name="alreadyCheckedList"></param>
+        /// <param name="previos"></param>
         /// <returns></returns>
-        public List<PossibleMove> GetAllAvaliableMoves(int teamId, Position source, List<CheckedPosition> alreadyCheckedList = null, Direction previosDirection=null)
+        public List<AvaliableMove> GetAllAvaliableMoves(GetAllAvaliableMovesTask task, TilePosition source, TilePosition previos)
         {
-            if (alreadyCheckedList == null)
-                alreadyCheckedList = new List<CheckedPosition>() { };
+            Direction previosDirection;
+            if (previos != null)
+                previosDirection = new Direction(previos, source);
+            else
+                previosDirection = new Direction(source, source);
 
-            var sourceTile = Map[source];
+            var sourceTile = Map[source.Position];
 
-            var ourShip = Teams[teamId].Ship;
-            bool fromShip = (ourShip.Position == source);
+            var ourTeamId = task.TeamId;
+            var ourTeam = Teams[ourTeamId];
+            var ourShip = ourTeam.Ship;
+            bool fromShip = (ourShip.Position == source.Position);
 
-            List<PossibleMove> goodTargets = new List<PossibleMove>();
+            List<AvaliableMove> goodTargets = new List<AvaliableMove>();
 
-            IEnumerable<Position> positionsForCheck;
+            IEnumerable<TilePosition> positionsForCheck;
 
             if (sourceTile.Type.RequreImmediateMove()) //для клеток с редиректами запоминаем, что в текущую клетку уже не надо возвращаться
             {
                 Position previosMoveDelta = null;
                 if (sourceTile.Type == TileType.Ice)
                     previosMoveDelta = previosDirection.GetDelta();
-                alreadyCheckedList.Add(new CheckedPosition(source, previosMoveDelta)); //запоминаем, что эту клетку просматривать уже не надо
+                task.alreadyCheckedList.Add(new CheckedPosition(source, previosMoveDelta)); //запоминаем, что эту клетку просматривать уже не надо
             }
 
             //места всех возможных ходов
-            positionsForCheck = GetAllTheoreticalMovesForSubturn(source, previosDirection);
+            positionsForCheck = GetAllTargetsForSubturn(source, previosDirection,ourTeam);
 
             foreach (var newPosition in positionsForCheck)
             {
-                if (alreadyCheckedList.Count > 0 && previosDirection!=null)
+                if (task.alreadyCheckedList.Count > 0 && previosDirection!=null)
                 {
-                    Position incomeDelta = Position.GetDelta(previosDirection.To, newPosition);
+                    Position incomeDelta = Position.GetDelta(previosDirection.To.Position, newPosition.Position);
                     CheckedPosition currentCheck = new CheckedPosition(newPosition, incomeDelta);
 
-                    if (WasCheckedBefore(alreadyCheckedList, currentCheck)) //мы попали по рекурсии в ранее просмотренную клетку
+                    if (WasCheckedBefore(task.alreadyCheckedList, currentCheck)) //мы попали по рекурсии в ранее просмотренную клетку
                     {
                         continue;
                     }
                 }
 
                 //проверяем, что на этой клетке
-                var newPositionTile = Map[newPosition];
+                var newPositionTile = Map[newPosition.Position];
 
-                var newMove = new Move(new TilePosition(source), new TilePosition(newPosition), MoveType.Usual);
-
-                if (sourceTile.Type == TileType.Water && newPositionTile.Type != TileType.Water) //выходим из воды
-                {
-                    if (source == ourShip.Position && GetShipLanding(ourShip.Position) == newPosition) //только высадка из корабля
-                        goodTargets.Add(new PossibleMove(newPosition));
-                    continue;
-                }
+                //var newMove = new Move(new TilePosition(source), new TilePosition(newPosition), MoveType.Usual);
 
                 switch (newPositionTile.Type)
                 {
                     case TileType.Water:
-                        if (ourShip.Position == newPosition) //заходим на свой корабль
+                        if (ourShip.Position == newPosition.Position) //заходим на свой корабль
                         {
-                            goodTargets.Add(new PossibleMove(newPosition)); //всегда это можем сделать
+                            goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition))); //всегда это можем сделать
+                            if (Map[task.FirstSource].Coins > 0)
+                                goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition,true))
+                                {
+                                    MoveType = MoveType.WithCoin
+                                }); //всегда это можем сделать
                         }
                         else if (sourceTile.Type == TileType.Water) //из воды в воду 
                         {
-                            if (source != ourShip.Position && GetPosibleSwimming(source).Contains(newPosition)) //пират плавает
-                                goodTargets.Add(new PossibleMove(newPosition));
-                            if (source == ourShip.Position && GetShipPosibleNavaigations(source).Contains(newPosition)) //корабль плавает
-                                goodTargets.Add(new PossibleMove(newPosition));
+                            if (source.Position != ourShip.Position && GetPosibleSwimming(task.FirstSource.Position).Contains(newPosition.Position)) //пират плавает
+                            {
+                                goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)));
+                            }
+                            if (source.Position == ourShip.Position && GetShipPosibleNavaigations(task.FirstSource.Position).Contains(newPosition.Position))
+                            {
+                                //корабль плавает
+                                goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)));
+                            }
                         }
                         else //с земли в воду мы можем попасть только если ранее попали на клетку, требующую действия
                         {
                             if (sourceTile.Type.RequreImmediateMove())
-                                goodTargets.Add(new PossibleMove(newPosition, PossibleMoveType.JumpToWater));
+                                goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)) { WithJumpToWater = true });
                         }
                         break;
                     case TileType.RespawnFort:
+                        if (task.FirstSource == newPosition && ourTeam.Pirates.Count() < 3)
+                            goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition), new Respawn(ourTeam, newPosition.Position))
+                            {
+                                MoveType = MoveType.WithRespawn
+                            });
+                        else if (newPositionTile.OccupationTeamId.HasValue == false || newPositionTile.OccupationTeamId == ourTeamId) //только если форт не занят
+                            goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)));
+                        break;
                     case TileType.Fort:
-                        if (newPositionTile.OccupationTeamId.HasValue == false || newPositionTile.OccupationTeamId == teamId) //только если форт не занят
-                            goodTargets.Add(new PossibleMove(newPosition));
+                        if (newPositionTile.OccupationTeamId.HasValue == false || newPositionTile.OccupationTeamId == ourTeamId) //только если форт не занят
+                            goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)));
                         break;
                     case TileType.Grass:
                     case TileType.Chest1:
@@ -280,17 +228,25 @@ namespace Jackal
                     case TileType.Chest4:
                     case TileType.Chest5:
                     case TileType.RumBarrel:
+                    case TileType.Spinning:
+                    case TileType.Trap:
+                        goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)));
+                        if (Map[task.FirstSource].Coins > 0)
+                            goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition, true))
+                            {
+                                MoveType = MoveType.WithCoin
+                            });
+                        break;
                     case TileType.Unknown:
-                        goodTargets.Add(new PossibleMove(newPosition));
+                        goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)));
                         break;
                     case TileType.Horse:
                     case TileType.Arrow:
                     case TileType.Airplane:
                     case TileType.Balloon:
-                        goodTargets.AddRange(GetAllAvaliableMoves(teamId, newPosition, alreadyCheckedList, new Direction(newMove.From.Position, newMove.To.Position)));
+                        goodTargets.AddRange(GetAllAvaliableMoves(task, newPosition, source));
                         break;
                 }
-
             }
             return goodTargets;
         }
@@ -302,62 +258,115 @@ namespace Jackal
         /// <param name="source"></param>
         /// <param name="previosMove"></param>
         /// <returns></returns>
-        public List<Position> GetAllTheoreticalMovesForSubturn(Position source, Direction previosMove)
+        public List<TilePosition> GetAllTargetsForSubturn(TilePosition source, Direction previosMove,Team ourTeam)
         {
-            var sourceTile = Map[source];
+            var sourceTile = Map[source.Position];
+            var ourShip = ourTeam.Ship;
 
-            IEnumerable<Position> rez;
+            IEnumerable<TilePosition> rez;
             switch (sourceTile.Type)
             {
                 case TileType.Horse:
-                    rez = GetHorseDeltas(source);
+                    rez = GetHorseDeltas(source.Position)
+                        .Select(x => IncomeTilePosition(x));
                     break;
                 case TileType.Arrow:
-                    rez = GetArrowsDeltas(sourceTile.ArrowsCode, source);
+                    rez = GetArrowsDeltas(sourceTile.ArrowsCode, source.Position)
+                        .Select(x => IncomeTilePosition(x));
                     break;
                 case TileType.Balloon:
-                    rez = Teams.Select(x => x.Ship.Position); //на корабль
+                    rez = Teams.Select(x => x.Ship.Position)
+                        .Select(x => IncomeTilePosition(x)); //на корабль
                     break;
                 case TileType.Airplane:
                     if (Map.AirplaneUsed == false)
                     {
-                        rez = Teams.Select(x => x.Ship.Position); //на корабль
+                        var shipTargets = Teams.Select(x => x.Ship.Position)
+                            .Select(x => IncomeTilePosition(x)); //на корабль
                         var airplaneTargets = AllTiles(x => x.Type != TileType.Water
                                                             && x.Type.RequreImmediateMove() == false
                                                             && x.Type != TileType.Airplane)
-                            .Select(x => x.Position);
-                        rez = rez.Concat(airplaneTargets);
+                            .Select(x => x.Position)
+                            .Select(x => IncomeTilePosition(x));
+                        rez = shipTargets.Concat(airplaneTargets);
+                        if (previosMove.From != source)
+                            rez = rez.Concat(new []{source}); //ход "остаемся на месте"
                     }
                     else
                     {
-                        rez = GetNearDeltas(source);
+                        rez = GetNearDeltas(source.Position)
+                            .Where(x => IsValidMapPosition(x))
+                            .Where(x => Map[x].Type != TileType.Water || x == ourShip.Position)
+                            .Select(x => IncomeTilePosition(x));
                     }
                     break;
                 case TileType.Croc:
                     rez = new[] {previosMove.From}; //возвращаемся назад
                     break;
                 case TileType.Ice:
-                    if (Map[previosMove.From].Type == TileType.Horse)
+                    if (Map[previosMove.From.Position].Type == TileType.Horse)
                     {
                         //повторяем ход лошади
-                        rez = GetHorseDeltas(source);
+                        rez = GetHorseDeltas(source.Position)
+                            .Select(x => IncomeTilePosition(x));
                     }
                     else //повторяем предыдущий ход
                     {
                         //TODO - проверка на использование самолета на предыдущем ходу - тогда мы должны повторить ход самолета
                         var previosDelta = previosMove.GetDelta();
-                        Position target = Position.AddDelta(source, previosDelta);
-                        rez = new[] {target};
+                        Position target = Position.AddDelta(source.Position, previosDelta);
+                        rez = new[] { target }.Select(x => IncomeTilePosition(x));
                     }
                     break;
                 case TileType.RespawnFort:
-                    rez= GetNearDeltas(source).Concat(new[]{source});
+                    rez = GetNearDeltas(source.Position)
+                        .Where(x => IsValidMapPosition(x))
+                        .Where(x => Map[x].Type != TileType.Water || x==ourShip.Position)
+                        .Select(x => IncomeTilePosition(x))
+                        .Concat(new[] {source});
+                    break;
+                case TileType.Spinning:
+                    if (source.Level == 0)
+                    {
+                        rez = GetNearDeltas(source.Position)
+                            .Where(x => IsValidMapPosition(x))
+                            .Where(x => Map[x].Type != TileType.Water || x == ourShip.Position)
+                            .Select(x => IncomeTilePosition(x));
+                    }
+                    else
+                    {
+                        rez = new[] {new TilePosition(source.Position, source.Level - 1)};
+                    }
+                    break;
+                case TileType.Water:
+                    if (source.Position == ourShip.Position) //с своего корабля
+                    {
+                        rez = GetShipPosibleNavaigations(source.Position)
+                            .Concat(new[] {GetShipLanding(source.Position)})
+                            .Select(x => IncomeTilePosition(x));
+                    }
+                    else //пират плавает в воде
+                    {
+                        rez = GetPosibleSwimming(source.Position)
+                            .Select(x => IncomeTilePosition(x));
+                    }
                     break;
                 default:
-                    rez = GetNearDeltas(source);
+                    rez = GetNearDeltas(source.Position)
+                        .Where(x => IsValidMapPosition(x))
+                        .Where(x => Map[x].Type != TileType.Water || x == ourShip.Position)
+                        .Select(x => IncomeTilePosition(x));
                     break;
             }
-            return rez.Where(x => IsValidMapPosition(x)).ToList();
+            return rez.Where(x => IsValidMapPosition(x.Position)).ToList();
+        }
+
+        TilePosition IncomeTilePosition(Position pos)
+        {
+            if (IsValidMapPosition(pos) && Map[pos].Type==TileType.Spinning)
+                return new TilePosition(pos,Map[pos].SpinningCount-1);
+            else
+                return new TilePosition(pos);
         }
 
         public static IEnumerable<Position> GetHorseDeltas(Position pos)
@@ -370,6 +379,7 @@ namespace Jackal
                 yield return new Position(pos.X + x, pos.Y + deltaY);
             }
         }
+
 
         public static IEnumerable<Position> GetNearDeltas(Position pos)
         {

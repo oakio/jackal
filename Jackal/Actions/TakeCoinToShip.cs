@@ -2,6 +2,7 @@
 
 namespace Jackal.Actions
 {
+    /*
     class TakeCoinToShip : IGameAction
     {
         private readonly Pirate _pirate;
@@ -18,7 +19,7 @@ namespace Jackal.Actions
             Board board = game.Board;
             var position = _pirate.Position;
             TileLevel tile = board.Map[position];
-            if (tile.Coins == 0 /* || _pirate.Coins > 0 */)
+            if (tile.Coins == 0 )
             {
                 throw new Exception("No coins to ship");
             }
@@ -34,4 +35,5 @@ namespace Jackal.Actions
             return GameActionResult.Live;
         }
     }
+    */
 }

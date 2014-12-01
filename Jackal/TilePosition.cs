@@ -5,22 +5,22 @@ namespace Jackal
 {
     public class TilePosition
     {
-        [JsonProperty]
+        [JsonProperty] 
         public readonly Position Position;
 
-       [JsonIgnore]
+        [JsonIgnore]
         public int X
         {
             get { return Position.X; }
         }
 
-       [JsonIgnore]
-       public int Y
+        [JsonIgnore]
+        public int Y
         {
             get { return Position.Y; }
         }
 
-        [JsonProperty]
+        [JsonProperty] 
         public readonly int Level;
 
         public TilePosition(Position position, int level = 0)

@@ -2,10 +2,10 @@
 {
     public class CheckedPosition
     {
-        public Position Position;
+        public TilePosition Position;
         public Position IncomeDelta;
 
-        public CheckedPosition(Position position, Position incomeDelta = null)
+        public CheckedPosition(TilePosition position, Position incomeDelta = null)
         {
             Position = position;
             IncomeDelta = incomeDelta;

@@ -2,16 +2,13 @@
 {
     class Dying : IGameAction
     {
-        private readonly Pirate _pirate;
-
-        public Dying(Pirate pirate)
+        public Dying()
         {
-            _pirate = pirate;
         }
 
-        public GameActionResult Act(Game game)
+        public GameActionResult Act(Game game,Pirate pirate)
         {
-            game.KillPirate(_pirate);
+            game.KillPirate(pirate);
 
             return GameActionResult.Die;
         }

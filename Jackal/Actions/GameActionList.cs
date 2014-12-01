@@ -2,7 +2,7 @@
 
 namespace Jackal.Actions
 {
-    class GameActionList : IGameAction
+    public class GameActionList : IGameAction
     {
         private readonly List<IGameAction> _actions;
 
@@ -11,11 +11,11 @@ namespace Jackal.Actions
             _actions = new List<IGameAction>(actions);
         }
 
-        public GameActionResult Act(Game game)
+        public GameActionResult Act(Game game,Pirate pirate)
         {
             foreach (var action in _actions)
             {
-                var rez=action.Act(game);
+                var rez = action.Act(game, pirate);
                 if (rez == GameActionResult.Die)
                     return GameActionResult.Die;
             }

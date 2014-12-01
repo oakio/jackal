@@ -1,5 +1,6 @@
 ﻿namespace Jackal.Actions
 {
+    /*
     class Attack : IGameAction
     {
         private readonly Position _to;
@@ -27,4 +28,5 @@
             return GameActionResult.Live;
         }
     }
+    */ 
 }

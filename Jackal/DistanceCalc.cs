@@ -147,19 +147,26 @@ namespace Jackal
 				do
 				{
 					var newPos = new List<CalcPosition>();
-					foreach (var pos in _lastCalculatedStep)
-					{
-						_lastCalculatedStepNumber++;
-						var position = pos;
-						//TODO: Вызывать правильную функцию GetAllAvaliableMoves с результатами которые отдаются плеерам для хода
-						//TODO: если нужны только ходы с золотом - из результатов убирать ходы без золота
-						//Не проверяем ходы до клеток, до которых уже просчитали самые короткие маршруты
-						newPos.AddRange(_board.GetAllAvaliableMoves(_teamId, position.Position, _calculated.Where(c=>c.Value.IsShortestDistance(_unknownSteps)).Select(c=>new CheckedPosition(c.Value.Position)).ToList())
-										.Select(p => new CalcPosition(position.Distance + position.SelfDistance(_board, _unknownSteps), p.Target, _lastCalculatedStepNumber))
-										.ToList());
-					}
+				    foreach (var pos in _lastCalculatedStep)
+				    {
+				        _lastCalculatedStepNumber++;
+				        var position = pos;
+				        //TODO: Вызывать правильную функцию GetAllAvaliableMoves с результатами которые отдаются плеерам для хода
+				        //TODO: если нужны только ходы с золотом - из результатов убирать ходы без золота
+				        //Не проверяем ходы до клеток, до которых уже просчитали самые короткие маршруты
+				        var checkedPositions = _calculated.Where(c => c.Value.IsShortestDistance(_unknownSteps)).Select(c => new CheckedPosition(new TilePosition(c.Value.Position))).ToList();
 
-					_lastCalculatedStep = AddStepPositions(newPos);
+				        var task = new GetAllAvaliableMovesTask();
+				        task.TeamId = _teamId;
+                        task.alreadyCheckedList=new List<CheckedPosition>(checkedPositions);
+				        task.FirstSource = new TilePosition( position.Position);
+				        var avaliableMoves = _board.GetAllAvaliableMoves(task);
+				        newPos.AddRange(avaliableMoves
+				            .Select(p => new CalcPosition(position.Distance + position.SelfDistance(_board, _unknownSteps), p.Target.Position, _lastCalculatedStepNumber))
+				            .ToList());
+				    }
+
+				    _lastCalculatedStep = AddStepPositions(newPos);
 
 					if (!_lastCalculatedStep.Any())
 					{
