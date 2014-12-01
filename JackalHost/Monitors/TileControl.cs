@@ -34,12 +34,12 @@ namespace JackalHost.Monitors
             }
 
             var tilePirates = pirates.Where(item => item.Position.Position == tile.Position).ToList();
-            DrawPirates(tilePirates);
+            DrawPirates(tile, tilePirates);
             DrawGold(tileShip == null ? tile.Coins : tileShip.Coins);
             DrawTileBackground(tile, tileShip);
         }
 
-	    private void DrawPirates(List<Pirate> pirates)
+        private void DrawPirates(Tile tile, List<Pirate> pirates)
 	    {
 	        if (pirates == null || pirates.Count == 0)
 	        {
@@ -50,7 +50,12 @@ namespace JackalHost.Monitors
 	        lblPirates.Visible = true;
 	        lblPirates.BackColor = GetTeamColor(pirates.First().TeamId);
 	        string str = "";
-	      
+
+            const char loveChar = '❤';
+            int inLoveCount = pirates.Count(x => x.IsInLove);
+            if (inLoveCount > 0)
+                str += (inLoveCount > 1 ? inLoveCount.ToString() : "") + loveChar;
+
             const char drunkChar = '☺';
 	        int drunkCount = pirates.Count(x => x.IsDrunk);
 	        if (drunkCount > 0)
@@ -61,11 +66,15 @@ namespace JackalHost.Monitors
             if (inTrapCount > 0)
                 str += (inTrapCount > 1 ? inTrapCount.ToString() : "") + inTrapChar;
 	      
-
-	        int normalCount = pirates.Count(x => x.IsDrunk == false&&x.IsInTrap==false);
-	        if (normalCount>0)
+	        int normalCount = pirates.Count(x => x.IsDrunk == false && x.IsInTrap==false);
+	        if (normalCount > 0)
 	            str += (normalCount > 1 ? normalCount.ToString() : "") + "P";
-	        lblPirates.Text = str;
+	        
+            lblPirates.Text = str;
+            if(tile.Type == TileType.Spinning)
+            {
+
+            }
 	    }
 
 	    private void DrawGold(int goldCount)

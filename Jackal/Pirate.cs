@@ -21,6 +21,12 @@ namespace Jackal
 
         [JsonProperty]
         public bool IsInTrap;
+
+        /// <summary>
+        /// todo Устанавливать, если пират нашел женщину
+        /// </summary>
+        [JsonProperty]
+        public bool IsInLove;
         
         public Pirate(int teamId, TilePosition position)
         {
@@ -28,6 +34,5 @@ namespace Jackal
             TeamId = teamId;
             Position = position;
         }
-
     }
 }

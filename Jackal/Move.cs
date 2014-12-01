@@ -59,20 +59,5 @@ namespace Jackal
             : this(new TilePosition(from), new TilePosition(to), type)
         {
         }
-
-        public override string ToString()
-        {
-            string str = string.Format("{0},{1}", From, To);
-            switch (Type)
-            {
-                case MoveType.WithCoin:
-                    str += '+';
-                    break;
-                case MoveType.WithRespawn:
-                    str += '❤';
-                    break;
-            }
-            return str;
-        }
 	}
 }
