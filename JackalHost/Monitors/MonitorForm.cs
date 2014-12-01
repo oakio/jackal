@@ -97,7 +97,7 @@ namespace JackalHost.Monitors
                     var board = game.Board;
                     var tile = board.Map[x, y];
                     var ships = board.Teams.Select(item => item.Ship).ToList();
-                    Draw(tile, ships, board.AllPirates);
+                    Draw(tile, ships);
                 }
             }
         }
@@ -194,13 +194,13 @@ namespace JackalHost.Monitors
                         tile.Type != prevTile.Type ||
                         tile.Coins != prevTile.Coins)
                     {
-                        Draw(tile, ships, board.AllPirates);
+                        Draw(tile, ships);
                     }         
                 }
             }
         }
 
-        private void Draw(Tile tile, List<Ship> ships, List<Pirate> pirates)
+        private void Draw(Tile tile, List<Ship> ships)
         {
             try
             {
@@ -216,12 +216,12 @@ namespace JackalHost.Monitors
                 {
                     tileControl.Invoke(new Action(() =>
                     {
-                        tileControl.Draw(tile, ships, pirates);
+                        tileControl.Draw(tile, ships);
                     }));
                 }
                 else
                 {
-                    tileControl.Draw(tile, ships, pirates);
+                    tileControl.Draw(tile, ships);
                 }
             }
             catch (Exception)

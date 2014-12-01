@@ -28,21 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblPirates = new System.Windows.Forms.Label();
             this.lblGold = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
-            // lblPirates
-            // 
-            this.lblPirates.AutoSize = true;
-            this.lblPirates.Dock = System.Windows.Forms.DockStyle.Left;
-            this.lblPirates.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lblPirates.ForeColor = System.Drawing.Color.White;
-            this.lblPirates.Location = new System.Drawing.Point(0, 0);
-            this.lblPirates.Name = "lblPirates";
-            this.lblPirates.Size = new System.Drawing.Size(26, 29);
-            this.lblPirates.TabIndex = 0;
-            this.lblPirates.Text = "0";
             // 
             // lblGold
             // 
@@ -65,7 +52,6 @@
             this.BackColor = System.Drawing.SystemColors.Control;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.Controls.Add(this.lblGold);
-            this.Controls.Add(this.lblPirates);
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "TileControl";
             this.Size = new System.Drawing.Size(56, 57);
@@ -76,7 +62,6 @@
 
         #endregion
 
-        public System.Windows.Forms.Label lblPirates;
-		public System.Windows.Forms.Label lblGold;
+        public System.Windows.Forms.Label lblGold;
     }
 }

@@ -17,7 +17,7 @@ namespace JackalHost.Monitors
 			InitializeComponent();
 		}
 
-        public void Draw(Tile tile, List<Ship> ships, List<Pirate> pirates)
+        public void Draw(Tile tile, List<Ship> ships)
         {
             var tileShip = ships.FirstOrDefault(item => item.Position == tile.Position);
             if (tileShip != null)
@@ -33,61 +33,152 @@ namespace JackalHost.Monitors
                 BackColor = SystemColors.Control;
             }
 
-            var tilePirates = pirates.Where(item => item.Position.Position == tile.Position).ToList();
-            DrawPirates(tile, tilePirates);
-            DrawGold(tileShip == null ? tile.Coins : tileShip.Coins);
+            Controls.Clear();
+            for (int i = 0; i < tile.Levels.Count; i++)
+            {
+                var level = tile.Levels[i];
+                DrawPirates(level, i, tile.Levels.Count, tileShip);
+            }      
             DrawTileBackground(tile, tileShip);
         }
 
-        private void DrawPirates(Tile tile, List<Pirate> pirates)
+        private void DrawPirates(TileLevel level, int levelIndex, int levelCount, Ship tileShip)
 	    {
-	        if (pirates == null || pirates.Count == 0)
-	        {
-	            lblPirates.Visible = false;
-	            return;
-	        }
-
-	        lblPirates.Visible = true;
-	        lblPirates.BackColor = GetTeamColor(pirates.First().TeamId);
-	        string str = "";
-
-            const char loveChar = '❤';
-            int inLoveCount = pirates.Count(x => x.IsInLove);
-            if (inLoveCount > 0)
-                str += (inLoveCount > 1 ? inLoveCount.ToString() : "") + loveChar;
-
-            const char drunkChar = '☺';
-	        int drunkCount = pirates.Count(x => x.IsDrunk);
-	        if (drunkCount > 0)
-	            str += (drunkCount > 1 ? drunkCount.ToString() : "") + drunkChar;
-
-            const char inTrapChar = '☹';
-            int inTrapCount = pirates.Count(x => x.IsInTrap);
-            if (inTrapCount > 0)
-                str += (inTrapCount > 1 ? inTrapCount.ToString() : "") + inTrapChar;
-	      
-	        int normalCount = pirates.Count(x => x.IsDrunk == false && x.IsInTrap==false);
-	        if (normalCount > 0)
-	            str += (normalCount > 1 ? normalCount.ToString() : "") + "P";
-	        
-            lblPirates.Text = str;
-            if(tile.Type == TileType.Spinning)
+            int width = Width / 4;
+            int height = Height / 4;
+            int locX = 0;
+            int locY = 0;
+            if (levelCount == 5)
             {
+                if (levelIndex == 4)
+                {
+                    locX = 2 * width;
+                    locY = 0;
+                }
+                if (levelIndex == 3)
+                {
+                    locX = 0;
+                    locY = 0;
+                }
+                if (levelIndex == 2)
+                {
+                    locX = 0;
+                    locY = 2 * height;
+                }
+                if (levelIndex == 1)
+                {
+                    locX = 0;
+                    locY = 3 * height;
+                }
+                if (levelIndex == 0)
+                {
+                    locX = 2 * width;
+                    locY = 3 * height;
+                }
+            }
+            if (levelCount == 4)
+            {
+                if (levelIndex == 3)
+                {
+                    locX = 2 * width;
+                    locY = 3 * height;
+                }
+                if (levelIndex == 2)
+                {
+                    locX = 0;
+                    locY = 2 * height;
+                }
+                if (levelIndex == 1)
+                {
+                    locX = 2 * width;
+                    locY = height;
+                }
+                if (levelIndex == 0)
+                {
+                    locX = 0;
+                    locY = 0;
+                }
+            }
+            if(levelCount == 3)
+            {
+                if (levelIndex == 2)
+                {
+                    locX = 2 * width;
+                    locY = 3 * height;
+                }
+                if (levelIndex == 1)
+                {
+                    locX = width;
+                    locY = height;
+                }
+                if (levelIndex == 0)
+                {
+                    locX = 2 * width;
+                    locY = 0;
+                }
+            }
+            if (levelCount == 2)
+            {
+                if (levelIndex == 1)
+                {
+                    locX = 0;
+                    locY = 3 * height;
+                }
+                if (levelIndex == 0)
+                {
+                    locX = 2 * width;
+                    locY = 0;
+                }
+            }
 
+            var pirates = level.Pirates;
+            if (pirates != null && pirates.Count > 0)
+            {
+                var lblPirates = new Label();
+                lblPirates.ForeColor = Color.White;
+                lblPirates.BackColor = GetTeamColor(pirates.First().TeamId);
+                lblPirates.Size = new Size(width, height);
+                lblPirates.Location = new Point(locX, locY);
+
+                string str = "";
+                const char loveChar = '❤';
+                int inLoveCount = pirates.Count(x => x.IsInLove);
+                if (inLoveCount > 0)
+                    str += (inLoveCount > 1 ? inLoveCount.ToString() : "") + loveChar;
+
+                const char drunkChar = '☺';
+                int drunkCount = pirates.Count(x => x.IsDrunk);
+                if (drunkCount > 0)
+                    str += (drunkCount > 1 ? drunkCount.ToString() : "") + drunkChar;
+
+                const char inTrapChar = '☹';
+                int inTrapCount = pirates.Count(x => x.IsInTrap);
+                if (inTrapCount > 0)
+                    str += (inTrapCount > 1 ? inTrapCount.ToString() : "") + inTrapChar;
+
+                int normalCount = pirates.Count(x => x.IsDrunk == false && x.IsInTrap == false);
+                if (normalCount > 0)
+                    str += (normalCount > 1 ? normalCount.ToString() : "") + "P";
+
+                lblPirates.Text = str;
+                Controls.Add(lblPirates);
+            }
+
+            if ((tileShip != null && tileShip.Coins > 0) || level.Coins > 0)
+            {
+                var lblGold = new Label();
+                lblGold.ForeColor = Color.Black;
+                lblGold.BackColor = Color.Gold;
+                lblGold.Size = new Size(width, height);
+                lblGold.Location = new Point(
+                    pirates != null && pirates.Count > 0 ? locX + width : locX, locY
+                );
+
+                int coins = tileShip != null ? tileShip.Coins : level.Coins;
+                lblGold.Text = coins.ToString();
+                Controls.Add(lblGold);
             }
 	    }
-
-	    private void DrawGold(int goldCount)
-        {
-            if (goldCount == 0)
-            {
-                lblGold.Visible = false;
-                return;
-            }
-
-            lblGold.Text = goldCount.ToString();
-            lblGold.Visible = true;
-        }
 
 	    private void DrawTileBackground(Tile tile, Ship ship)
 	    {
