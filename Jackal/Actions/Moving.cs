@@ -156,26 +156,30 @@ namespace Jackal.Actions
             }
 
             //проводим пьянку для пирата
-            if (_targetTile.Type == TileType.RumBarrel)
+            switch (_targetTile.Type)
             {
-                pirate.DrunkSinceTurnNo = game.TurnNo;
-                pirate.IsDrunk = true;
-            }
-            //пирата попадает в ловушку
-            else if (_targetTile.Type == TileType.Trap)
-            {
-                if (_targetTile.Pirates.Count == 1)
-                {
-                    pirate.IsInTrap = true;
-                }
-                else
-                {
-                    foreach (Pirate pirateOnTile in _targetTile.Pirates)
+                case TileType.RumBarrel:
+                    pirate.DrunkSinceTurnNo = game.TurnNo;
+                    pirate.IsDrunk = true;
+                    break;
+                case TileType.Trap:
+                    if (_targetTile.Pirates.Count == 1)
                     {
-                        pirateOnTile.IsInTrap = false;
+                        pirate.IsInTrap = true;
                     }
-                }
+                    else
+                    {
+                        foreach (Pirate pirateOnTile in _targetTile.Pirates)
+                        {
+                            pirateOnTile.IsInTrap = false;
+                        }
+                    }
+                    break;
+                case TileType.Canibal:
+                    game.KillPirate(pirate);
+                    return GameActionResult.Die;
             }
+
             return GameActionResult.Live;
         }
     }

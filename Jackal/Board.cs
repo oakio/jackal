@@ -221,6 +221,11 @@ namespace Jackal
                         if (newPositionTile.OccupationTeamId.HasValue == false || newPositionTile.OccupationTeamId == ourTeamId) //только если форт не занят
                             goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)));
                         break;
+
+                    case TileType.Canibal:
+                        goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)));
+                        break;
+
                     case TileType.Grass:
                     case TileType.Chest1:
                     case TileType.Chest2:
@@ -231,7 +236,8 @@ namespace Jackal
                     case TileType.Spinning:
                     case TileType.Trap:
                         goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)));
-                        if (task.AddCoinMoving && Map[task.FirstSource].Coins > 0)
+                        if (task.AddCoinMoving && Map[task.FirstSource].Coins > 0 &&
+                            (newPositionTile.OccupationTeamId == null || newPositionTile.OccupationTeamId == ourTeamId))
                             goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition, true))
                             {
                                 MoveType = MoveType.WithCoin
