@@ -79,6 +79,7 @@
     <Compile Include="MoveType.cs" />
     <Compile Include="Pirate.cs" />
     <Compile Include="Players\BlankPlayer.cs" />
+    <Compile Include="Players\HumanPlayer.cs" />
     <Compile Include="Players\MikePlayer.cs" />
     <Compile Include="Players\SmartPlayer2.cs" />
     <Compile Include="Players\SmartPlayerDistCalc.cs" />
