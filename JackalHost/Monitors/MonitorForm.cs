@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading;
 using System.Windows.Forms;
 using System.Drawing;
@@ -168,16 +169,47 @@ namespace JackalHost.Monitors
         public void Draw(Board board, Board prevBoard)
         {
             var ships = board.Teams.Select(item => item.Ship).ToList();
+            /*
             var diffPiratesList =
                 from curr in board.AllPirates
                 join prev in prevBoard.AllPirates on curr.Id equals prev.Id
                 where curr.Position != prev.Position
                 select new List<Pirate> { curr, prev };
+            */
+
+            var diffPositions = new HashSet<Position>();
+
+            //нам нужны координаты клеток, где поменялось расположение пиратов
+            var idList = board.AllPirates.Union(prevBoard.AllPirates).Select(x => x.Id).Distinct();
+            foreach (var guid in idList)
+            {
+                var newPirate = board.AllPirates.FirstOrDefault(x => x.Id == guid);
+                var oldPirate = prevBoard.AllPirates.FirstOrDefault(x => x.Id == guid);
+                if (newPirate == null)
+                {
+                    diffPositions.Add(oldPirate.Position.Position);
+                }
+                else if (oldPirate == null)
+                {
+                    diffPositions.Add(newPirate.Position.Position);
+                }
+                else if (oldPirate.Position != newPirate.Position
+                         || oldPirate.IsDrunk != newPirate.IsDrunk
+                         || oldPirate.IsInTrap != newPirate.IsInTrap
+                         || oldPirate.IsInLove != newPirate.IsInLove)
+                {
+                    diffPositions.Add(oldPirate.Position.Position);
+                    diffPositions.Add(newPirate.Position.Position);
+                }
+            }
+
+            /*
             var diffPositions = new List<Position>();
             foreach (var pirates in diffPiratesList)
             {
                 diffPositions.AddRange(pirates.Select(item => item.Position.Position).ToList());
             }
+            */
 
             for (int y = 0; y < Board.Size; y++)
             {
@@ -185,17 +217,14 @@ namespace JackalHost.Monitors
                 {
                     var tile = board.Map[x, y];
                     var prevTile = prevBoard.Map[x, y];
-                    bool isDiffPosition = diffPositions.Any(
-                        item => item == tile.Position ||
-                        item == prevTile.Position
-                    );
+                    bool isDiffPosition = diffPositions.Any(item => item == tile.Position || item == prevTile.Position);
 
-                    if (isDiffPosition ||
-                        tile.Type != prevTile.Type ||
-                        tile.Coins != prevTile.Coins)
+                    if (isDiffPosition
+                        || tile.Type != prevTile.Type
+                        || tile.Coins != prevTile.Coins)
                     {
                         Draw(tile, ships);
-                    }         
+                    }
                 }
             }
         }
