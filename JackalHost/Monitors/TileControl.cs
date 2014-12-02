@@ -37,107 +37,132 @@ namespace JackalHost.Monitors
             for (int i = 0; i < tile.Levels.Count; i++)
             {
                 var level = tile.Levels[i];
-                DrawPirates(level, i, tile.Levels.Count, tileShip);
-            }      
+                DrawPiratesAndCoins(level, i, tile.Levels.Count, tileShip);
+            }
             DrawTileBackground(tile, tileShip);
         }
 
-        private void DrawPirates(TileLevel level, int levelIndex, int levelCount, Ship tileShip)
+        private void DrawPiratesAndCoins(TileLevel level, int levelIndex, int levelCount, Ship tileShip)
 	    {
-            int width = Width / 4;
-            int height = Height / 4;
+            var pirates = level.Pirates;
+            bool hasPirates = pirates != null && pirates.Count > 0;
+            bool hasCoins = (tileShip != null && tileShip.Coins > 0) || level.Coins > 0;
+
             int locX = 0;
             int locY = 0;
-            if (levelCount == 5)
+            int width = Width / 4;
+            int height = Height / 4;
+
+            // calc location
+            switch(levelCount)
             {
-                if (levelIndex == 4)
+                case 5:
                 {
-                    locX = 2 * width;
-                    locY = 0;
+                    if (levelIndex == 4)
+                    {
+                        locX = hasCoins ? 2 * width : 3 * width;
+                        locY = 0;
+                    }
+                    if (levelIndex == 3)
+                    {
+                        locX = hasCoins ? 0 : width;
+                        locY = 0;
+                    }
+                    if (levelIndex == 2)
+                    {
+                        locX = 0;
+                        locY = (int)(1.4 * height);
+                    }
+                    if (levelIndex == 1)
+                    {
+                        locX = 0;
+                        locY = 3 * height;
+                    }
+                    if (levelIndex == 0)
+                    {
+                        locX = hasCoins ? 2 * width : 3 * width;
+                        locY = 3 * height;
+                    }
+                    break;
                 }
-                if (levelIndex == 3)
+                case 4:
                 {
-                    locX = 0;
-                    locY = 0;
+                    if (levelIndex == 3)
+                    {
+                        locX = hasCoins ? 2 * width : 3 * width;
+                        locY = 3 * height;
+                    }
+                    if (levelIndex == 2)
+                    {
+                        locX = 0;
+                        locY = (int)(2.4 * height);
+                    }
+                    if (levelIndex == 1)
+                    {
+                        locX = 2 * width;
+                        locY = (int)(0.8 * height);
+                    }
+                    if (levelIndex == 0)
+                    {
+                        locX = 0;
+                        locY = 0;
+                    }
+                    break;
                 }
-                if (levelIndex == 2)
+                case 3:
                 {
-                    locX = 0;
-                    locY = 2 * height;
+                    if (levelIndex == 2)
+                    {
+                        locX = hasCoins ? 2 * width : 3 * width;
+                        locY = 3 * height;
+                    }
+                    if (levelIndex == 1)
+                    {
+                        locX = width;
+                        locY = (int)(1.4 * height);
+                    }
+                    if (levelIndex == 0)
+                    {
+                        locX = hasCoins ? 2 * width : 3 * width;
+                        locY = 0;
+                    }
+                    break;
                 }
-                if (levelIndex == 1)
+                case 2:
                 {
-                    locX = 0;
-                    locY = 3 * height;
+                    if (levelIndex == 1)
+                    {
+                        locX = 0;
+                        locY = 3 * height;
+                    }
+                    if (levelIndex == 0)
+                    {
+                        locX = hasCoins ? 2 * width : 3 * width;
+                        locY = 0;
+                    }
+                    break;
                 }
-                if (levelIndex == 0)
+                case 1:
                 {
-                    locX = 2 * width;
-                    locY = 3 * height;
-                }
-            }
-            if (levelCount == 4)
-            {
-                if (levelIndex == 3)
-                {
-                    locX = 2 * width;
-                    locY = 3 * height;
-                }
-                if (levelIndex == 2)
-                {
-                    locX = 0;
-                    locY = 2 * height;
-                }
-                if (levelIndex == 1)
-                {
-                    locX = 2 * width;
-                    locY = height;
-                }
-                if (levelIndex == 0)
-                {
-                    locX = 0;
-                    locY = 0;
-                }
-            }
-            if(levelCount == 3)
-            {
-                if (levelIndex == 2)
-                {
-                    locX = 2 * width;
-                    locY = 3 * height;
-                }
-                if (levelIndex == 1)
-                {
-                    locX = width;
-                    locY = height;
-                }
-                if (levelIndex == 0)
-                {
-                    locX = 2 * width;
-                    locY = 0;
-                }
-            }
-            if (levelCount == 2)
-            {
-                if (levelIndex == 1)
-                {
-                    locX = 0;
-                    locY = 3 * height;
-                }
-                if (levelIndex == 0)
-                {
-                    locX = 2 * width;
-                    locY = 0;
+                    width = Width / 3;
+                    height = Height / 3;
+                    break;
                 }
             }
 
-            var pirates = level.Pirates;
-            if (pirates != null && pirates.Count > 0)
+            // draw pirates
+            if (hasPirates)
             {
                 var lblPirates = new Label();
                 lblPirates.ForeColor = Color.White;
                 lblPirates.BackColor = GetTeamColor(pirates.First().TeamId);
+                lblPirates.TextAlign = ContentAlignment.MiddleCenter;
                 lblPirates.Size = new Size(width, height);
+
+                if (levelCount == 1)
+                {
+                    lblPirates.Font = new Font("Microsoft Sans Serif", 12);
+                }
                 lblPirates.Location = new Point(locX, locY);
 
                 string str = "";
@@ -164,17 +189,27 @@ namespace JackalHost.Monitors
                 Controls.Add(lblPirates);
             }
 
-            if ((tileShip != null && tileShip.Coins > 0) || level.Coins > 0)
+            // draw coins
+            if (hasCoins)
             {
+                int coins = tileShip != null ? tileShip.Coins : level.Coins;
+
                 var lblGold = new Label();
                 lblGold.ForeColor = Color.Black;
                 lblGold.BackColor = Color.Gold;
+                lblGold.TextAlign = ContentAlignment.MiddleCenter;
                 lblGold.Size = new Size(width, height);
-                lblGold.Location = new Point(
-                    pirates != null && pirates.Count > 0 ? locX + width : locX, locY
-                );
 
-                int coins = tileShip != null ? tileShip.Coins : level.Coins;
+                if (levelCount == 1)
+                {
+                    lblGold.Font =  new Font("Microsoft Sans Serif", coins > 9 ? 9 : 12);
+                    locX = 2 * width;
+                }
+                else if (hasPirates)
+                {
+                    locX = locX + width;
+                }
+                lblGold.Location = new Point(locX, locY);
                 lblGold.Text = coins.ToString();
                 Controls.Add(lblGold);
             }
