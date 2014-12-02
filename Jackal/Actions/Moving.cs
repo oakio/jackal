@@ -87,8 +87,11 @@ namespace Jackal.Actions
                 return GameActionResult.Die;
             }
 
+            var fromTileLevel = map[_from];
+            var targetTileLevel = map[_to];
+
             //убиваем чужих пиратов
-            var enemyPirates = _targetTile.Pirates.Where(x => x.TeamId != pirate.TeamId).ToList();
+            var enemyPirates = targetTileLevel.Pirates.Where(x => x.TeamId != pirate.TeamId).ToList();
             foreach (var enemyPirate in enemyPirates)
             {
                 Team enemyTeam = board.Teams[enemyPirate.TeamId];
@@ -112,9 +115,7 @@ namespace Jackal.Actions
 
             //двигаем своего пирата
 
-            var fromTile = map[_from];
-            var targetTileLevel = map[_to];
-
+          
             if (_from.Position == ourShip.Position && _targetTile.Type==TileType.Water) //это мы сдвигаем корабль
             {
                 var pirateOnShips = map[ourShip.Position].Pirates;
@@ -128,7 +129,7 @@ namespace Jackal.Actions
             }
             else //сдвигает только своего пирата
             {
-                fromTile.Pirates.Remove(pirate);
+                fromTileLevel.Pirates.Remove(pirate);
 
                 pirate.Position = _to;
                 targetTileLevel.Pirates.Add(pirate);
@@ -136,9 +137,9 @@ namespace Jackal.Actions
 
             if (_withCoin)
             {
-                if (fromTile.Coins == 0) throw new Exception("No coins");
+                if (fromTileLevel.Coins == 0) throw new Exception("No coins");
 
-                fromTile.Coins--;
+                fromTileLevel.Coins--;
                 if (ourTeam.Ship.Position != _to.Position)
                 {
                     targetTileLevel.Coins++;

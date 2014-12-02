@@ -264,6 +264,7 @@ namespace Jackal
                     case TileType.Arrow:
                     case TileType.Airplane:
                     case TileType.Balloon:
+                    case TileType.Ice:
                         goodTargets.AddRange(GetAllAvaliableMoves(task, newPosition, source));
                         break;
                 }
