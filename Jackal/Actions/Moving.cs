@@ -52,7 +52,7 @@ namespace Jackal.Actions
                 {
                     var task = new GetAllAvaliableMovesTask();
                     task.TeamId = pirate.TeamId;
-                    task.AddCoinMoving = false;
+                    task.NoCoinMoving = true;
                     task.FirstSource = _to;
                     task.PreviosSource = _from;
 

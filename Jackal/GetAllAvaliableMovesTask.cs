@@ -8,6 +8,11 @@ namespace Jackal
         public List<CheckedPosition> alreadyCheckedList = new List<CheckedPosition>();
         public TilePosition FirstSource;
         public TilePosition PreviosSource;
-        public bool AddCoinMoving = true;
+        public bool NoCoinMoving ;
+        public bool NoTrap;
+        public bool NoCanibal;
+        public bool NoRespawn;
+        public bool NoJumpToWater;
+        public bool NoFort;
     }
 }

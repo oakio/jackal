@@ -70,12 +70,16 @@ namespace Jackal
                 Pirate pirate = Board.Teams[CurrentTeamId].Pirates.First(x => x.Position == _availableMoves[moveNo].From);
                 action.Act(this, pirate);
             }
-            else //у нас нет возможных ходов - все трезвые пираты гибнут
+            else //у нас нет возможных ходов - тогда если все трезвые, то все гибнут
             {
-                var allNotDrunkPirates = Board.Teams[CurrentTeamId].Pirates.Where(x => x.IsDrunk == false);
-                foreach (var pirate in allNotDrunkPirates)
+                var allPirates = Board.Teams[CurrentTeamId].Pirates.ToList();
+                bool allNotDrunkPirates = allPirates.All(x => x.IsDrunk == false);
+                if (allNotDrunkPirates)
                 {
-                    KillPirate(pirate);
+                    foreach (var pirate in allPirates)
+                    {
+                        KillPirate(pirate);
+                    }
                 }
             }
 

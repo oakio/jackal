@@ -160,6 +160,8 @@ namespace Jackal
 				        task.TeamId = _teamId;
                         task.alreadyCheckedList=new List<CheckedPosition>(checkedPositions);
 				        task.FirstSource = new TilePosition( position.Position);
+				        task.NoJumpToWater = true;
+				        task.NoCanibal = true;
 				        var avaliableMoves = _board.GetAllAvaliableMoves(task);
 				        newPos.AddRange(avaliableMoves
 				            .Select(p => new CalcPosition(position.Distance + position.SelfDistance(_board, _unknownSteps), p.Target.Position, _lastCalculatedStepNumber))
