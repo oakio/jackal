@@ -15,6 +15,9 @@ namespace Jackal
         public readonly int ArrowsCode;
 
         [JsonProperty]
+		public readonly int CannonDirection;
+		
+		[JsonProperty]
         public readonly int SpinningCount;
 
         /// <summary>
@@ -71,6 +74,7 @@ namespace Jackal
             }
             ArrowsCode = tileParams.ArrowsCode;
             SpinningCount = tileParams.SpinningCount;
-        }
-    }
+	        CannonDirection = tileParams.CanonDirection;
+		}
+	}
 }

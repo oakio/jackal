@@ -5,6 +5,7 @@
         public Position Position;
         public TileType Type;
         public int ArrowsCode;
+		public int CanonDirection;
         public int SpinningCount;
 
 

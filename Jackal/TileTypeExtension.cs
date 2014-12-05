@@ -16,6 +16,7 @@
         {
             return (type == TileType.Arrow
                     || type == TileType.Horse
+					|| type == TileType.Cannon
                     || type == TileType.Balloon
                     || type == TileType.Ice
                     || type == TileType.Croc

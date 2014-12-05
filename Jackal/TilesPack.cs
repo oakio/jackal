@@ -59,6 +59,7 @@ namespace Jackal
             AddDef(TileType.Croc, 4);
             AddDef(TileType.Ice, 6);
 
+			AddDef(TileType.Cannon, 10);
 
             //arrows
             for (int arrowType = 0; arrowType < ArrowsCodesHelper.ArrowsTypes.Length; arrowType++)

@@ -266,6 +266,7 @@ namespace Jackal
                     case TileType.Balloon:
                     case TileType.Ice:
                     case TileType.Croc:
+					case TileType.Cannon:
                         goodTargets.AddRange(GetAllAvaliableMoves(task, newPosition, source));
                         break;
                 }
@@ -292,6 +293,9 @@ namespace Jackal
                     rez = GetHorseDeltas(source.Position)
                         .Select(x => IncomeTilePosition(x));
                     break;
+				case TileType.Cannon:
+					rez = new []{IncomeTilePosition(GetCannonFly(sourceTile.CannonDirection, source.Position))};
+					break;
                 case TileType.Arrow:
                     rez = GetArrowsDeltas(sourceTile.ArrowsCode, source.Position)
                         .Select(x => IncomeTilePosition(x));
@@ -469,6 +473,20 @@ namespace Jackal
                 throw new Exception("wrong ship position");
             }
         }
+
+
+		public static Position GetCannonFly(int arrowsCode, Position pos)
+		{
+			if (arrowsCode == 0) // вверх
+				return new Position(pos.X, 12);
+			if (arrowsCode == 1) // вправо
+				return new Position(12, pos.Y);
+			if (arrowsCode == 2) // вниз
+				return new Position(pos.X, 0);
+//			if (arrowsCode == 3) // влево
+			return new Position(0, pos.Y);
+		}
+
 
         public IEnumerable<Position> GetArrowsDeltas(int arrowsCode, Position source)
         {

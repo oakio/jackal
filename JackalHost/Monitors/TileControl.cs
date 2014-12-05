@@ -277,6 +277,10 @@ namespace JackalHost.Monitors
 	            case TileType.Horse:
                     filename = @"horse";
 	                break;
+				case TileType.Cannon:
+					filename = @"cannon";
+	                rotateCount = tile.CannonDirection;
+					break;
                 case TileType.Croc:
                     filename = @"croc";
                     break;

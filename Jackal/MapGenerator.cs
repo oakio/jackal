@@ -30,6 +30,7 @@ namespace Jackal
                 int rotatesCount = _rand.Next(4);
                 for (int j = 1; j <= rotatesCount; j++)
                 {
+	                tempDef.CanonDirection = rotatesCount;
                     tempDef.ArrowsCode = ArrowsCodesHelper.DoRotate(tempDef.ArrowsCode);
                 }
                 tempDef.Position = info.Position;
