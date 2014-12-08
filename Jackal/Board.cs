@@ -205,7 +205,14 @@ namespace Jackal
                         else //с земли в воду мы можем попасть только если ранее попали на клетку, требующую действия
                         {
                             if (task.NoJumpToWater == false && sourceTile.Type.RequreImmediateMove())
+                            {
                                 goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)) { WithJumpToWater = true });
+                                if (task.NoCoinMoving == false && Map[task.FirstSource].Coins > 0)
+                                    goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition))
+                                    {
+                                        WithJumpToWater = true, MoveType = MoveType.WithCoin
+                                    });
+                            }
                         }
                         break;
                     case TileType.RespawnFort:

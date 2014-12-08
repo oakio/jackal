@@ -140,11 +140,8 @@ namespace Jackal.Actions
                 if (fromTileLevel.Coins == 0) throw new Exception("No coins");
 
                 fromTileLevel.Coins--;
-                if (ourTeam.Ship.Position != _to.Position)
-                {
-                    targetTileLevel.Coins++;
-                }
-                else //перенос монеты на корабль
+
+                if (ourTeam.Ship.Position == _to.Position)  //перенос монеты на корабль
                 {
                     ourShip.Coins++;
                     //_pirate.Coins++;
@@ -153,6 +150,15 @@ namespace Jackal.Actions
                     game.CoinsLeft--;
 
                     game.LastActionTurnNo = game.TurnNo;
+                }
+                else if (_targetTile.Type == TileType.Water) // если монета попала в воду, то она тонет
+                {
+                    game.CoinsLeft--;
+                    game.LastActionTurnNo = game.TurnNo;
+                }
+                else
+                {
+                    targetTileLevel.Coins++;
                 }
             }
 

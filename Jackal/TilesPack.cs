@@ -58,8 +58,7 @@ namespace Jackal
             AddDef(TileType.Airplane, 1);
             AddDef(TileType.Croc, 4);
             AddDef(TileType.Ice, 6);
-
-			AddDef(TileType.Cannon, 10);
+			AddDef(TileType.Cannon, 2);
 
             //arrows
             for (int arrowType = 0; arrowType < ArrowsCodesHelper.ArrowsTypes.Length; arrowType++)
