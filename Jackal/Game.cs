@@ -12,6 +12,10 @@ namespace Jackal
         public readonly Board Board;
 
         public Dictionary<int, int> Scores; // TeamId->Total couns
+        
+        /// <summary>
+        /// Нерастасканное золотишко
+        /// </summary>
         public int CoinsLeft;
 
         private readonly List<Move> _availableMoves;

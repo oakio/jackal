@@ -13,6 +13,12 @@ namespace Jackal
         [JsonIgnore]
         internal MapGenerator Generator;
 
+        [JsonIgnore]
+        public int MapId
+        {
+            get { return Generator.MapId; }
+        }
+
         public Map Map;
 
         public Team[] Teams;

@@ -35,7 +35,7 @@ namespace JackalHost
 				new SmartPlayer2(),
 				new SmartPlayer(),
 			};
-			int mapId = 887412+1;
+            int mapId = 351658;
             board = new Board(players, mapId);
             game = new Game(players, board);
 

@@ -205,7 +205,7 @@ namespace JackalHost.Monitors
                     lblGold.Font =  new Font("Microsoft Sans Serif", coins > 9 ? 9 : 12);
                     locX = 2 * width;
                 }
-                else if (hasPirates)
+                else
                 {
                     locX = locX + width;
                 }
@@ -236,7 +236,6 @@ namespace JackalHost.Monitors
 	        }
 
 	        int rotateCount = 0;
-
 	        string filename;
 	        switch (type)
 	        {
@@ -328,8 +327,7 @@ namespace JackalHost.Monitors
 	                throw new NotSupportedException();
 	        }
 
-            string relativePath = string.Format(@"Content\Fields\{0}.png", filename);
-
+            var relativePath = string.Format(@"Content\Fields\{0}.png", filename);
 	        var baseDir = AppDomain.CurrentDomain.BaseDirectory;
 	        var image = Image.FromFile(Path.Combine(baseDir, relativePath));
 	        switch (rotateCount)

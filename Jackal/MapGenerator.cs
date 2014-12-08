@@ -9,12 +9,14 @@ namespace Jackal
         public const int Size = 11;
         public const int TotalCoins = 37;
 
+        public readonly int MapId;
         private readonly Random _rand;
         private readonly Dictionary<Position,Tile> _tiles;
 
         public MapGenerator(int mapId)
         {
-            _rand = new Random(mapId + 5000000);
+            MapId = mapId;
+            _rand = new Random(MapId + 5000000);
 
             var pack = Shuffle(TilesPack.Instance.List);
             var positions = Board.GetAllEarth().ToList();

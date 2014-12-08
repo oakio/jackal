@@ -58,7 +58,7 @@
             // 
             this.gameSplitContainer.Panel2.Controls.Add(this.statSplitContainer);
             this.gameSplitContainer.Size = new System.Drawing.Size(1261, 877);
-            this.gameSplitContainer.SplitterDistance = 986;
+            this.gameSplitContainer.SplitterDistance = 1000;
             this.gameSplitContainer.TabIndex = 0;
             this.gameSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.gameSplitContainer_SplitterMoved);
             // 
@@ -81,8 +81,8 @@
             this.statSplitContainer.Panel2.Controls.Add(this.fastTurnesBtn);
             this.statSplitContainer.Panel2.Controls.Add(this.pauseGameBtn);
             this.statSplitContainer.Panel2.Controls.Add(this.newGameBtn);
-            this.statSplitContainer.Size = new System.Drawing.Size(271, 877);
-            this.statSplitContainer.SplitterDistance = 386;
+            this.statSplitContainer.Size = new System.Drawing.Size(257, 877);
+            this.statSplitContainer.SplitterDistance = 500;
             this.statSplitContainer.TabIndex = 1;
             this.statSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.statSplitContainer_SplitterMoved);
             // 

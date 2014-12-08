@@ -168,18 +168,8 @@ namespace JackalHost.Monitors
 
         public void Draw(Board board, Board prevBoard)
         {
-            var ships = board.Teams.Select(item => item.Ship).ToList();
-            /*
-            var diffPiratesList =
-                from curr in board.AllPirates
-                join prev in prevBoard.AllPirates on curr.Id equals prev.Id
-                where curr.Position != prev.Position
-                select new List<Pirate> { curr, prev };
-            */
-
+            // координаты клеток, где поменялось расположение пиратов
             var diffPositions = new HashSet<Position>();
-
-            //нам нужны координаты клеток, где поменялось расположение пиратов
             var idList = board.AllPirates.Union(prevBoard.AllPirates).Select(x => x.Id).Distinct();
             foreach (var guid in idList)
             {
@@ -203,21 +193,16 @@ namespace JackalHost.Monitors
                 }
             }
 
-            /*
-            var diffPositions = new List<Position>();
-            foreach (var pirates in diffPiratesList)
-            {
-                diffPositions.AddRange(pirates.Select(item => item.Position.Position).ToList());
-            }
-            */
-
+            var ships = board.Teams.Select(item => item.Ship).ToList();
             for (int y = 0; y < Board.Size; y++)
             {
                 for (int x = 0; x < Board.Size; x++)
                 {
                     var tile = board.Map[x, y];
                     var prevTile = prevBoard.Map[x, y];
-                    bool isDiffPosition = diffPositions.Any(item => item == tile.Position || item == prevTile.Position);
+                    bool isDiffPosition = diffPositions.Any(
+                        item => item == tile.Position || item == prevTile.Position
+                    );
 
                     if (isDiffPosition
                         || tile.Type != prevTile.Type
@@ -273,7 +258,7 @@ namespace JackalHost.Monitors
 
                     if (i == 0)
                     {
-                        DrawTurn(statControl, game.TurnNo, game.IsGameOver);
+                        DrawTurn(statControl, game);
                         continue;
                     }
 
@@ -292,18 +277,18 @@ namespace JackalHost.Monitors
             }
         }
 
-        private void DrawTurn(StatControl statControl, int turnNo, bool isGameOver = false)
+        private void DrawTurn(StatControl statControl, Game game)
         {
             if (statControl.InvokeRequired)
             {
                 statControl.Invoke(new Action(() =>
                 {
-                    statControl.DrawTurn(turnNo, isGameOver);
+                    statControl.DrawTurn(game);
                 }));
             }
             else
             {
-                statControl.DrawTurn(turnNo, isGameOver);
+                statControl.DrawTurn(game);
             }
         }
 

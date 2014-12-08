@@ -18,17 +18,21 @@ namespace JackalHost.Monitors
 			InitializeComponent();
 		}
 
-        public void DrawTurn(int turnNo, bool isGameOver = false)
+        public void DrawTurn(Game game)
         {
             txtBox.BackColor = Color.White;
             txtBox.ForeColor = Color.Black;
-            txtBox.Text = "TurnNo: " + turnNo + (isGameOver ? " - game over" : "");
+            txtBox.Text = "MapId: " + game.Board.MapId + Environment.NewLine;
+            txtBox.Text += "TurnNo: " + game.TurnNo + (game.IsGameOver ? " - game over" : "");
+            txtBox.Text += Environment.NewLine + "gold = " + game.CoinsLeft;
         }
 
         public void DrawStat(Team team, int goldCount)
         {
             txtBox.BackColor = TileControl.GetTeamColor(team.Id);
-            txtBox.Text = string.Format("{0}: gold = {1}", team.Name, goldCount);
+            txtBox.Text = string.Format(
+                "{0}:{1}gold = {2}", team.Name, Environment.NewLine, goldCount
+            );
         }
 	}
 }
