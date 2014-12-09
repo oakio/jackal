@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jackal", "Jackal\Jackal.csproj", "{F09A6694-A08D-4C94-A6A2-9AF9FAA6AA6E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JackalHost", "JackalHost\JackalHost.csproj", "{C5859774-9403-40CE-945F-8527398E7D3F}"
@@ -25,6 +23,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JackalBattlefield", "JackalBattlefield\JackalBattlefield.csproj", "{7DFD5770-B060-491B-BED9-00282C233F02}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jackal.RolloPlayer", "Jackal.RolloPlayer\Jackal.RolloPlayer.csproj", "{2A356132-7720-4F7E-AE75-6EF40DCCED8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JackalWebHost", "JackalWebHost\JackalWebHost.csproj", "{4E322764-62BE-4DF8-A852-6FBB26284145}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,6 +64,10 @@ Global
 		{2A356132-7720-4F7E-AE75-6EF40DCCED8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A356132-7720-4F7E-AE75-6EF40DCCED8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A356132-7720-4F7E-AE75-6EF40DCCED8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E322764-62BE-4DF8-A852-6FBB26284145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E322764-62BE-4DF8-A852-6FBB26284145}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E322764-62BE-4DF8-A852-6FBB26284145}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E322764-62BE-4DF8-A852-6FBB26284145}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

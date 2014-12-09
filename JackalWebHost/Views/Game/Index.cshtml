@@ -1,0 +1,259 @@
+﻿@{
+    ViewBag.Title = "Game";
+}
+
+    <style type="text/css">
+        #map {float: left;}
+        #map table td {width: 50px; height: 50px; border: 1px black solid; vertical-align: top; background-size: cover;}
+        table td .coins {width: 15px; height: 15px; float: right; color: black; }
+        table td .pirates {width: 15px; height: 15px; float: left; color: white; }
+
+        .controls { width: 200px; float: right; }
+        #teams div { width: 100%; color: white; }
+        .controls button { width: 100% }
+
+    </style>
+
+<h2>Game</h2>
+
+<div style="width: 1024px">
+<div class="controls">
+
+    <div id="gamename"></div>
+    <div id="counter">0</div>
+
+    <div id="teams"></div>
+
+    <button id="game">start</button>
+    <button id="reset">reset</button>
+
+</div>
+<div id="map"></div>
+</div>
+
+<script type="text/javascript">
+
+
+    var gamestate = 'stop';
+    var gamename = null;
+    var map;
+    var groups;
+    var gamehandler;
+
+    $(document).ready(function () {
+
+        $('#game').click(function () {
+
+            if (gamestate == 'stop') {
+
+                if (gamename == null) {
+
+                    $.post("/Game/Start", null, function (data) {
+
+                        gamename = data.gamename;
+                        $('#gamename').text(gamename);
+
+                        groups = new Teams(data.teams);
+
+                        map = new Map(data.map.Width, data.map.Height);
+                        RedrawMap(data.map.Changes);
+                        
+                        gameStart();
+
+                    });
+                }
+                else gameStart();
+
+            } else if (gamestate == 'start') {
+
+                gamestate = 'stoping';
+                $('#game').text('wait');
+            }
+
+        });
+
+        $('#reset').click(function () {
+
+            gameReset();
+        });
+    });
+
+
+    function gameReset() {
+
+        if (gamestate == 'start') {
+
+            gamestate = 'stoping';
+            $('#game').text('wait');
+            setTimeout(gameReset, 500);
+        }
+        else {
+            $.post("/Game/Reset", null, function (data) {
+
+                gamename = null;
+                $('#gamename').text('');
+
+                var mapElm = $('#map');
+                if (typeof (mapElm) != 'undefined')
+                    mapElm.html('');
+
+                var teamsElm = $('#teams');
+                if (typeof (teamsElm) != 'undefined')
+                    teamsElm.html('');
+
+            });
+        }
+    }
+
+
+    function gameStart()
+    {
+        gamestate = 'start';
+        $('#game').text('pause');
+        setTimeout(gameTurn, 250);
+    }
+
+    function gameTurn()
+    {
+        if (gamestate == 'stoping') {
+
+            gamestate = 'stop';
+            $('#game').text('start');
+            return;
+        }
+
+        $.post("/Game/Turn", null, function (data) {
+
+            $('#counter').text(data.turn);
+
+            RedrawMap(data.changes);
+            RedrawStat(data.teams);
+
+            setTimeout(gameTurn, 250);
+        });
+
+    }
+
+
+    /// ===========================
+    /// Отображение карты на экране
+    /// ===========================
+    function Map(width, height) {
+
+        this.width = width;
+        this.height = height;
+
+        var mapElm = $('#map');
+        if (typeof (mapElm) == 'undefined') return;
+
+        this.fields = {};
+        for (var i = 0; i < this.width; i++) {
+            this.fields[i] = {};
+        }
+
+        var table = $('<table style="border: 1px black solid;"></table>');
+        mapElm.append(table);
+        for (var j = 0; j < this.height; j++) {
+            var tr = $('<tr></tr>');
+            //this.fields[j] = {};
+            table.append(tr);
+            for (var i = 0; i < this.width; i++) {
+                var td = $('<td></td>');
+                var coins = $('<div class="coins" />');
+                var pirates = $('<div class="pirates" />');
+                td.append(coins);
+                td.append(pirates);
+                this.fields[i][j] = {
+                    location: td,
+                    coins: coins,
+                    pirates: pirates
+                };
+                tr.append(td);
+            }
+        }
+    }
+
+
+    function RedrawMap(changes) {
+
+        for (var index in changes) {
+
+            var each = changes[index];
+            var field = map.fields[each.X][each.Y];
+
+            if (each.BackgroundImageSrc != null)
+                field.location.css('backgroundImage', 'url(' + each.BackgroundImageSrc + ')');
+            else
+                field.location.css('backgroundColor', each.BackgroundColor);
+
+            
+            if (each.Levels.length == 1) {
+
+                var lev = each.Levels[0];
+                if (lev.hasPirates) {
+
+                    field.pirates.css('backgroundColor', lev.Pirate.BackColor);
+                    field.pirates.text(lev.Pirate.Text);
+                }
+                else {
+
+                    field.pirates.css('backgroundColor', '');
+                    field.pirates.text('');
+                }
+
+                if (lev.hasCoins) {
+                    field.coins.css('backgroundColor', lev.Coin.BackColor);
+                    field.coins.text(lev.Coin.Text);
+                }
+                else {
+
+                    field.coins.css('backgroundColor', '');
+                    field.coins.text('');
+                }
+
+            }
+
+            // пока не обрабатываем уровни
+            for (var lindex in each.Levels) {
+
+            }
+
+        }
+    }
+
+
+    function RedrawStat(teams) {
+
+        for (var index=0 ; index < teams.length ; index++) {
+            var team = teams[index];
+
+            groups.teams[team.id].elm.text(team.Text);
+        }
+    }
+
+    /// ===========================
+    /// Отображение карты на экране
+    /// ===========================
+    function Teams(teams) {
+
+        var teamsElm = $('#teams');
+        if (typeof (teamsElm) == 'undefined') return;
+
+        this.teams = {};
+
+        for (var index in teams) {
+
+            var team = teams[index];
+            var elm = $('<div />');
+            elm.css('backgroundColor', team.BackColor);
+
+            this.teams[team.id] = {
+                elm: elm,
+            };
+            teamsElm.append(elm);
+        }
+    }
+
+
+
+</script>
