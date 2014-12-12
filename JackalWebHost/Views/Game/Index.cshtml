@@ -148,23 +148,28 @@
 
         this.fields = {};
         for (var i = 0; i < this.width; i++) {
-            this.fields[i] = {};
+        	this.fields[i] = {};
+        	for (var j = 0; j < this.height; j++) {
+        		this.fields[i][j] = { isUnknown: true };
+	        }
         }
 
         var table = $('<table style="border: 1px black solid;"></table>');
         mapElm.append(table);
         for (var j = 0; j < this.height; j++) {
             var tr = $('<tr></tr>');
-            //this.fields[j] = {};
             table.append(tr);
             for (var i = 0; i < this.width; i++) {
-                var td = $('<td></td>');
+            	var td = $('<td></td>');
+            	var lev = $('<div class="level-0" />');
                 var coins = $('<div class="coins" />');
                 var pirates = $('<div class="pirates" />');
-                td.append(coins);
-                td.append(pirates);
-                this.fields[i][j] = {
-                    location: td,
+	            td.append(lev);
+	            lev.append(coins);
+	            lev.append(pirates);
+	            this.fields[i][j].location = td;
+	            this.fields[i][j][0] = {
+                	location: lev,
                     coins: coins,
                     pirates: pirates
                 };
@@ -178,44 +183,63 @@
 
         for (var index in changes) {
 
+        	
+	        
             var each = changes[index];
             var field = map.fields[each.X][each.Y];
 
-            if (each.BackgroundImageSrc != null)
-                field.location.css('backgroundImage', 'url(' + each.BackgroundImageSrc + ')');
-            else
-                field.location.css('backgroundColor', each.BackgroundColor);
+            if (!each.IsUnknown && field.isUnknown) {
 
-            
-            if (each.Levels.length == 1) {
-
-                var lev = each.Levels[0];
-                if (lev.hasPirates) {
-
-                    field.pirates.css('backgroundColor', lev.Pirate.BackColor);
-                    field.pirates.text(lev.Pirate.Text);
-                }
-                else {
-
-                    field.pirates.css('backgroundColor', '');
-                    field.pirates.text('');
-                }
-
-                if (lev.hasCoins) {
-                    field.coins.css('backgroundColor', lev.Coin.BackColor);
-                    field.coins.text(lev.Coin.Text);
-                }
-                else {
-
-                    field.coins.css('backgroundColor', '');
-                    field.coins.text('');
-                }
-
+            	field.isUnknown = false;
+            	if (each.Levels.length > 1) {
+            		
+            		for (var lindex in each.Levels) {
+            			if (lindex > 0){
+            				var lev = $('<div class="level-'+lindex+'" />');
+            				var coins = $('<div class="coins" />');
+            				var pirates = $('<div class="pirates" />');
+            				field.location.append(lev);
+            				lev.append(coins);
+            				lev.append(pirates);
+            				field[lindex] = {
+            					location: lev,
+            					coins: coins,
+            					pirates: pirates
+            				};
+           				}
+            		}
+            	}
             }
 
-            // пока не обрабатываем уровни
+            if (each.BackgroundImageSrc != null)
+            	field.location.css('backgroundImage', 'url(' + each.BackgroundImageSrc + ')');
+            else
+            	field.location.css('backgroundColor', each.BackgroundColor);
+
+
             for (var lindex in each.Levels) {
 
+	            var level = field[lindex];
+
+		        var lev = each.Levels[0];
+		        if (lev.hasPirates) {
+
+		        	level.pirates.css('backgroundColor', lev.Pirate.BackColor);
+		        	level.pirates.text(lev.Pirate.Text);
+		        } else {
+
+		        	level.pirates.css('backgroundColor', '');
+		        	level.pirates.text('');
+		        }
+
+		        if (lev.hasCoins) {
+		        	level.coins.css('backgroundColor', lev.Coin.BackColor);
+		        	level.coins.text(lev.Coin.Text);
+		        } else {
+
+		        	level.coins.css('backgroundColor', '');
+		        	level.coins.text('');
+		        }
             }
 
         }

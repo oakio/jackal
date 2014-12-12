@@ -11,7 +11,7 @@ namespace JackalWebHost.Models
         public string BackgroundColor;
         public int Rotate;
 
-        public bool isUnknown;
+        public bool IsUnknown;
 
         public LevelChange[] Levels;
 

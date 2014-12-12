@@ -325,7 +325,7 @@ namespace JackalWebHost.Service
             switch (type)
             {
                 case TileType.Unknown:
-                    tileChange.isUnknown = true;
+                    tileChange.IsUnknown = true;
                     filename = @"back";
                     break;
                 case TileType.Water:
