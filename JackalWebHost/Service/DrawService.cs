@@ -151,111 +151,6 @@ namespace JackalWebHost.Service
             levelChange.hasCoins = hasCoins;
             levelChange.Level = levelIndex;
 
-            int locX = 0;
-            int locY = 0;
-            int width = Width / 4;
-            int height = Height / 4;
-
-            // calc location
-            switch (levelCount)
-            {
-                case 5:
-                    {
-                        if (levelIndex == 4)
-                        {
-                            locX = hasCoins ? 2 * width : 3 * width;
-                            locY = 0;
-                        }
-                        if (levelIndex == 3)
-                        {
-                            locX = hasCoins ? 0 : width;
-                            locY = 0;
-                        }
-                        if (levelIndex == 2)
-                        {
-                            locX = 0;
-                            locY = (int)(1.4 * height);
-                        }
-                        if (levelIndex == 1)
-                        {
-                            locX = 0;
-                            locY = 3 * height;
-                        }
-                        if (levelIndex == 0)
-                        {
-                            locX = hasCoins ? 2 * width : 3 * width;
-                            locY = 3 * height;
-                        }
-                        break;
-                    }
-                case 4:
-                    {
-                        if (levelIndex == 3)
-                        {
-                            locX = hasCoins ? 2 * width : 3 * width;
-                            locY = 3 * height;
-                        }
-                        if (levelIndex == 2)
-                        {
-                            locX = 0;
-                            locY = (int)(2.4 * height);
-                        }
-                        if (levelIndex == 1)
-                        {
-                            locX = 2 * width;
-                            locY = (int)(0.8 * height);
-                        }
-                        if (levelIndex == 0)
-                        {
-                            locX = 0;
-                            locY = 0;
-                        }
-                        break;
-                    }
-                case 3:
-                    {
-                        if (levelIndex == 2)
-                        {
-                            locX = hasCoins ? 2 * width : 3 * width;
-                            locY = 3 * height;
-                        }
-                        if (levelIndex == 1)
-                        {
-                            locX = width;
-                            locY = (int)(1.4 * height);
-                        }
-                        if (levelIndex == 0)
-                        {
-                            locX = hasCoins ? 2 * width : 3 * width;
-                            locY = 0;
-                        }
-                        break;
-                    }
-                case 2:
-                    {
-                        if (levelIndex == 1)
-                        {
-                            locX = 0;
-                            locY = 3 * height;
-                        }
-                        if (levelIndex == 0)
-                        {
-                            locX = hasCoins ? 2 * width : 3 * width;
-                            locY = 0;
-                        }
-                        break;
-                    }
-                case 1:
-                    {
-                        width = Width / 3;
-                        height = Height / 3;
-                        break;
-                    }
-            }
-
-            
-
-
             // draw pirates
             if (hasPirates)
             {
@@ -263,13 +158,7 @@ namespace JackalWebHost.Service
 
                 pirate.ForeColor = "white";
                 pirate.BackColor = GetTeamColor(pirates.First().TeamId);
-                pirate.Width = width;
-                pirate.Height = height;
-                pirate.locX = locX;
-                pirate.locY = locY;
-
                 pirate.Text = pirates.Count().ToString();
-
                 levelChange.Pirate = pirate;
             }
 
@@ -282,21 +171,7 @@ namespace JackalWebHost.Service
 
                 coin.ForeColor = "black";
                 coin.BackColor = "gold";
-                coin.Width = width;
-                coin.Height = height;
-
-                if (levelCount == 1)
-                {
-                    locX = 2 * width;
-                }
-                else if (hasPirates)
-                {
-                    locX = locX + width;
-                }
-                coin.locX = locX;
-                coin.locY = locY;
                 coin.Text = coins.ToString();
-
                 levelChange.Coin = coin;
             }
 

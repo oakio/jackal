@@ -5,12 +5,30 @@
     <style type="text/css">
         #map {float: left;}
         #map table td {width: 50px; height: 50px; border: 1px black solid; vertical-align: top; background-size: cover;}
-        table td .coins {width: 15px; height: 15px; float: right; color: black; }
+        table td .coins {width: 15px; height: 15px; float: right; color: black; position: relative; }
         table td .pirates {width: 15px; height: 15px; float: left; color: white; }
 
         .controls { width: 200px; float: right; }
         #teams div { width: 100%; color: white; }
         .controls button { width: 100% }
+
+        .level-21 { position: absolute; margin-top: 35px; }
+        .level-20 { position: absolute; margin-left: 35px; }
+
+        .level-32 { position: absolute; margin-top: 35px; margin-left: 35px; }
+        .level-31 { position: absolute; margin-top: 15px; margin-left: 5px;}
+        .level-30 { position: absolute; margin-left: 35px; }
+
+        .level-43 { position: absolute; margin-top: 35px; margin-left: 35px; }
+        .level-42 { position: absolute; margin-top: 25px; }
+        .level-41 { position: absolute; margin-top: 10px; margin-left: 25px;}
+        .level-40 { position: absolute; }
+
+        .level-54 { position: absolute; margin-left: 35px; }
+        .level-53 { position: absolute; margin-left: 15px;}
+        .level-52 { position: absolute; margin-top: 15px; }
+        .level-51 { position: absolute; margin-top: 35px; margin-left: 5px; }
+        .level-50 { position: absolute; margin-top: 35px; margin-left: 35px; }
 
     </style>
 
@@ -26,6 +44,7 @@
 
     <button id="game">start</button>
     <button id="reset">reset</button>
+    <button id="next">next</button>
 
 </div>
 <div id="map"></div>
@@ -76,6 +95,21 @@
 
             gameReset();
         });
+
+
+        $('#next').click(function () {
+
+            $.post("/Game/Turn", null, function (data) {
+
+                $('#counter').text(data.turn);
+
+                RedrawMap(data.changes);
+                RedrawStat(data.teams);
+            });
+
+
+        });
+
     });
 
 
@@ -156,12 +190,12 @@
 
         var table = $('<table style="border: 1px black solid;"></table>');
         mapElm.append(table);
-        for (var j = 0; j < this.height; j++) {
+        for (var j = (this.height - 1); j >= 0 ; j--) {
             var tr = $('<tr></tr>');
             table.append(tr);
             for (var i = 0; i < this.width; i++) {
             	var td = $('<td></td>');
-            	var lev = $('<div class="level-0" />');
+            	var lev = $('<div />');
                 var coins = $('<div class="coins" />');
                 var pirates = $('<div class="pirates" />');
 	            td.append(lev);
@@ -190,38 +224,51 @@
 
             if (!each.IsUnknown && field.isUnknown) {
 
+                field[0].location.addClass('level-' + each.Levels.length + '0');
+
             	field.isUnknown = false;
             	if (each.Levels.length > 1) {
-            		
-            		for (var lindex in each.Levels) {
-            			if (lindex > 0){
-            				var lev = $('<div class="level-'+lindex+'" />');
-            				var coins = $('<div class="coins" />');
-            				var pirates = $('<div class="pirates" />');
-            				field.location.append(lev);
-            				lev.append(coins);
-            				lev.append(pirates);
-            				field[lindex] = {
-            					location: lev,
-            					coins: coins,
-            					pirates: pirates
-            				};
-           				}
-            		}
+
+            	    for (var lindex in each.Levels) {
+            	        if (lindex > 0) {
+            	            var lev = $('<div class="level-' + each.Levels.length + lindex + '" />');
+            	            var coins = $('<div class="coins" />');
+            	            var pirates = $('<div class="pirates" />');
+            	            field.location.append(lev);
+            	            lev.append(coins);
+            	            lev.append(pirates);
+            	            field[lindex] = {
+            	                location: lev,
+            	                coins: coins,
+            	                pirates: pirates
+            	            };
+            	        }
+            	    }
             	}
             }
 
             if (each.BackgroundImageSrc != null)
-            	field.location.css('backgroundImage', 'url(' + each.BackgroundImageSrc + ')');
-            else
-            	field.location.css('backgroundColor', each.BackgroundColor);
+                field.location.css('backgroundImage', 'url(' + each.BackgroundImageSrc + ')');
+            else {
+                field.location.css('backgroundImage', '');
+                field.location.css('backgroundColor', each.BackgroundColor);
+            }
+
+            if (each.Rotate == 1) {
+                field.location.css('transform', 'rotate(90deg)');
+            } else if (each.Rotate == 2) {
+                field.location.css('transform', 'rotate(180deg)');
+            } else if (each.Rotate == 3) {
+                field.location.css('transform', 'rotate(270deg)');
+            }
+
 
 
             for (var lindex in each.Levels) {
 
 	            var level = field[lindex];
 
-		        var lev = each.Levels[0];
+	            var lev = each.Levels[lindex];
 		        if (lev.hasPirates) {
 
 		        	level.pirates.css('backgroundColor', lev.Pirate.BackColor);

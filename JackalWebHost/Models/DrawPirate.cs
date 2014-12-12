@@ -9,10 +9,6 @@ namespace JackalWebHost.Models
     {
         public string ForeColor;
         public string BackColor;
-        public int Width;
-        public int Height;
-        public int locX;
-        public int locY;
         public string Text;
     }
 }
