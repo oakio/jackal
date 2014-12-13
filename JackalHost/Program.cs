@@ -97,6 +97,7 @@ namespace JackalHost
                 var boardStrHistory = new Dictionary<long, string>();
                 for (long i = 0, prev_i = 0; !game.IsGameOver; prev_i = i, i++)
                 {
+                    bool isShowAvailableMoves = false;
                     while (isPause)
                     {
                         if (prevTurnes > 0)
@@ -113,7 +114,18 @@ namespace JackalHost
                             nextTurnes--;
                             break;
                         }
+                        if (isShowAvailableMoves == false && 
+                            i >= boardStrHistory.Count)
+                        {
+                            isShowAvailableMoves = true;
+                            _form.ShowAvailableMoves(game);
+                        }
                         Thread.Sleep(TimeSpan.FromMilliseconds(250));
+                    }
+                    if (isShowAvailableMoves)
+                    {
+                        isShowAvailableMoves = false;
+                        _form.HideAvailableMoves(game);
                     }
 
                     if (i >= boardStrHistory.Count)

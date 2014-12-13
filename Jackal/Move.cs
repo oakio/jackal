@@ -8,7 +8,6 @@ namespace Jackal
         [JsonProperty]
         public readonly MoveType Type;
 
-        //public Pirate Pirate;
         public bool WithCoins { get { return Type == MoveType.WithCoin; } }
 	    public bool WithRespawn{ get { return Type == MoveType.WithRespawn; } }
 

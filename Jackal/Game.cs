@@ -107,6 +107,17 @@ namespace Jackal
 
         public Pirate NeedSubTurnPirate { private get; set; }
 
+        public List<Move> GetPrevAvailableMoves()
+        {
+            return _availableMoves;
+        }
+
+        public List<Move> GetAvailableMoves()
+        {
+            GetAvailableMoves(CurrentTeamId);
+            return _availableMoves;
+        }
+
         private void GetAvailableMoves(int teamId)
         {
             _availableMoves.Clear();

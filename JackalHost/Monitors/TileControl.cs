@@ -42,6 +42,26 @@ namespace JackalHost.Monitors
             DrawTileBackground(tile, tileShip);
         }
 
+        public void ShowAvailableMove(int teamId)
+        {
+            int width = Width / 4;
+            int height = Height / 4;
+            int locX = (Width / 2) - (width / 2);
+            int locY = (Height / 2) - (height / 2);
+
+            var lblAvailableMove = new Control();
+            lblAvailableMove.Name = GetAvailableMoveKey();
+            lblAvailableMove.BackColor = GetTeamColor(teamId);
+            lblAvailableMove.Size = new Size(width, height);
+            lblAvailableMove.Location = new Point(locX, locY);
+            Controls.Add(lblAvailableMove);
+        }
+
+        public void HideAvailableMove()
+        {
+            Controls.RemoveByKey(GetAvailableMoveKey());
+        }
+
         private void DrawPiratesAndCoins(TileLevel level, int levelIndex, int levelCount, Ship tileShip)
 	    {
             var pirates = level.Pirates;
@@ -355,6 +375,11 @@ namespace JackalHost.Monitors
                 case 3: return Color.DarkOrange;
                 default: throw new NotSupportedException();
             }
+        }
+
+        private string GetAvailableMoveKey()
+        {
+            return string.Format("AvailableMove{0}", Name);
         }
 	}
 }

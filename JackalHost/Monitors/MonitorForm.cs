@@ -218,9 +218,7 @@ namespace JackalHost.Monitors
         {
             try
             {
-                var gamePanel = gameSplitContainer.Panel1;
-                var tileKey = GetTileKey(tile.Position.X, tile.Position.Y);
-                var tileControl = gamePanel.Controls[tileKey] as TileControl;
+                var tileControl = GetTileControl(tile.Position.X, tile.Position.Y);
                 if (tileControl == null)
                 {
                     return;
@@ -305,6 +303,76 @@ namespace JackalHost.Monitors
             {
                 statControl.DrawStat(team, goldCount);
             }
+        }
+
+        public void ShowAvailableMoves(Game game)
+        {
+            int currentTeamId = game.CurrentTeamId;
+            var availableMoves = game.GetAvailableMoves();
+            foreach (var move in availableMoves)
+            {
+                try
+                {
+                    var tileControl = GetTileControl(move.To.X, move.To.Y);
+                    if (tileControl == null)
+                    {
+                        return;
+                    }
+
+                    if (tileControl.InvokeRequired)
+                    {
+                        tileControl.Invoke(new Action(() =>
+                        {
+                            tileControl.ShowAvailableMove(currentTeamId);
+                        }));
+                    }
+                    else
+                    {
+                        tileControl.ShowAvailableMove(currentTeamId);
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
+        public void HideAvailableMoves(Game game)
+        {
+            var prevAvailableMoves = game.GetPrevAvailableMoves();
+            foreach (var move in prevAvailableMoves)
+            {
+                try
+                {
+                    var tileControl = GetTileControl(move.To.X, move.To.Y);
+                    if (tileControl == null)
+                    {
+                        return;
+                    }
+
+                    if (tileControl.InvokeRequired)
+                    {
+                        tileControl.Invoke(new Action(() =>
+                        {
+                            tileControl.HideAvailableMove();
+                        }));
+                    }
+                    else
+                    {
+                        tileControl.HideAvailableMove();
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
+        private TileControl GetTileControl(int x, int y)
+        {
+            var gamePanel = gameSplitContainer.Panel1;
+            var tileKey = GetTileKey(x, y);
+            return gamePanel.Controls[tileKey] as TileControl;
         }
 
         private static string GetStatKey(int index)
