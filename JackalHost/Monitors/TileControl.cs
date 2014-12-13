@@ -62,8 +62,8 @@ namespace JackalHost.Monitors
                 Controls.ContainsKey(AvailableMoveKey2))
             {
                 name = AvailableMoveKey3;
-                locX += (int)(width / 8);
-                locY += (int)(height / 8);
+                locX += (int)(width / 2);
+                locY += (int)(height / 2);
             }
             else if (Controls.ContainsKey(AvailableMoveKey1))
             {

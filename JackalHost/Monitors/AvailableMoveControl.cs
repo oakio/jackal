@@ -13,7 +13,6 @@ namespace JackalHost.Monitors
 {
     public partial class AvailableMoveControl : UserControl
     {
-        const int BORDER_SIZE = 4;
         GraphicsPath path = new GraphicsPath();
 
         public AvailableMoveControl(Color color)
