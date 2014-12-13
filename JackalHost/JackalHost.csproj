@@ -50,6 +50,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Monitors\AvailableMoveControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Monitors\AvailableMoveControl.Designer.cs">
+      <DependentUpon>AvailableMoveControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Monitors\MonitorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -86,6 +92,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Monitors\AvailableMoveControl.resx">
+      <DependentUpon>AvailableMoveControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Monitors\MonitorForm.resx">
       <DependentUpon>MonitorForm.cs</DependentUpon>
     </EmbeddedResource>

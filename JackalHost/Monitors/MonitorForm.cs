@@ -323,12 +323,12 @@ namespace JackalHost.Monitors
                     {
                         tileControl.Invoke(new Action(() =>
                         {
-                            tileControl.ShowAvailableMove(currentTeamId);
+                            tileControl.ShowAvailableMove(currentTeamId, move.To.Level, move.WithCoins);
                         }));
                     }
                     else
                     {
-                        tileControl.ShowAvailableMove(currentTeamId);
+                        tileControl.ShowAvailableMove(currentTeamId, move.To.Level, move.WithCoins);
                     }
                 }
                 catch (Exception)
