@@ -85,6 +85,28 @@ namespace JackalWebHost.Service
         }
 
 
+
+        public List<DrawMove> DrawAvailableMoves(List<Move> moves) 
+        {
+            return moves.Select(m => new DrawMove
+            {
+                WithCoin = m.WithCoins,
+                WithRespawn = m.WithRespawn,
+                From = new LevelPosition { 
+                    X = m.From.X,
+                    Y = m.From.Y,
+                    Level = m.From.Level
+                },
+                To = new LevelPosition
+                {
+                    X = m.To.X,
+                    Y = m.To.Y,
+                    Level = m.To.Level
+                }
+            }).ToList();
+ 
+        }
+
         public DrawMap Map(Board board)
         {
             List<TileChange> changes = new List<TileChange>();

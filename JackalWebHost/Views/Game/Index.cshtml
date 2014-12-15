@@ -4,31 +4,36 @@
 
     <style type="text/css">
         #map {float: left;}
-        #map table td {width: 50px; height: 50px; border: 1px black solid; vertical-align: top; background-size: cover;}
-        table td .coins {width: 15px; height: 15px; float: right; color: black; position: relative; }
-        table td .pirates {width: 15px; height: 15px; float: left; color: white; }
+        #map table td {width: 50px; height: 50px; border: 1px black solid; vertical-align: top; padding: 0px; }
+        table td .coins {width: 15px; height: 15px; float: right; color: black; position: relative; z-index: 5;}
+        table td .pirates {width: 15px; height: 15px; float: left; color: white; z-index: 5;}
 
         .controls { width: 200px; float: right; }
         #teams div { width: 100%; color: white; }
         .controls button { width: 100% }
 
-        .level-21 { position: absolute; margin-top: 35px; }
-        .level-20 { position: absolute; margin-left: 35px; }
+        .back { position: absolute; width: 50px; height: 50px; background-size: cover; border-width: 0px; z-index: 0;}
 
-        .level-32 { position: absolute; margin-top: 35px; margin-left: 35px; }
-        .level-31 { position: absolute; margin-top: 15px; margin-left: 5px;}
-        .level-30 { position: absolute; margin-left: 35px; }
+        .level { position: absolute; width: 50px; z-index: 3; }
+        .level-10 { position: absolute; width: 50px; z-index: 3;}
 
-        .level-43 { position: absolute; margin-top: 35px; margin-left: 35px; }
+        .level-21 { position: absolute; margin-top: 35px; z-index: 3;}
+        .level-20 { position: absolute; margin-left: 35px; z-index: 3;}
+
+        .level-32 { position: absolute; margin-top: 35px; margin-left: 35px; z-index: 3;}
+        .level-31 { position: absolute; margin-top: 15px; margin-left: 5px; z-index: 3;}
+        .level-30 { position: absolute; margin-left: 35px; z-index: 3;}
+
+        .level-43 { position: absolute; margin-top: 35px; margin-left: 35px; z-index: 3;}
         .level-42 { position: absolute; margin-top: 25px; }
-        .level-41 { position: absolute; margin-top: 10px; margin-left: 25px;}
+        .level-41 { position: absolute; margin-top: 10px; margin-left: 25px; z-index: 3;}
         .level-40 { position: absolute; }
 
-        .level-54 { position: absolute; margin-left: 35px; }
-        .level-53 { position: absolute; margin-left: 15px;}
-        .level-52 { position: absolute; margin-top: 15px; }
-        .level-51 { position: absolute; margin-top: 35px; margin-left: 5px; }
-        .level-50 { position: absolute; margin-top: 35px; margin-left: 35px; }
+        .level-54 { position: absolute; margin-left: 35px; z-index: 3;}
+        .level-53 { position: absolute; margin-left: 15px; z-index: 3;}
+        .level-52 { position: absolute; margin-top: 15px; z-index: 3;}
+        .level-51 { position: absolute; margin-top: 35px; margin-left: 5px; z-index: 3;}
+        .level-50 { position: absolute; margin-top: 35px; margin-left: 35px; z-index: 3;}
 
     </style>
 
@@ -101,10 +106,13 @@
 
             $.post("/Game/Turn", null, function (data) {
 
+                UndrawMoves();
+
                 $('#counter').text(data.turn);
 
                 RedrawMap(data.changes);
                 RedrawStat(data.teams);
+                RedrawMoves(data.moves);
             });
 
 
@@ -160,8 +168,11 @@
 
             $('#counter').text(data.turn);
 
+            UndrawMoves();
+
             RedrawMap(data.changes);
             RedrawStat(data.teams);
+            RedrawMoves(data.moves);
 
             setTimeout(gameTurn, 250);
         });
@@ -194,14 +205,17 @@
             var tr = $('<tr></tr>');
             table.append(tr);
             for (var i = 0; i < this.width; i++) {
-            	var td = $('<td></td>');
-            	var lev = $('<div />');
+                var td = $('<td></td>');
+                var back = $('<div class="back" />');
+            	var lev = $('<div class="level" />');
                 var coins = $('<div class="coins" />');
                 var pirates = $('<div class="pirates" />');
-	            td.append(lev);
+                td.append(lev);
+                td.append(back);
 	            lev.append(coins);
 	            lev.append(pirates);
 	            this.fields[i][j].location = td;
+	            this.fields[i][j].back = back;
 	            this.fields[i][j][0] = {
                 	location: lev,
                     coins: coins,
@@ -248,18 +262,18 @@
             }
 
             if (each.BackgroundImageSrc != null)
-                field.location.css('backgroundImage', 'url(' + each.BackgroundImageSrc + ')');
+                field.back.css('backgroundImage', 'url(' + each.BackgroundImageSrc + ')');
             else {
-                field.location.css('backgroundImage', '');
-                field.location.css('backgroundColor', each.BackgroundColor);
+                field.back.css('backgroundImage', '');
+                field.back.css('backgroundColor', each.BackgroundColor);
             }
 
             if (each.Rotate == 1) {
-                field.location.css('transform', 'rotate(90deg)');
+                field.back.css('transform', 'rotate(90deg)');
             } else if (each.Rotate == 2) {
-                field.location.css('transform', 'rotate(180deg)');
+                field.back.css('transform', 'rotate(180deg)');
             } else if (each.Rotate == 3) {
-                field.location.css('transform', 'rotate(270deg)');
+                field.back.css('transform', 'rotate(270deg)');
             }
 
 
@@ -289,6 +303,30 @@
 		        }
             }
 
+        }
+    }
+
+
+
+    var moves = [];
+
+    function RedrawMoves(avmoves) {
+
+        for (var index = 0 ; index < avmoves.length ; index++) {
+
+            var move = avmoves[index];
+            var level = map.fields[move.To.X][move.To.Y][move.To.Level];
+            level.pirates.css('backgroundColor', 'Orange');
+            moves.push(level);
+        }
+    }
+
+
+    function UndrawMoves() {
+
+        while (moves.length > 0) {
+            var level = moves.pop();
+            level.pirates.css('backgroundColor', '');
         }
     }
 

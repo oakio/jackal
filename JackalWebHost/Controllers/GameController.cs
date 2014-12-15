@@ -75,8 +75,14 @@ namespace JackalWebHost.Controllers
             var service = new DrawService();
             var changes = service.Draw(gameState.board, prevBoard);
 
+            // availableMoves
+            int currentTeamId = gameState.game.CurrentTeamId;
+            var availableMoves = gameState.game.GetAvailableMoves();
+            var avMoves = service.DrawAvailableMoves(availableMoves);
+
+
             var teams = service.GetStat(gameState.game);
-            return Json(new { turn = gameState.game.TurnNo, changes = changes, teams = teams });
+            return Json(new { turn = gameState.game.TurnNo, changes = changes, teams = teams, moves = avMoves });
         }
 
         /// <summary>
