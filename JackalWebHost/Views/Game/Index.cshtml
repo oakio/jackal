@@ -50,7 +50,17 @@
     <button id="game">start</button>
     <button id="reset">reset</button>
     <button id="next">next</button>
-
+	<div>
+		<div>
+			<input id="first-pirate" type="radio" name="piratesChoice" value="1" />1-ый пират
+		</div>
+		<div>
+			<input id="second-pirate" type="radio" name="piratesChoice" value="2" />2-ой пират
+		</div>
+		<div>
+			<input id="third-pirate" type="radio" name="piratesChoice" value="3" />3-ий пират
+		</div>
+	</div>
 </div>
 <div id="map"></div>
 </div>
@@ -118,8 +128,30 @@
 
         });
 
+	    $('input[name=piratesChoice]').change(function() {
+
+		    DrawPirateAvailableMoves($(this).val());
+	    });
     });
 
+
+
+	function DrawPirateAvailableMoves(num) {
+		
+		for (var index = 0 ; index < moves.length ; index++) {
+
+			var move = moves[index];
+			var level = map.fields[move.To.X][move.To.Y][move.To.Level];
+
+			if (move.PirateNum == num) {
+
+				level.pirates.css('backgroundColor', 'Orange');
+			} else {
+				level.pirates.css('backgroundColor', '');
+			}
+
+		}
+	}
 
     function gameReset() {
 
@@ -312,20 +344,40 @@
 
     function RedrawMoves(avmoves) {
 
+	    var nums = 0;
+
+	    moves = avmoves;
         for (var index = 0 ; index < avmoves.length ; index++) {
 
             var move = avmoves[index];
-            var level = map.fields[move.To.X][move.To.Y][move.To.Level];
-            level.pirates.css('backgroundColor', 'Orange');
-            moves.push(level);
+            //var level = map.fields[move.To.X][move.To.Y][move.To.Level];
+            //level.pirates.css('backgroundColor', 'Orange');
+            //moves.push();
+            if (move.PirateNum == 3)
+            	nums |= 4;
+	        nums |= move.PirateNum;
         }
+	    
+        if (nums & 1) {
+        	$('#first-pirate').show();
+        } else $('#first-pirate').hide();
+        if (nums & 2) {
+        	$('#second-pirate').show();
+        } else $('#second-pirate').hide();
+        if (nums & 4) {
+        	$('#third-pirate').show();
+        } else $('#third-pirate').hide();
+
+        $('#first-pirate input:radio').prop('checked', true);
+        DrawPirateAvailableMoves(1);
     }
 
 
     function UndrawMoves() {
 
-        while (moves.length > 0) {
-            var level = moves.pop();
+    	while (moves.length > 0) {
+    		var move = moves.pop();
+    		var level = map.fields[move.To.X][move.To.Y][move.To.Level];
             level.pirates.css('backgroundColor', '');
         }
     }

@@ -86,25 +86,34 @@ namespace JackalWebHost.Service
 
 
 
-        public List<DrawMove> DrawAvailableMoves(List<Move> moves) 
+        public List<DrawMove> DrawAvailableMoves(List<Move> moves)
         {
-            return moves.Select(m => new DrawMove
+            List<DrawMove> result = new List<DrawMove>();
+            var grMoves = moves.GroupBy(m => m.From);
+            int index = 1;
+            foreach (var gr in grMoves)
             {
-                WithCoin = m.WithCoins,
-                WithRespawn = m.WithRespawn,
-                From = new LevelPosition { 
-                    X = m.From.X,
-                    Y = m.From.Y,
-                    Level = m.From.Level
-                },
-                To = new LevelPosition
+                result.AddRange(gr.Select(m => new DrawMove
                 {
-                    X = m.To.X,
-                    Y = m.To.Y,
-                    Level = m.To.Level
-                }
-            }).ToList();
- 
+                    PirateNum = index,
+                    WithCoin = m.WithCoins,
+                    WithRespawn = m.WithRespawn,
+                    From = new LevelPosition
+                    {
+                        X = m.From.X,
+                        Y = m.From.Y,
+                        Level = m.From.Level
+                    },
+                    To = new LevelPosition
+                    {
+                        X = m.To.X,
+                        Y = m.To.Y,
+                        Level = m.To.Level
+                    }
+                }));
+                index++;
+            }
+            return result;
         }
 
         public DrawMap Map(Board board)
