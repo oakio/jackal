@@ -35,6 +35,30 @@
         .level-51 { position: absolute; margin-top: 35px; margin-left: 5px; z-index: 3;}
         .level-50 { position: absolute; margin-top: 35px; margin-left: 35px; z-index: 3;}
 
+
+		.digit_1 {
+			background-image: url(/Content/Digits/digits_small.jpg);
+		}
+		.digit_2 {
+			background-image: url(/Content/Digits/digits_small.jpg);
+			background-position: 51px 0px;
+		}
+
+		.digit_3 {
+			background-image: url(/Content/Digits/digits_small.jpg);
+			background-position: 0px -51px;
+		}
+		
+		.digit_4 {
+			background-image: url(/Content/Digits/digits_small.jpg);
+			background-position: 51px -51px;
+		}
+
+		.digit_5 {
+			background-image: url(/Content/Digits/digits_small.jpg);
+			background-position: 0px -102px;
+		}
+
     </style>
 
 <h2>Game</h2>
@@ -137,19 +161,51 @@
 
 
 	function DrawPirateAvailableMoves(num) {
-		
-		for (var index = 0 ; index < moves.length ; index++) {
+
+		for (var index = 0; index < moves.length; index++) {
 
 			var move = moves[index];
-			var level = map.fields[move.To.X][move.To.Y][move.To.Level];
+			var fld = map.fields[move.To.X][move.To.Y];
+
+			if (fld.locsize == 1) {
+				fld.back.css('opacity', '1');
+			} else {
+				fld.location.removeClass('digit_' + (fld.locsize - move.To.Level));
+				fld.back.css('opacity', '1');
+			}
+		}
+
+		
+		for (index = 0 ; index < moves.length ; index++) {
+
+			move = moves[index];
+			fld = map.fields[move.To.X][move.To.Y];
+			var level = fld[move.To.Level];
 
 			if (move.PirateNum == num) {
 
-				level.pirates.css('backgroundColor', 'Orange');
-			} else {
-				level.pirates.css('backgroundColor', '');
+				if (fld.locsize == 1) {
+					fld.back.css('opacity', '0.5');
+				} else {
+					fld.location.addClass('digit_' + (fld.locsize - move.To.Level));
+					fld.back.css('opacity', '0.5');
+				}
 			}
 
+		}
+	}
+
+	function UndrawMoves() {
+
+		while (moves.length > 0) {
+			var move = moves.pop();
+			var fld = map.fields[move.To.X][move.To.Y];
+			if (fld.locsize == 1) {
+				fld.back.css('opacity', '1');
+			} else {
+				fld.location.removeClass('digit_' + (fld.locsize - move.To.Level));
+				fld.back.css('opacity', '1');
+			}
 		}
 	}
 
@@ -247,6 +303,7 @@
 	            lev.append(coins);
 	            lev.append(pirates);
 	            this.fields[i][j].location = td;
+	            this.fields[i][j].locsize = 1;
 	            this.fields[i][j].back = back;
 	            this.fields[i][j][0] = {
                 	location: lev,
@@ -281,6 +338,7 @@
             	            var coins = $('<div class="coins" />');
             	            var pirates = $('<div class="pirates" />');
             	            field.location.append(lev);
+	            	        field.locsize = each.Levels.length;
             	            lev.append(coins);
             	            lev.append(pirates);
             	            field[lindex] = {
@@ -370,16 +428,6 @@
 
         $('#first-pirate input:radio').prop('checked', true);
         DrawPirateAvailableMoves(1);
-    }
-
-
-    function UndrawMoves() {
-
-    	while (moves.length > 0) {
-    		var move = moves.pop();
-    		var level = map.fields[move.To.X][move.To.Y][move.To.Level];
-            level.pirates.css('backgroundColor', '');
-        }
     }
 
 
