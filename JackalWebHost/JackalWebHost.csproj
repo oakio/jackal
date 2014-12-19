@@ -141,6 +141,7 @@
     <Compile Include="Service\DrawService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Digits\digits_small.jpg" />
     <Content Include="Content\Fields\1.png" />
     <Content Include="Content\Fields\airplane.png" />
     <Content Include="Content\Fields\arrow1.png" />
