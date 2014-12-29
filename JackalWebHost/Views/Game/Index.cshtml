@@ -2,9 +2,10 @@
     ViewBag.Title = "Game";
 }
 
-    <style type="text/css">
+<style type="text/css">
         #map {float: left;}
         #map table td {width: 50px; height: 50px; border: 1px black solid; vertical-align: top; padding: 0px; }
+		#map table { border-collapse: separate; border-spacing: 2px; box-sizing: border-box; }
         table td .coins {width: 15px; height: 15px; float: right; color: black; position: relative; z-index: 5;}
         table td .pirates {width: 15px; height: 15px; float: left; color: white; z-index: 5;}
 
@@ -37,29 +38,56 @@
 
 
 		.digit_1 {
-			background-image: url(/Content/Digits/digits_small.jpg);
+			background-image: url(/Content/Pictures/digits_small.jpg);
 		}
 		.digit_2 {
-			background-image: url(/Content/Digits/digits_small.jpg);
+			background-image: url(/Content/Pictures/digits_small.jpg);
 			background-position: 51px 0px;
 		}
 
 		.digit_3 {
-			background-image: url(/Content/Digits/digits_small.jpg);
+			background-image: url(/Content/Pictures/digits_small.jpg);
 			background-position: 0px -51px;
 		}
 		
 		.digit_4 {
-			background-image: url(/Content/Digits/digits_small.jpg);
+			background-image: url(/Content/Pictures/digits_small.jpg);
 			background-position: 51px -51px;
 		}
 
 		.digit_5 {
-			background-image: url(/Content/Digits/digits_small.jpg);
+			background-image: url(/Content/Pictures/digits_small.jpg);
 			background-position: 0px -102px;
 		}
 
-    </style>
+		.human {
+			background-image: url("/Content/Pictures/human.png");
+			background-repeat: no-repeat;
+			width: 50px;
+			height: 50px;
+			margin: 0;
+			padding: 0;
+		}
+
+		.robot {
+			background-image: url("/Content/Pictures/robot.png");
+			background-repeat: no-repeat;
+			width: 50px;
+			height: 50px;
+			margin: 0;
+			padding: 0;
+		}
+
+		.robot2 {
+			background-image: url("/Content/Pictures/robot2.png");
+			background-repeat: no-repeat;
+			width: 50px;
+			height: 50px;
+			margin: 0;
+			padding: 0;
+		}
+
+</style>
 
 <h2>Game</h2>
 
@@ -89,6 +117,25 @@
 <div id="map"></div>
 </div>
 
+<div class="modal fade" id="preparing-file-modal" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Начать игру</h4>
+			</div>
+			<div class="modal-body">
+				<div id="player-choose-menu" class="center-block" style="width: 250px; height: 250px; position: relative;">
+					<div class="robot" style="position: absolute; top: 0px; left: 100px; cursor: pointer;" ></div>
+					<div class="robot2" style="position: absolute; top: 100px; left: 0px; cursor: pointer;" ></div>
+					<div class="robot2" style="position: absolute; top: 100px; left: 200px; cursor: pointer;" ></div>
+					<div class="robot" style="position: absolute; top: 200px; left: 100px; cursor: pointer;" ></div>
+				</div>
+				<button id="start-button-modal" class="btn btn-primary" type="submit">Начать</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <script type="text/javascript">
 
 
@@ -100,25 +147,58 @@
 
     $(document).ready(function () {
 
+    	$('#player-choose-menu div').click(function () {
+    		if ($(this).hasClass('human')) {
+    			$(this).removeClass();
+    			$(this).addClass('robot');
+    		} else if ($(this).hasClass('robot')) {
+    			$(this).removeClass();
+    			$(this).addClass('robot2');
+    		} else {
+    			$(this).removeClass();
+    			$(this).addClass('human');
+    		}
+    	});
+
+    	$('#start-button-modal').click(function () {
+    		var preparingFileModal = $("#preparing-file-modal");
+    		preparingFileModal.modal('toggle');
+
+    		var players = $('#player-choose-menu div');
+    		//var print = '';
+    		//for (var i = 0 ; i < players.length ; i++) {
+    		//	print += $(players[i]).attr('class') + ' ';
+    		//}
+    		var input = [];
+    		for (var i = 0; i < players.length; i++) {
+    			input.push($(players[i]).attr('class'));
+    		}
+    		
+
+
+    		$.post("/Game/Start", { players: JSON.stringify(input) }, function (data) {
+
+    			gamename = data.gamename;
+    			$('#gamename').text(gamename);
+
+    			groups = new Teams(data.teams);
+
+    			map = new Map(data.map.Width, data.map.Height);
+    			RedrawMap(data.map.Changes);
+
+    			gameStart();
+
+    		});
+    	});
+
         $('#game').click(function () {
 
             if (gamestate == 'stop') {
 
                 if (gamename == null) {
 
-                    $.post("/Game/Start", null, function (data) {
-
-                        gamename = data.gamename;
-                        $('#gamename').text(gamename);
-
-                        groups = new Teams(data.teams);
-
-                        map = new Map(data.map.Width, data.map.Height);
-                        RedrawMap(data.map.Changes);
-                        
-                        gameStart();
-
-                    });
+                	var preparingFileModal = $("#preparing-file-modal");
+                	preparingFileModal.modal('toggle');
                 }
                 else gameStart();
 

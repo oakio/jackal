@@ -30,20 +30,37 @@ namespace JackalWebHost.Controllers
         /// <summary>
         /// Запуск игры
         /// </summary>
-        public JsonResult Start()
+        public JsonResult Start(string players)
         {
             GameState gameState = new GameState();
 
-            IPlayer[] players =
-			{
-				new SmartPlayer(), 
-				new SmartPlayer2(),
-				new SmartPlayer2(),
-				new SmartPlayer(),
-			};
+            var playersList = JsonHelper.DeserialiazeWithType<string[]>(players);
+
+
+            IPlayer[] gamePlayers = new IPlayer[4];
+            int index = 0;
+
+            foreach (var pl in playersList)
+            {
+                switch (pl)
+                {
+                    case "robot":
+                        gamePlayers[index++] = new SmartPlayer();
+                        break;
+                    default:
+                        gamePlayers[index++] = new SmartPlayer2();
+                        break;
+                }
+            }
+
+            while (index < 4)
+            {
+                gamePlayers[index++] = new SmartPlayer();
+            }
+
             int mapId = 887412 + 1;
-            gameState.board = new Board(players, mapId);
-            gameState.game = new Game(players, gameState.board);
+            gameState.board = new Board(gamePlayers, mapId);
+            gameState.game = new Game(gamePlayers, gameState.board);
 
             Session["test"] = gameState;
 
