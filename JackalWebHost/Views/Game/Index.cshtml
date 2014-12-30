@@ -113,6 +113,11 @@
 			<input id="third-pirate" type="radio" name="piratesChoice" value="3" />3-ий пират
 		</div>
 	</div>
+	<div>
+		<div>
+			<input id="with-coin" type="checkbox" />С монетой
+		</div>
+	</div>
 </div>
 <div id="map"></div>
 </div>
@@ -144,6 +149,7 @@
     var map;
     var groups;
     var gamehandler;
+    var isHumanStep = false;
 
     $(document).ready(function () {
 
@@ -227,10 +233,17 @@
                 RedrawMap(data.changes);
                 RedrawStat(data.teams);
                 RedrawMoves(data.moves);
+	            
+                isHumanStep = data.isHuman;
             });
 
 
         });
+
+        $('#with-coin').change(function () {
+
+        	DrawPirateAvailableMoves($('input[name=piratesChoice]:checked').val());
+	    });
 
 	    $('input[name=piratesChoice]').change(function() {
 
@@ -239,14 +252,15 @@
     });
 
 
-
 	function DrawPirateAvailableMoves(num) {
+
+		var withCoin = $('#with-coin').prop('checked');
 
 		for (var index = 0; index < moves.length; index++) {
 
 			var move = moves[index];
 			var fld = map.fields[move.To.X][move.To.Y];
-
+			
 			if (fld.locsize == 1) {
 				fld.back.css('opacity', '1');
 			} else {
@@ -262,8 +276,11 @@
 			fld = map.fields[move.To.X][move.To.Y];
 			var level = fld[move.To.Level];
 
-			if (move.PirateNum == num) {
+			if (move.From.PirateNum == num) {
 
+				if (withCoin && !move.WithCoin)
+					continue;
+					
 				if (fld.locsize == 1) {
 					fld.back.css('opacity', '0.5');
 				} else {
@@ -342,11 +359,14 @@
             RedrawStat(data.teams);
             RedrawMoves(data.moves);
 
-            setTimeout(gameTurn, 250);
+	        isHumanStep = data.isHuman;
+	        if (!data.isHuman) {
+		        setTimeout(gameTurn, 250);
+	        }
         });
 
     }
-
+    
 
     /// ===========================
     /// Отображение карты на экране
@@ -375,6 +395,10 @@
             for (var i = 0; i < this.width; i++) {
                 var td = $('<td></td>');
                 var back = $('<div class="back" />');
+	            
+            	// обработчик щелчка пользователя
+	            back.click(makeUserHandler(i, j));
+
             	var lev = $('<div class="level" />');
                 var coins = $('<div class="coins" />');
                 var pirates = $('<div class="pirates" />');
@@ -395,6 +419,46 @@
         }
     }
 
+
+	/// ==============================
+	/// Обработчик щелчка пользователя
+	/// ==============================
+    var makeUserHandler = function (i, j) {
+    	return function () {   
+    		if (!isHumanStep) return;
+
+    		for (var index = 0; index < moves.length; index++) {
+
+    			var move = moves[index];
+    			if ((move.To.X == i) && (move.To.Y == j)) {
+
+    				// есть ход
+    				if ($('#with-coin').prop('checked') && !move.WithCoin)
+    					continue;
+
+					$.post("/Game/Turn", { turnNum: move.MoveNum }, function(data) {
+
+    					$('#counter').text(data.turn);
+
+    					UndrawMoves();
+
+    					RedrawMap(data.changes);
+    					RedrawStat(data.teams);
+    					RedrawMoves(data.moves);
+
+    					isHumanStep = data.isHuman;
+    					if (!data.isHuman) {
+    						setTimeout(gameTurn, 250);
+    					}
+    				});
+
+    				//alert('есть ход');
+    				return;
+    			}
+    		}
+    		alert('нет хода');
+    	};
+    };
 
     function RedrawMap(changes) {
 
@@ -491,9 +555,9 @@
             //var level = map.fields[move.To.X][move.To.Y][move.To.Level];
             //level.pirates.css('backgroundColor', 'Orange');
             //moves.push();
-            if (move.PirateNum == 3)
+            if (move.From.PirateNum == 3)
             	nums |= 4;
-	        nums |= move.PirateNum;
+	        nums |= move.From.PirateNum;
         }
 	    
         if (nums & 1) {
@@ -506,7 +570,7 @@
         	$('#third-pirate').show();
         } else $('#third-pirate').hide();
 
-        $('#first-pirate input:radio').prop('checked', true);
+        $('#first-pirate').prop('checked', true);
         DrawPirateAvailableMoves(1);
     }
 

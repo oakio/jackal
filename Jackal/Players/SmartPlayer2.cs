@@ -13,6 +13,11 @@ namespace Jackal
             Rnd = new Random(1);
         }
 
+        public void SetHumanMove(int moveNum)
+        {
+            throw new NotImplementedException();
+        }
+
         public int OnMove(GameState gameState)
         {
             Board board = gameState.Board;

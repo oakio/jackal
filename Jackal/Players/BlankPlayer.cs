@@ -10,6 +10,11 @@
             player.OnNewGame();
         }
 
+        public void SetHumanMove(int moveNum)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public virtual int OnMove(GameState gameState)
         {
             return player.OnMove(gameState);

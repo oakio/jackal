@@ -47,6 +47,9 @@ namespace JackalWebHost.Controllers
                     case "robot":
                         gamePlayers[index++] = new SmartPlayer();
                         break;
+                    case "human":
+                        gamePlayers[index++] = new WebHumanPlayer();
+                        break;
                     default:
                         gamePlayers[index++] = new SmartPlayer2();
                         break;
@@ -74,7 +77,7 @@ namespace JackalWebHost.Controllers
         /// <summary>
         /// Ход игры
         /// </summary>
-        public JsonResult Turn()
+        public JsonResult Turn(int? turnNum)
         {
             GameState gameState = Session["test"] as GameState;
             if (gameState == null)
@@ -82,10 +85,19 @@ namespace JackalWebHost.Controllers
 
             string prevBoardStr = JsonHelper.SerialiazeWithType(gameState.board);
 
-            if (gameState.game.CurrentPlayer is HumanPlayer)
+            if (gameState.game.CurrentPlayer is WebHumanPlayer)
             {
+                if (turnNum.HasValue)
+                {
+                    gameState.game.CurrentPlayer.SetHumanMove(turnNum.Value);
+                    gameState.game.Turn();
+                }
+                else
+                {
+                    // если пользователь не сделал выбор, то перезапрашиваем ход
+                }
             }
-            gameState.game.Turn();
+            else gameState.game.Turn();
 
             var prevBoard = JsonHelper.DeserialiazeWithType<Board>(prevBoardStr);
 
@@ -97,9 +109,10 @@ namespace JackalWebHost.Controllers
             var availableMoves = gameState.game.GetAvailableMoves();
             var avMoves = service.DrawAvailableMoves(availableMoves);
 
+            bool isHumanPlayer = gameState.game.CurrentPlayer is WebHumanPlayer;
 
             var teams = service.GetStat(gameState.game);
-            return Json(new { turn = gameState.game.TurnNo, changes = changes, teams = teams, moves = avMoves });
+            return Json(new { turn = gameState.game.TurnNo, changes = changes, teams = teams, moves = avMoves, isHuman = isHumanPlayer });
         }
 
         /// <summary>

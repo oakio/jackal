@@ -7,6 +7,7 @@ namespace JackalWebHost.Models
 {
     public class LevelPosition
     {
+        public int PirateNum;
         public int Level;
         public int X;
         public int Y;

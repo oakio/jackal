@@ -7,7 +7,8 @@ namespace JackalWebHost.Models
 {
     public class DrawMove
     {
-        public int PirateNum;
+        public int MoveNum;
+        //public int PirateNum;
         public LevelPosition From;
         public LevelPosition To;
         public bool WithCoin;

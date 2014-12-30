@@ -12,7 +12,12 @@ namespace Jackal.RolloPlayer
 			Rnd = new Random();
 		}
 
-        public virtual int OnMove(GameState gameState)
+	    public void SetHumanMove(int moveNum)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public virtual int OnMove(GameState gameState)
         {
 	        var board = gameState.Board;
 			var availableMoves = gameState.AvailableMoves;

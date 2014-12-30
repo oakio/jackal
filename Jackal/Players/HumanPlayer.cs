@@ -21,6 +21,11 @@ namespace Jackal.Players
         {
         }
 
+        public void SetHumanMove(int moveNum)
+        {
+            throw new NotImplementedException();
+        }
+
         public int OnMove(GameState gameState)
         {
             _waitHandle.WaitOne();

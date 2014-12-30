@@ -89,29 +89,38 @@ namespace JackalWebHost.Service
         public List<DrawMove> DrawAvailableMoves(List<Move> moves)
         {
             List<DrawMove> result = new List<DrawMove>();
-            var grMoves = moves.GroupBy(m => m.From);
-            int index = 1;
-            foreach (var gr in grMoves)
+            List<LevelPosition> pirates = new List<LevelPosition>();
+
+            int index = 0;
+            int mindex = 1;
+            foreach (var move in moves)
             {
-                result.AddRange(gr.Select(m => new DrawMove
+                var pirate = pirates.FirstOrDefault(p => (p.X == move.From.X) && (p.Y == move.From.Y) && (p.Level == move.From.Level));
+                if (pirate == null)
                 {
-                    PirateNum = index,
-                    WithCoin = m.WithCoins,
-                    WithRespawn = m.WithRespawn,
-                    From = new LevelPosition
+                    pirate = new LevelPosition
+                        {
+                            PirateNum = mindex++,
+                            X = move.From.X,
+                            Y = move.From.Y,
+                            Level = move.From.Level
+                        };
+                    pirates.Add(pirate);
+                }
+
+                result.Add(new DrawMove
                     {
-                        X = m.From.X,
-                        Y = m.From.Y,
-                        Level = m.From.Level
-                    },
-                    To = new LevelPosition
-                    {
-                        X = m.To.X,
-                        Y = m.To.Y,
-                        Level = m.To.Level
-                    }
-                }));
-                index++;
+                        MoveNum = index++,
+                        WithCoin = move.WithCoins,
+                        WithRespawn = move.WithRespawn,
+                        From = pirate,
+                        To = new LevelPosition
+                        {
+                            X = move.To.X,
+                            Y = move.To.Y,
+                            Level = move.To.Level
+                        }
+                    });
             }
             return result;
         }

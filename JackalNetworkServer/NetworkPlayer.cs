@@ -20,6 +20,11 @@ namespace JackalNetworkServer
             _client.Query(newGameMessage);
         }
 
+        public void SetHumanMove(int moveNum)
+        {
+            throw new NotImplementedException();
+        }
+
         public int OnMove(GameState gameState)
         {
             DecisionRequest request = new DecisionRequest(gameState);
