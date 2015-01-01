@@ -168,6 +168,9 @@ namespace Jackal
 
             foreach (var newPosition in positionsForCheck)
             {
+                //проверяем, что на этой клетке
+                var newPositionTile = Map[newPosition.Position];
+
                 if (task.alreadyCheckedList.Count > 0 && previosDirection!=null)
                 {
                     Position incomeDelta = Position.GetDelta(previosDirection.To.Position, newPosition.Position);
@@ -175,12 +178,13 @@ namespace Jackal
 
                     if (WasCheckedBefore(task.alreadyCheckedList, currentCheck)) //мы попали по рекурсии в ранее просмотренную клетку
                     {
+                        if ((newPositionTile.Type == TileType.Airplane) && (Map.AirplaneUsed == false)) { 
+                            // даем возможность не использовать самолет сразу!
+                            goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)));
+                        }
                         continue;
                     }
                 }
-
-                //проверяем, что на этой клетке
-                var newPositionTile = Map[newPosition.Position];
 
                 //var newMove = new Move(new TilePosition(source), new TilePosition(newPosition), MoveType.Usual);
 
@@ -222,11 +226,14 @@ namespace Jackal
                         }
                         break;
                     case TileType.RespawnFort:
-                        if (task.NoRespawn==false && task.FirstSource == newPosition && ourTeam.Pirates.Count() < 3)
-                            goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition), new Respawn(ourTeam, newPosition.Position))
-                            {
-                                MoveType = MoveType.WithRespawn
-                            });
+                        if (task.FirstSource == newPosition)
+                        {
+                            if (task.NoRespawn==false && ourTeam.Pirates.Count() < 3)
+                                goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition), new Respawn(ourTeam, newPosition.Position))
+                                {
+                                    MoveType = MoveType.WithRespawn
+                                });
+                        }
                         else if (newPositionTile.OccupationTeamId.HasValue == false || newPositionTile.OccupationTeamId == ourTeamId) //только если форт не занят
                             goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)));
                         break;
@@ -275,12 +282,27 @@ namespace Jackal
                         break;
                     case TileType.Horse:
                     case TileType.Arrow:
-                    case TileType.Airplane:
                     case TileType.Balloon:
                     case TileType.Ice:
                     case TileType.Croc:
 					case TileType.Cannon:
                         goodTargets.AddRange(GetAllAvaliableMoves(task, newPosition, source));
+                        break;
+                    case TileType.Airplane:
+                        if (Map.AirplaneUsed == false)
+                        {
+                            goodTargets.AddRange(GetAllAvaliableMoves(task, newPosition, source));
+                        }
+                        else {
+                            // если нет самолета, то клетка работает как трава!
+                            goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition)));
+                            if (task.NoCoinMoving == false && Map[task.FirstSource].Coins > 0
+                                && (newPositionTile.OccupationTeamId == null || newPositionTile.OccupationTeamId == ourTeamId))
+                                goodTargets.Add(new AvaliableMove(task.FirstSource, newPosition, new Moving(task.FirstSource, newPosition, true))
+                                {
+                                    MoveType = MoveType.WithCoin
+                                });
+                        }
                         break;
                 }
             }
