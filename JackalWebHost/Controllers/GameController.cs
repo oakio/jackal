@@ -71,7 +71,7 @@ namespace JackalWebHost.Controllers
             var map = service.Map(gameState.board);
             var teams = service.GetStat(gameState.game);
 
-            return Json(new { gamename = "test", map = map, teams = teams });
+            return Json(new { gamename = "test", map = map, mapId = mapId, teams = teams });
         }
 
         /// <summary>
@@ -112,7 +112,9 @@ namespace JackalWebHost.Controllers
             bool isHumanPlayer = gameState.game.CurrentPlayer is WebHumanPlayer;
 
             var teams = service.GetStat(gameState.game);
-            return Json(new { turn = gameState.game.TurnNo, changes = changes, teams = teams, moves = avMoves, isHuman = isHumanPlayer });
+            return Json(new { turn = gameState.game.TurnNo, 
+                changes = changes, teams = teams, moves = avMoves, 
+                isHuman = isHumanPlayer, curTeam = currentTeamId, isGameOver = gameState.game.IsGameOver });
         }
 
         /// <summary>

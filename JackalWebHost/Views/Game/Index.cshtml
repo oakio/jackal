@@ -3,14 +3,17 @@
 }
 
 <style type="text/css">
+        body {
+            background-color: lightgray;
+        }
         #map {float: left;}
         #map table td {width: 50px; height: 50px; border: 1px black solid; vertical-align: top; padding: 0px; }
 		#map table { border-collapse: separate; border-spacing: 2px; box-sizing: border-box; }
         table td .coins {width: 15px; height: 15px; float: right; color: black; position: relative; z-index: 5;}
         table td .pirates {width: 15px; height: 15px; float: left; color: white; z-index: 5;}
 
-        .controls { width: 200px; float: right; }
-        #teams div { width: 100%; color: white; }
+        .controls { width: 200px; }
+        #teams div { color: white; }
         .controls button { width: 100% }
 
         .back { position: absolute; width: 50px; height: 50px; background-size: cover; border-width: 0px; z-index: 0;}
@@ -87,39 +90,95 @@
 			padding: 0;
 		}
 
+        .bs-panel-control, .bs-panel-statistics, .bs-panel-pirate {
+            background-color: white;
+            border-color: gray;
+            border-style: solid;
+            border-width: 1px;
+            border-radius: 4px;
+            margin: 0 -15px 15px;
+            padding: 45px 15px 15px;
+            position: relative;
+        }
+        .bs-panel-control:after, .bs-panel-statistics:after, .bs-panel-pirate:after {
+            color: #959595;
+            font-size: 12px;
+            font-weight: 700;
+            left: 15px;
+            letter-spacing: 1px;
+            position: absolute;
+            text-transform: uppercase;
+            top: 15px;
+        }
+
+        .bs-panel-control:after {
+            content: "Управление";
+        }
+        .bs-panel-statistics:after {
+            content: "Статистика";
+        }
+
+        .bs-panel-pirate:after {
+            content: "Подсветка хода";
+        }
+
 </style>
 
-<h2>Game</h2>
+<div class="col-md-offset-1">
+<h2>Остров сокровищ</h2>
+</div>
+<br/>
+<br/>
+<div style="width: 100%;">
+    <div class="center-block" style="width: 1000px;">
+        <div id="map"></div>
+<div class="controls center-block">
 
-<div style="width: 1024px">
-<div class="controls">
-
-    <div id="gamename"></div>
-    <div id="counter">0</div>
-
-    <div id="teams"></div>
-
-    <button id="game">start</button>
-    <button id="reset">reset</button>
-    <button id="next">next</button>
-	<div>
-		<div>
-			<input id="first-pirate" type="radio" name="piratesChoice" value="1" />1-ый пират
-		</div>
-		<div>
-			<input id="second-pirate" type="radio" name="piratesChoice" value="2" />2-ой пират
-		</div>
-		<div>
-			<input id="third-pirate" type="radio" name="piratesChoice" value="3" />3-ий пират
-		</div>
-	</div>
-	<div>
-		<div>
-			<input id="with-coin" type="checkbox" />С монетой
-		</div>
+    <div class="bs-panel-statistics" style="display: none;">
+        <div>Код игры: <span id="gamename"></span></div>
+        <div>Код карты: <span id="mapcode"></span></div>
+        <div>Номер хода: <span id="counter"></span></div>
+        <div style="margin: 15px 15px 0 15px;">
+            <div id="teams"></div>
+        </div>
+    </div>
+    <div id="end-game-alert" class="alert alert-danger" style="display: none;"></div>
+    <div class="bs-panel-control">
+        <button id="game" class="btn btn-default">Начать</button>
+        <button id="next" class="btn btn-default">Следующий ход</button>
+        <hr/>
+        <button id="reset" class="btn btn-default">Заново</button>
+    </div>
+    <br/>
+	<div class="bs-panel-pirate" style="display: none;">
+        <div id="first-pirate" class="input-group">
+          <span class="input-group-addon">
+            <input  type="radio" name="piratesChoice" value="1" />
+          </span>
+          <input type="text" class="form-control" value="1-ый пират" disabled="disabled" />
+        </div><!-- /input-group -->
+        <div id="second-pirate" class="input-group">
+          <span class="input-group-addon">
+            <input  type="radio" name="piratesChoice" value="2" />
+          </span>
+          <input type="text" class="form-control" value="2-ой пират" disabled="disabled" />
+        </div><!-- /input-group -->
+        <div id="third-pirate" class="input-group">
+          <span class="input-group-addon">
+            <input  type="radio" name="piratesChoice" value="3" />
+          </span>
+          <input type="text" class="form-control" value="3-ий пират" disabled="disabled" />
+        </div><!-- /input-group -->
+        <hr/>
+        <div id="with-coin-checkbox" class="input-group">
+          <span class="input-group-addon">
+            <input id="with-coin" type="checkbox">
+          </span>
+          <input type="text" class="form-control" value="С монетой" disabled="disabled" />
+        </div><!-- /input-group -->
 	</div>
 </div>
-<div id="map"></div>
+       </div>
 </div>
 
 <div class="modal fade" id="preparing-file-modal" data-backdrop="static" data-keyboard="false">
@@ -130,10 +189,10 @@
 			</div>
 			<div class="modal-body">
 				<div id="player-choose-menu" class="center-block" style="width: 250px; height: 250px; position: relative;">
-					<div class="robot" style="position: absolute; top: 0px; left: 100px; cursor: pointer;" ></div>
+                    <div class="robot" style="position: absolute; top: 200px; left: 100px; cursor: pointer;" ></div>
 					<div class="robot2" style="position: absolute; top: 100px; left: 0px; cursor: pointer;" ></div>
+                    <div class="robot" style="position: absolute; top: 0px; left: 100px; cursor: pointer;" ></div>
 					<div class="robot2" style="position: absolute; top: 100px; left: 200px; cursor: pointer;" ></div>
-					<div class="robot" style="position: absolute; top: 200px; left: 100px; cursor: pointer;" ></div>
 				</div>
 				<button id="start-button-modal" class="btn btn-primary" type="submit">Начать</button>
 			</div>
@@ -150,6 +209,8 @@
     var groups;
     var gamehandler;
     var isHumanStep = false;
+    var curTeam = 0;
+    var humanTeams = {};
 
     $(document).ready(function () {
 
@@ -186,6 +247,14 @@
 
     			gamename = data.gamename;
     			$('#gamename').text(gamename);
+    			$('#mapcode').text(data.mapId);
+
+    			$('.bs-panel-statistics').show();
+    			$('.bs-panel-pirate').show();
+    			$('#end-game-alert').hide();
+
+    			$('.controls').removeClass('center-block').addClass('col-md-3')
+    			$('#map').addClass('col-md-9');
 
     			groups = new Teams(data.teams);
 
@@ -211,7 +280,7 @@
             } else if (gamestate == 'start') {
 
                 gamestate = 'stoping';
-                $('#game').text('wait');
+                $('#game').text('Ожидаем ...');
             }
 
         });
@@ -224,37 +293,106 @@
 
         $('#next').click(function () {
 
-            $.post("/Game/Turn", null, function (data) {
-
-                UndrawMoves();
-
-                $('#counter').text(data.turn);
-
-                RedrawMap(data.changes);
-                RedrawStat(data.teams);
-                RedrawMoves(data.moves);
-	            
-                isHumanStep = data.isHuman;
-            });
-
+            MakeTurn();
 
         });
 
         $('#with-coin').change(function () {
 
-        	DrawPirateAvailableMoves($('input[name=piratesChoice]:checked').val());
+            DrawPirateAvailableMoves($('input[name=piratesChoice]:checked').val());
+
+            if (!isHumanStep) return;
+            curTeam.withCoin = $(this).is(':checked');
 	    });
 
 	    $('input[name=piratesChoice]').change(function() {
 
+	        //alert($(this).val());
 		    DrawPirateAvailableMoves($(this).val());
+
+		    if (!isHumanStep) return;
+		    curTeam.pirate = $(this).val();
 	    });
     });
 
 
+    function MakeTurn(moveNum) {
+
+        $.post("/Game/Turn", { turnNum: moveNum }, function (data) {
+
+            if (data.isGameOver) {
+
+                var elm = $('#end-game-alert');
+                elm.text('Игра закончена. Победил ' + GetWinner(data.teams));
+                elm.show();
+                return;
+            }
+
+            UndrawMoves();
+
+            $('#counter').text(data.turn);
+
+            RedrawMap(data.changes);
+            RedrawStat(data.teams);
+
+            SetPirateTeamInfo(data);
+
+            if (!data.isHuman && (gamestate == 'start')) {
+                setTimeout(gameTurn, 250);
+            }
+        });
+    }
+
+    function SetPirateTeamInfo(data) {
+
+        isHumanStep = data.isHuman;
+
+        var team = humanTeams[data.curTeam];
+        if (team == null) {
+            team = {
+                pirate: 1,
+                withCoin: false
+            }
+            humanTeams[data.curTeam] = team;
+        }
+
+
+        curTeam = team;
+
+        var available = GetPiratesAvailability(data.moves);
+        if (available[team.pirate - 1]) {
+            $('input[name=piratesChoice][value=' + team.pirate + ']').prop('checked', true);
+            $('#with-coin').prop('checked', team.withCoin);
+            DrawPirateAvailableMoves(curTeam.pirate);
+        }
+        else {
+            $('input[name=piratesChoice][value=1]').prop('checked', true);
+            $('#with-coin').prop('checked', team.withCoin);
+            DrawPirateAvailableMoves(1);
+        }
+    }
+
 	function DrawPirateAvailableMoves(num) {
 
-		var withCoin = $('#with-coin').prop('checked');
+	    var withCoin = false;
+	    for (index = 0 ; index < moves.length ; index++) {
+	        var mv = moves[index];
+	        if ((mv.From.PirateNum == num) && (mv.WithCoin)) {
+	            withCoin = true;
+	            break;
+	        }
+	    }
+
+	    if (!withCoin) {
+	        $('#with-coin').prop('checked', false);
+	        $('#with-coin-checkbox').hide();
+	    }
+	    else {
+	        $('#with-coin-checkbox').show();
+	    }
+
+	    if (withCoin) withCoin = $('#with-coin').prop('checked');
+
 
 		for (var index = 0; index < moves.length; index++) {
 
@@ -269,7 +407,7 @@
 			}
 		}
 
-		
+		//alert('num = ' + num);
 		for (index = 0 ; index < moves.length ; index++) {
 
 			move = moves[index];
@@ -311,7 +449,7 @@
         if (gamestate == 'start') {
 
             gamestate = 'stoping';
-            $('#game').text('wait');
+            $('#game').text('Ожидаем');
             setTimeout(gameReset, 500);
         }
         else {
@@ -319,6 +457,14 @@
 
                 gamename = null;
                 $('#gamename').text('');
+                $('#game').text('Начать');
+
+                $('.bs-panel-statistics').hide();
+                $('.bs-panel-pirate').hide();
+                $('#end-game-alert').hide();
+
+                $('.controls').removeClass('col-md-3').addClass('center-block')
+                $('#map').removeClass('col-md-9');
 
                 var mapElm = $('#map');
                 if (typeof (mapElm) != 'undefined')
@@ -336,7 +482,7 @@
     function gameStart()
     {
         gamestate = 'start';
-        $('#game').text('pause');
+        $('#game').text('Остановить');
         setTimeout(gameTurn, 250);
     }
 
@@ -345,26 +491,11 @@
         if (gamestate == 'stoping') {
 
             gamestate = 'stop';
-            $('#game').text('start');
+            $('#game').text('Продолжить');
             return;
         }
 
-        $.post("/Game/Turn", null, function (data) {
-
-            $('#counter').text(data.turn);
-
-            UndrawMoves();
-
-            RedrawMap(data.changes);
-            RedrawStat(data.teams);
-            RedrawMoves(data.moves);
-
-	        isHumanStep = data.isHuman;
-	        if (!data.isHuman) {
-		        setTimeout(gameTurn, 250);
-	        }
-        });
-
+        MakeTurn();
     }
     
 
@@ -429,28 +560,15 @@
 
     		for (var index = 0; index < moves.length; index++) {
 
-    			var move = moves[index];
-    			if ((move.To.X == i) && (move.To.Y == j)) {
+    		    var move = moves[index];
+    		    var curpirate = $('input[name=piratesChoice]:checked').val();
+    		    if ((move.To.X == i) && (move.To.Y == j) && (curpirate == move.From.PirateNum)) {
 
     				// есть ход
     				if ($('#with-coin').prop('checked') && !move.WithCoin)
     					continue;
 
-					$.post("/Game/Turn", { turnNum: move.MoveNum }, function(data) {
-
-    					$('#counter').text(data.turn);
-
-    					UndrawMoves();
-
-    					RedrawMap(data.changes);
-    					RedrawStat(data.teams);
-    					RedrawMoves(data.moves);
-
-    					isHumanStep = data.isHuman;
-    					if (!data.isHuman) {
-    						setTimeout(gameTurn, 250);
-    					}
-    				});
+    				MakeTurn(move.MoveNum);
 
     				//alert('есть ход');
     				return;
@@ -544,34 +662,47 @@
 
     var moves = [];
 
-    function RedrawMoves(avmoves) {
+    function GetPiratesAvailability(avmoves) {
+        
+        var nums = 0;
 
-	    var nums = 0;
-
-	    moves = avmoves;
+        moves = avmoves;
         for (var index = 0 ; index < avmoves.length ; index++) {
 
             var move = avmoves[index];
-            //var level = map.fields[move.To.X][move.To.Y][move.To.Level];
-            //level.pirates.css('backgroundColor', 'Orange');
-            //moves.push();
             if (move.From.PirateNum == 3)
-            	nums |= 4;
-	        nums |= move.From.PirateNum;
+                nums |= 4;
+            nums |= move.From.PirateNum;
         }
-	    
+
         if (nums & 1) {
-        	$('#first-pirate').show();
+            $('#first-pirate').show();
         } else $('#first-pirate').hide();
         if (nums & 2) {
-        	$('#second-pirate').show();
+            $('#second-pirate').show();
         } else $('#second-pirate').hide();
         if (nums & 4) {
-        	$('#third-pirate').show();
+            $('#third-pirate').show();
         } else $('#third-pirate').hide();
 
-        $('#first-pirate').prop('checked', true);
-        DrawPirateAvailableMoves(1);
+        return [nums & 1, nums & 2, nums & 4];
+    }
+
+
+    function GetWinner(teams) {
+
+        var maxgold = 0;
+        var winner;
+        for (var index=0 ; index < teams.length ; index++) {
+            var team = teams[index];
+            if (team.gold > maxgold){
+                maxgold = team.gold;
+                winner = team.name;
+            } else if (team.gold == maxgold) {
+                winner += (" и " + team.name);
+            }
+        }
+        return winner;
     }
 
 
@@ -580,13 +711,13 @@
         for (var index=0 ; index < teams.length ; index++) {
             var team = teams[index];
 
-            groups.teams[team.id].elm.text(team.Text);
+            groups.teams[team.id].gld.text(team.gold);
         }
     }
 
-    /// ===========================
-    /// Отображение карты на экране
-    /// ===========================
+    /// =============================
+    /// Отображение игроков на экране
+    /// =============================
     function Teams(teams) {
 
         var teamsElm = $('#teams');
@@ -597,13 +728,25 @@
         for (var index in teams) {
 
             var team = teams[index];
-            var elm = $('<div />');
-            elm.css('backgroundColor', team.BackColor);
+            var row = $('<div class="row" />');
+
+            var name = $('<div class="col-md-8" />');
+            name.text(team.name);
+            name.css('backgroundColor', team.backcolor);
+            row.append(name);
+
+            var elm = $('<div class="col-md-4" />');
+            elm.css('backgroundColor', team.backcolor);
+            var gld = $('<span class="badge"></span>');
+            gld.text(team.gold);
+            elm.append(gld);
+            row.append(elm);
 
             this.teams[team.id] = {
-                elm: elm,
+                elm: name,
+                gld: gld
             };
-            teamsElm.append(elm);
+            teamsElm.append(row);
         }
     }
 

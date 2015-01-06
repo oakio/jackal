@@ -352,7 +352,6 @@ namespace JackalWebHost.Service
             List<DrawTeam> teams = new List<DrawTeam>();
             foreach (var team in game.Board.Teams)
             {
-
                 int goldCount;
                 game.Scores.TryGetValue(team.Id, out goldCount);
                 teams.Add(DrawStat(team, goldCount));
@@ -363,10 +362,10 @@ namespace JackalWebHost.Service
         public DrawTeam DrawStat(Team team, int goldCount)
         {
             return new DrawTeam{
-                BackColor = GetTeamColor(team.Id),
-                Text = string.Format("{0}: gold = {1}", team.Name, goldCount),
+                backcolor = GetTeamColor(team.Id),
                 id = team.Id,
-                name = team.Name
+                name = team.Name,
+                gold = goldCount
             };
         }
 

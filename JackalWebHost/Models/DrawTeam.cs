@@ -10,8 +10,6 @@ namespace JackalWebHost.Models
         public int id;
         public string name;
         public int gold;
-        public string BackColor;
-        public string Text;
-
+        public string backcolor;
     }
 }
