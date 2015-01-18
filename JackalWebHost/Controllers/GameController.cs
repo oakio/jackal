@@ -69,9 +69,13 @@ namespace JackalWebHost.Controllers
 
             var service = new DrawService();
             var map = service.Map(gameState.board);
-            var teams = service.GetStat(gameState.game);
 
-            return Json(new { gamename = "test", map = map, mapId = mapId, teams = teams });
+            return Json(new { 
+                gamename = "test", 
+                map = map, 
+                mapId = mapId, 
+                stat = service.GetStatistics(gameState.game) 
+            });
         }
 
         /// <summary>
@@ -102,19 +106,11 @@ namespace JackalWebHost.Controllers
             var prevBoard = JsonHelper.DeserialiazeWithType<Board>(prevBoardStr);
 
             var service = new DrawService();
-            var changes = service.Draw(gameState.board, prevBoard);
-
-            // availableMoves
-            int currentTeamId = gameState.game.CurrentTeamId;
-            var availableMoves = gameState.game.GetAvailableMoves();
-            var avMoves = service.DrawAvailableMoves(availableMoves);
-
-            bool isHumanPlayer = gameState.game.CurrentPlayer is WebHumanPlayer;
-
-            var teams = service.GetStat(gameState.game);
-            return Json(new { turn = gameState.game.TurnNo, 
-                changes = changes, teams = teams, moves = avMoves, 
-                isHuman = isHumanPlayer, curTeam = currentTeamId, isGameOver = gameState.game.IsGameOver });
+            return Json(new {
+                changes = service.Draw(gameState.board, prevBoard),
+                stat = service.GetStatistics(gameState.game),
+                moves = service.GetAvailableMoves(gameState.game)
+            });
         }
 
         /// <summary>

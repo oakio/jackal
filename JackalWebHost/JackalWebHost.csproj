@@ -135,6 +135,7 @@
     <Compile Include="Models\LevelChange.cs" />
     <Compile Include="Models\DrawPirate.cs" />
     <Compile Include="Models\DrawMove.cs" />
+    <Compile Include="Models\GameStatistics.cs" />
     <Compile Include="Models\TileChange.cs" />
     <Compile Include="Models\LevelPosition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
