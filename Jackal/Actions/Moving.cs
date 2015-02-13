@@ -102,7 +102,7 @@ namespace Jackal.Actions
                 {
                     enemyPirate.Position = new TilePosition(enemyTeam.Ship.Position);
                     board.Map[enemyTeam.Ship.Position].Pirates.Add(enemyPirate);
-                    _targetTile.Pirates.Remove(enemyPirate);
+                    targetTileLevel.Pirates.Remove(enemyPirate);
                     enemyPirate.IsInTrap = false;
                     enemyPirate.IsDrunk = false;
                     enemyPirate.DrunkSinceTurnNo = null;
