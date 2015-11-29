@@ -1,6 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5D5340F5-739A-47ED-A76D-9BA02F18C004}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jackal", "Jackal\Jackal.csproj", "{F09A6694-A08D-4C94-A6A2-9AF9FAA6AA6E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JackalHost", "JackalHost\JackalHost.csproj", "{C5859774-9403-40CE-945F-8527398E7D3F}"
@@ -12,13 +21,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JackalNetwork", "JackalNetwork\JackalNetwork.csproj", "{4BF2DF9D-AE2C-4BA8-ADFD-2D2A7235E145}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jackal.Tests", "Jackal.Tests\Jackal.Tests.csproj", "{062246C4-FED7-4ED8-BE10-E8B9BED3F9CE}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5D5340F5-739A-47ED-A76D-9BA02F18C004}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JackalBattlefield", "JackalBattlefield\JackalBattlefield.csproj", "{7DFD5770-B060-491B-BED9-00282C233F02}"
 EndProject
