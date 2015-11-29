@@ -1,4 +1,5 @@
 ﻿using Jackal;
+using Jackal.Players;
 using JackalWebHost.Models;
 using System;
 using System.Collections.Generic;
@@ -85,15 +86,44 @@ namespace JackalWebHost.Service
         }
 
 
+        /// <summary>
+        /// Формирование статистики после хода
+        /// </summary>
+        public GameStatistics GetStatistics(Game game)
+        {
+            List<DrawTeam> teams = new List<DrawTeam>();
+            foreach (var team in game.Board.Teams)
+            {
+                int goldCount;
+                game.Scores.TryGetValue(team.Id, out goldCount);
+                teams.Add(new DrawTeam
+                {
+                    backcolor = GetTeamColor(team.Id),
+                    id = team.Id,
+                    name = team.Name,
+                    gold = goldCount
+                });
+            }
 
-        public List<DrawMove> DrawAvailableMoves(List<Move> moves)
+            return new GameStatistics
+            {
+                Teams = teams,
+                TurnNo = game.TurnNo,
+                IsGameOver = game.IsGameOver,
+                CurrentTeamId = game.CurrentTeamId,
+                IsHumanPlayer = game.CurrentPlayer is WebHumanPlayer
+            };
+        }
+
+
+        public List<DrawMove> GetAvailableMoves(Game game)
         {
             List<DrawMove> result = new List<DrawMove>();
             List<LevelPosition> pirates = new List<LevelPosition>();
 
             int index = 0;
             int mindex = 1;
-            foreach (var move in moves)
+            foreach (var move in game.GetAvailableMoves())
             {
                 var pirate = pirates.FirstOrDefault(p => (p.X == move.From.X) && (p.Y == move.From.Y) && (p.Level == move.From.Level));
                 if (pirate == null)
@@ -347,27 +377,6 @@ namespace JackalWebHost.Service
         }
 
 
-        public List<DrawTeam> GetStat(Game game){
-
-            List<DrawTeam> teams = new List<DrawTeam>();
-            foreach (var team in game.Board.Teams)
-            {
-                int goldCount;
-                game.Scores.TryGetValue(team.Id, out goldCount);
-                teams.Add(DrawStat(team, goldCount));
-            }
-            return teams;
-        }
         
-        public DrawTeam DrawStat(Team team, int goldCount)
-        {
-            return new DrawTeam{
-                backcolor = GetTeamColor(team.Id),
-                id = team.Id,
-                name = team.Name,
-                gold = goldCount
-            };
-        }
-
     }
 }

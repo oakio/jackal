@@ -90,7 +90,7 @@
 			padding: 0;
 		}
 
-        .bs-panel-control, .bs-panel-statistics, .bs-panel-pirate {
+        .bs-panel-control, .bs-panel-statistics, .bs-panel-pirate, .bs-panel-start {
             background-color: white;
             border-color: gray;
             border-style: solid;
@@ -100,7 +100,7 @@
             padding: 45px 15px 15px;
             position: relative;
         }
-        .bs-panel-control:after, .bs-panel-statistics:after, .bs-panel-pirate:after {
+        .bs-panel-control:after, .bs-panel-statistics:after, .bs-panel-pirate:after, .bs-panel-start:after {
             color: #959595;
             font-size: 12px;
             font-weight: 700;
@@ -111,7 +111,7 @@
             top: 15px;
         }
 
-        .bs-panel-control:after {
+        .bs-panel-control:after, .bs-panel-start:after {
             content: "Управление";
         }
         .bs-panel-statistics:after {
@@ -125,7 +125,7 @@
 </style>
 
 <div class="col-md-offset-1">
-<h2>Остров сокровищ</h2>
+<h2>Остров сокровищ!!!</h2>
 </div>
 <br/>
 <br/>
@@ -143,7 +143,10 @@
         </div>
     </div>
     <div id="end-game-alert" class="alert alert-danger" style="display: none;"></div>
-    <div class="bs-panel-control">
+    <div class="bs-panel-start">
+        <button id="game-start" class="btn btn-default">Начать</button>
+    </div>
+    <div class="bs-panel-control" style="display: none;">
         <button id="game" class="btn btn-default">Начать</button>
         <button id="next" class="btn btn-default">Следующий ход</button>
         <hr/>
@@ -202,18 +205,12 @@
 
 <script type="text/javascript">
 
-
-    var gamestate = 'stop';
-    var gamename = null;
-    var map;
-    var groups;
-    var gamehandler;
-    var isHumanStep = false;
-    var curTeam = 0;
-    var humanTeams = {};
+    /// собственно объект игры
+    var game = new Game();
 
     $(document).ready(function () {
 
+        /// выбор игроков
     	$('#player-choose-menu div').click(function () {
     		if ($(this).hasClass('human')) {
     			$(this).removeClass();
@@ -227,290 +224,259 @@
     		}
     	});
 
+        /// Начинаем игру
     	$('#start-button-modal').click(function () {
+
     		var preparingFileModal = $("#preparing-file-modal");
     		preparingFileModal.modal('toggle');
 
     		var players = $('#player-choose-menu div');
-    		//var print = '';
-    		//for (var i = 0 ; i < players.length ; i++) {
-    		//	print += $(players[i]).attr('class') + ' ';
-    		//}
     		var input = [];
     		for (var i = 0; i < players.length; i++) {
     			input.push($(players[i]).attr('class'));
     		}
-    		
 
-
-    		$.post("/Game/Start", { players: JSON.stringify(input) }, function (data) {
-
-    			gamename = data.gamename;
-    			$('#gamename').text(gamename);
-    			$('#mapcode').text(data.mapId);
-
-    			$('.bs-panel-statistics').show();
-    			$('.bs-panel-pirate').show();
-    			$('#end-game-alert').hide();
-
-    			$('.controls').removeClass('center-block').addClass('col-md-3')
-    			$('#map').addClass('col-md-9');
-
-    			groups = new Teams(data.teams);
-
-    			map = new Map(data.map.Width, data.map.Height);
-    			RedrawMap(data.map.Changes);
-
-    			gameStart();
-
-    		});
+    		game.MakeStart(input);
     	});
 
+        /// Смена режима игры (пошаговый/непрерывный)
         $('#game').click(function () {
 
-            if (gamestate == 'stop') {
-
-                if (gamename == null) {
-
-                	var preparingFileModal = $("#preparing-file-modal");
-                	preparingFileModal.modal('toggle');
-                }
-                else gameStart();
-
-            } else if (gamestate == 'start') {
-
-                gamestate = 'stoping';
-                $('#game').text('Ожидаем ...');
-            }
-
+            game.ChangeState();
         });
 
+        /// Начать игру
+        $('#game-start').click(function () {
+
+            var preparingFileModal = $("#preparing-file-modal");
+            preparingFileModal.modal('toggle');
+        });
+
+        /// Начать заново
         $('#reset').click(function () {
 
-            gameReset();
+            game.GameReset();
         });
 
-
+        /// Следующий ход в пошаговом режиме
         $('#next').click(function () {
 
-            MakeTurn();
+            game.MakeTurn();
 
         });
 
+        /// Атрибут хода (с монетой/ без монеты)
         $('#with-coin').change(function () {
 
-            DrawPirateAvailableMoves($('input[name=piratesChoice]:checked').val());
+            game.moves.DrawPirateAvailableMoves($('input[name=piratesChoice]:checked').val());
 
-            if (!isHumanStep) return;
-            curTeam.withCoin = $(this).is(':checked');
+            if (!game.isHumanStep) return;
+            game.moves.currentTeam.withCoin = $(this).is(':checked');
 	    });
 
+        /// Выбор пирата, ходы которого будут подсвечиваться и,
+        /// если игрок - человек, который будет делать ход
 	    $('input[name=piratesChoice]').change(function() {
 
-	        //alert($(this).val());
-		    DrawPirateAvailableMoves($(this).val());
+		    game.moves.DrawPirateAvailableMoves($(this).val());
 
-		    if (!isHumanStep) return;
-		    curTeam.pirate = $(this).val();
+		    if (!game.isHumanStep) return;
+		    game.moves.currentTeam.pirate = $(this).val();
 	    });
     });
 
 
-    function MakeTurn(moveNum) {
+    function Game() {
 
-        $.post("/Game/Turn", { turnNum: moveNum }, function (data) {
+        this.gamename = null;
+        this.gamestate = 'stop';
+        this.map;
+        this.groups;
+        this.isHumanStep = false;
 
-            if (data.isGameOver) {
+        // подсветка ходов или выбор хода
+        this.moves;
 
-                var elm = $('#end-game-alert');
-                elm.text('Игра закончена. Победил ' + GetWinner(data.teams));
-                elm.show();
+        this.ChangeState = function () {
+
+            if (this.gamestate == 'stop') {
+
+                this.GameStart();
+
+            } else if (this.gamestate == 'start') {
+
+                this.GameStop();
+            }
+        }
+
+        this.GameStart = function () {
+
+            this.gamestate = 'start';
+            $('#game').text('Остановить');
+            setTimeout(this.GameTurn, 250);
+        }
+
+        this.GameStop = function () {
+
+            if (this.isHumanStep) {
+                this.gamestate = 'stop';
+                $('#game').text('Продолжить');
+            }
+            else {
+                this.gamestate = 'stoping';
+                $('#game').text('Ожидаем ...');
+            }
+        }
+
+        this.GameTurn = function () {
+
+            if (this.gamestate == 'stoping') {
+
+                this.gamestate = 'stop';
+                $('#game').text('Продолжить');
                 return;
             }
 
-            UndrawMoves();
-
-            $('#counter').text(data.turn);
-
-            RedrawMap(data.changes);
-            RedrawStat(data.teams);
-
-            SetPirateTeamInfo(data);
-
-            if (!data.isHuman && (gamestate == 'start')) {
-                setTimeout(gameTurn, 250);
-            }
-        });
-    }
-
-    function SetPirateTeamInfo(data) {
-
-        isHumanStep = data.isHuman;
-
-        var team = humanTeams[data.curTeam];
-        if (team == null) {
-            team = {
-                pirate: 1,
-                withCoin: false
-            }
-            humanTeams[data.curTeam] = team;
+            game.MakeTurn();
         }
 
+        this.MakeStart = function (players) {
 
-        curTeam = team;
+            var self = this;
+            $.post("/Game/Start", { players: JSON.stringify(players) }, function (data) {
 
-        var available = GetPiratesAvailability(data.moves);
-        if (available[team.pirate - 1]) {
-            $('input[name=piratesChoice][value=' + team.pirate + ']').prop('checked', true);
-            $('#with-coin').prop('checked', team.withCoin);
-            DrawPirateAvailableMoves(curTeam.pirate);
-        }
-        else {
-            $('input[name=piratesChoice][value=1]').prop('checked', true);
-            $('#with-coin').prop('checked', team.withCoin);
-            DrawPirateAvailableMoves(1);
-        }
-    }
+                self.gamename = data.gamename;
+                $('#gamename').text(self.gamename);
+                $('#mapcode').text(data.mapId);
 
-	function DrawPirateAvailableMoves(num) {
-
-	    var withCoin = false;
-	    for (index = 0 ; index < moves.length ; index++) {
-	        var mv = moves[index];
-	        if ((mv.From.PirateNum == num) && (mv.WithCoin)) {
-	            withCoin = true;
-	            break;
-	        }
-	    }
-
-	    if (!withCoin) {
-	        $('#with-coin').prop('checked', false);
-	        $('#with-coin-checkbox').hide();
-	    }
-	    else {
-	        $('#with-coin-checkbox').show();
-	    }
-
-	    if (withCoin) withCoin = $('#with-coin').prop('checked');
-
-
-		for (var index = 0; index < moves.length; index++) {
-
-			var move = moves[index];
-			var fld = map.fields[move.To.X][move.To.Y];
-			
-			if (fld.locsize == 1) {
-				fld.back.css('opacity', '1');
-			} else {
-				fld.location.removeClass('digit_' + (fld.locsize - move.To.Level));
-				fld.back.css('opacity', '1');
-			}
-		}
-
-		//alert('num = ' + num);
-		for (index = 0 ; index < moves.length ; index++) {
-
-			move = moves[index];
-			fld = map.fields[move.To.X][move.To.Y];
-			var level = fld[move.To.Level];
-
-			if (move.From.PirateNum == num) {
-
-				if (withCoin && !move.WithCoin)
-					continue;
-					
-				if (fld.locsize == 1) {
-					fld.back.css('opacity', '0.5');
-				} else {
-					fld.location.addClass('digit_' + (fld.locsize - move.To.Level));
-					fld.back.css('opacity', '0.5');
-				}
-			}
-
-		}
-	}
-
-	function UndrawMoves() {
-
-		while (moves.length > 0) {
-			var move = moves.pop();
-			var fld = map.fields[move.To.X][move.To.Y];
-			if (fld.locsize == 1) {
-				fld.back.css('opacity', '1');
-			} else {
-				fld.location.removeClass('digit_' + (fld.locsize - move.To.Level));
-				fld.back.css('opacity', '1');
-			}
-		}
-	}
-
-    function gameReset() {
-
-        if (gamestate == 'start') {
-
-            gamestate = 'stoping';
-            $('#game').text('Ожидаем');
-            setTimeout(gameReset, 500);
-        }
-        else {
-            $.post("/Game/Reset", null, function (data) {
-
-                gamename = null;
-                $('#gamename').text('');
-                $('#game').text('Начать');
-
-                $('.bs-panel-statistics').hide();
-                $('.bs-panel-pirate').hide();
+                $('.bs-panel-statistics').show();
+                $('.bs-panel-pirate').show();
+                $('.bs-panel-control').show();
+                $('.bs-panel-start').hide();
                 $('#end-game-alert').hide();
 
-                $('.controls').removeClass('col-md-3').addClass('center-block')
-                $('#map').removeClass('col-md-9');
+                $('.controls').removeClass('center-block').addClass('col-md-3')
+                $('#map').addClass('col-md-9');
 
-                var mapElm = $('#map');
-                if (typeof (mapElm) != 'undefined')
-                    mapElm.html('');
+                self.groups = new Teams(data.stat.Teams);
 
-                var teamsElm = $('#teams');
-                if (typeof (teamsElm) != 'undefined')
-                    teamsElm.html('');
+                self.map = new Map(data.map.Width, data.map.Height);
+                self.map.RedrawMap(data.map.Changes);
+
+                self.moves = new Moves(self.map);
+
+                self.GameStart();
 
             });
-        }
-    }
 
-
-    function gameStart()
-    {
-        gamestate = 'start';
-        $('#game').text('Остановить');
-        setTimeout(gameTurn, 250);
-    }
-
-    function gameTurn()
-    {
-        if (gamestate == 'stoping') {
-
-            gamestate = 'stop';
-            $('#game').text('Продолжить');
-            return;
         }
 
-        MakeTurn();
+        this.MakeTurn = function(moveNum) {
+
+            var self = this;
+            $.post("/Game/Turn", { turnNum: moveNum }, function (data) {
+
+                if (data.stat.isGameOver) {
+
+                    self.groups.Redraw(data.stat.Teams)
+                    $('#counter').text(data.stat.TurnNo);
+                    var elm = $('#end-game-alert');
+                    elm.text('Игра закончена. Победил ' + self.groups.GetWinner(data.stat.Teams));
+                    elm.show();
+                    return;
+                }
+
+                self.moves.UndrawMoves();
+
+                self.map.RedrawMap(data.changes);
+                self.groups.Redraw(data.stat.Teams)
+                $('#counter').text(data.stat.TurnNo);
+
+                self.isHumanStep = data.stat.IsHumanPlayer;
+
+                self.moves.SetCurrentTeam(data.stat.CurrentTeamId);
+                self.moves.DrawAvailablePirates(data.moves);
+
+                if (!data.stat.IsHumanPlayer && (self.gamestate == 'start')) {
+                    setTimeout(self.GameTurn, 150);
+                }
+            });
+        }
+
+        this.GameReset = function() {
+
+            if (this.gamestate == 'start') {
+
+                if (this.isHumanStep) {
+                    this.gamestate = 'stop';
+                    $('#game').text('Продолжить');
+                }
+                else {
+                    this.gamestate = 'stoping';
+                    $('#game').text('Ожидаем');
+                }
+                setTimeout(this.GameReset, 500);
+            }
+            else {
+                $.post("/Game/Reset", null, function (data) {
+
+                    self.gamename = null;
+                    $('#gamename').text('');
+                    $('#game').text('Начать');
+
+                    $('.bs-panel-statistics').hide();
+                    $('.bs-panel-pirate').hide();
+                    $('.bs-panel-control').hide();
+                    $('#end-game-alert').hide();
+
+                    $('.bs-panel-start').show();
+
+                    $('.controls').removeClass('col-md-3').addClass('center-block')
+                    $('#map').removeClass('col-md-9');
+
+                    var mapElm = $('#map');
+                    if (typeof (mapElm) != 'undefined')
+                        mapElm.html('');
+                });
+            }
+        }
+
     }
+
+
+
+
+
+
     
+    /// ==============================
+    /// Обработчик щелчка пользователя
+    /// ==============================
+    var makeUserHandler = function (i, j) {
+        return function () {
+            if (!game.isHumanStep) return;
+
+            var action = game.moves.GetActionMove(i, j);
+            if (action != null) {
+                game.MakeTurn(action.MoveNum);
+            }
+            else alert('нет хода');
+        };
+    };
+
 
     /// ===========================
     /// Отображение карты на экране
     /// ===========================
     function Map(width, height) {
 
-        this.width = width;
-        this.height = height;
-
         var mapElm = $('#map');
         if (typeof (mapElm) == 'undefined') return;
 
+        this.width = width;
+        this.height = height;
         this.fields = {};
+
         for (var i = 0; i < this.width; i++) {
         	this.fields[i] = {};
         	for (var j = 0; j < this.height; j++) {
@@ -548,176 +514,231 @@
                 tr.append(td);
             }
         }
+
+        /// перерисовка карты
+        this.RedrawMap = function (changes) {
+
+            for (var index in changes) {
+
+                var each = changes[index];
+                var field = this.fields[each.X][each.Y];
+
+                if (!each.IsUnknown && field.isUnknown) {
+
+                    field[0].location.addClass('level-' + each.Levels.length + '0');
+
+                    field.isUnknown = false;
+                    if (each.Levels.length > 1) {
+
+                        for (var lindex in each.Levels) {
+                            if (lindex > 0) {
+                                var lev = $('<div class="level-' + each.Levels.length + lindex + '" />');
+                                var coins = $('<div class="coins" />');
+                                var pirates = $('<div class="pirates" />');
+                                field.location.append(lev);
+                                field.locsize = each.Levels.length;
+                                lev.append(coins);
+                                lev.append(pirates);
+                                field[lindex] = {
+                                    location: lev,
+                                    coins: coins,
+                                    pirates: pirates
+                                };
+                            }
+                        }
+                    }
+                }
+
+                if (each.BackgroundImageSrc != null)
+                    field.back.css('backgroundImage', 'url(' + each.BackgroundImageSrc + ')');
+                else {
+                    field.back.css('backgroundImage', '');
+                    field.back.css('backgroundColor', each.BackgroundColor);
+                }
+
+                if (each.Rotate == 1) {
+                    field.back.css('transform', 'rotate(90deg)');
+                } else if (each.Rotate == 2) {
+                    field.back.css('transform', 'rotate(180deg)');
+                } else if (each.Rotate == 3) {
+                    field.back.css('transform', 'rotate(270deg)');
+                }
+
+                for (var lindex in each.Levels) {
+
+                    var lev = each.Levels[lindex];
+
+                    var level = field[lindex];
+                    level.pirates.css('backgroundColor', lev.hasPirates ? lev.Pirate.BackColor : '');
+                    level.pirates.text(lev.hasPirates ? lev.Pirate.Text : '');
+
+                    level.coins.css('backgroundColor', lev.hasCoins ? lev.Coin.BackColor : '');
+                    level.coins.text(lev.hasCoins ? lev.Coin.Text : '');
+                }
+
+            }
+        }
+
     }
 
 
-	/// ==============================
-	/// Обработчик щелчка пользователя
-	/// ==============================
-    var makeUserHandler = function (i, j) {
-    	return function () {   
-    		if (!isHumanStep) return;
 
-    		for (var index = 0; index < moves.length; index++) {
 
-    		    var move = moves[index];
-    		    var curpirate = $('input[name=piratesChoice]:checked').val();
-    		    if ((move.To.X == i) && (move.To.Y == j) && (curpirate == move.From.PirateNum)) {
 
-    				// есть ход
-    				if ($('#with-coin').prop('checked') && !move.WithCoin)
-    					continue;
+    /// ================================================================
+    /// Отображение подсветки ходов и совершение действий human player-а
+    /// ================================================================
+    function Moves(map) {
 
-    				MakeTurn(move.MoveNum);
+        this.moves = [];
+        this.teamsHistory = {};
+        this.currentTeam;
+        this.map = map;
 
-    				//alert('есть ход');
-    				return;
-    			}
-    		}
-    		alert('нет хода');
-    	};
-    };
+        this.SetCurrentTeam = function (teamIndex) {
 
-    function RedrawMap(changes) {
+            var team = this.teamsHistory[teamIndex];
+            if (team == null) {
+                team = {
+                    pirate: 1,
+                    withCoin: false
+                }
+                this.teamsHistory[teamIndex] = team;
+            }
+            this.currentTeam = team;
+        }
 
-        for (var index in changes) {
+        this.DrawAvailablePirates = function(avmoves) {
 
-        	
-	        
-            var each = changes[index];
-            var field = map.fields[each.X][each.Y];
+            this.moves = avmoves;
 
-            if (!each.IsUnknown && field.isUnknown) {
+            // ищем пиратов, могущих сделать ход
+            var nums = 0;
+            for (var index = 0 ; index < avmoves.length ; index++) {
 
-                field[0].location.addClass('level-' + each.Levels.length + '0');
-
-            	field.isUnknown = false;
-            	if (each.Levels.length > 1) {
-
-            	    for (var lindex in each.Levels) {
-            	        if (lindex > 0) {
-            	            var lev = $('<div class="level-' + each.Levels.length + lindex + '" />');
-            	            var coins = $('<div class="coins" />');
-            	            var pirates = $('<div class="pirates" />');
-            	            field.location.append(lev);
-	            	        field.locsize = each.Levels.length;
-            	            lev.append(coins);
-            	            lev.append(pirates);
-            	            field[lindex] = {
-            	                location: lev,
-            	                coins: coins,
-            	                pirates: pirates
-            	            };
-            	        }
-            	    }
-            	}
+                var move = avmoves[index];
+                if (move.From.PirateNum == 3)
+                    nums |= 4;
+                nums |= move.From.PirateNum;
             }
 
-            if (each.BackgroundImageSrc != null)
-                field.back.css('backgroundImage', 'url(' + each.BackgroundImageSrc + ')');
+            // отображаем пиратов, могущих сделать ход
+            var availables = [nums & 1, nums & 2, nums & 4];
+            var pirateElms = [$('#first-pirate'), $('#second-pirate'), $('#third-pirate')];
+            for (index = 0 ; index < 3 ; index++) {
+                if (availables[index])
+                    pirateElms[index].show();
+                else pirateElms[index].hide();
+            }
+
+            var currentPirate = (availables[this.currentTeam.pirate - 1]) ? this.currentTeam.pirate : 1;
+
+            // выставляем настройки для ходов выбранного пирата
+            $('input[name=piratesChoice][value=' + currentPirate + ']').prop('checked', true);
+            $('#with-coin').prop('checked', this.currentTeam.withCoin);
+
+            // отображение подсветки ходов выбранного пирата
+            this.DrawPirateAvailableMoves(currentPirate);
+        }
+
+
+        this.DrawPirateAvailableMoves = function(num) {
+
+            var withCoin = false;
+            for (index = 0 ; index < this.moves.length ; index++) {
+                var mv = this.moves[index];
+                if ((mv.From.PirateNum == num) && (mv.WithCoin)) {
+                    withCoin = true;
+                    break;
+                }
+            }
+
+            if (!withCoin) {
+                $('#with-coin').prop('checked', false);
+                $('#with-coin-checkbox').hide();
+            }
             else {
-                field.back.css('backgroundImage', '');
-                field.back.css('backgroundColor', each.BackgroundColor);
+                $('#with-coin-checkbox').show();
             }
 
-            if (each.Rotate == 1) {
-                field.back.css('transform', 'rotate(90deg)');
-            } else if (each.Rotate == 2) {
-                field.back.css('transform', 'rotate(180deg)');
-            } else if (each.Rotate == 3) {
-                field.back.css('transform', 'rotate(270deg)');
+            if (withCoin) withCoin = $('#with-coin').prop('checked');
+
+
+            for (var index = 0; index < this.moves.length; index++) {
+
+                var move = this.moves[index];
+                var fld = this.map.fields[move.To.X][move.To.Y];
+
+                if (fld.locsize == 1) {
+                    fld.back.css('opacity', '1');
+                } else {
+                    fld.location.removeClass('digit_' + (fld.locsize - move.To.Level));
+                    fld.back.css('opacity', '1');
+                }
             }
 
+            //alert('num = ' + num);
+            for (index = 0 ; index < this.moves.length ; index++) {
 
+                move = this.moves[index];
+                fld = this.map.fields[move.To.X][move.To.Y];
+                var level = fld[move.To.Level];
 
-            for (var lindex in each.Levels) {
+                if (move.From.PirateNum == num) {
 
-	            var level = field[lindex];
+                    if (withCoin && !move.WithCoin)
+                        continue;
 
-	            var lev = each.Levels[lindex];
-		        if (lev.hasPirates) {
+                    if (fld.locsize == 1) {
+                        fld.back.css('opacity', '0.5');
+                    } else {
+                        fld.location.addClass('digit_' + (fld.locsize - move.To.Level));
+                        fld.back.css('opacity', '0.5');
+                    }
+                }
 
-		        	level.pirates.css('backgroundColor', lev.Pirate.BackColor);
-		        	level.pirates.text(lev.Pirate.Text);
-		        } else {
-
-		        	level.pirates.css('backgroundColor', '');
-		        	level.pirates.text('');
-		        }
-
-		        if (lev.hasCoins) {
-		        	level.coins.css('backgroundColor', lev.Coin.BackColor);
-		        	level.coins.text(lev.Coin.Text);
-		        } else {
-
-		        	level.coins.css('backgroundColor', '');
-		        	level.coins.text('');
-		        }
             }
-
         }
+
+        this.UndrawMoves = function() {
+
+            while (this.moves.length > 0) {
+                var move = this.moves.pop();
+                var fld = this.map.fields[move.To.X][move.To.Y];
+                if (fld.locsize == 1) {
+                    fld.back.css('opacity', '1');
+                } else {
+                    fld.location.removeClass('digit_' + (fld.locsize - move.To.Level));
+                    fld.back.css('opacity', '1');
+                }
+            }
+        }
+
+        this.GetActionMove = function (i, j) {
+
+            for (var index = 0; index < this.moves.length; index++) {
+
+                var move = this.moves[index];
+                var curpirate = $('input[name=piratesChoice]:checked').val();
+                if ((move.To.X == i) && (move.To.Y == j) && (curpirate == move.From.PirateNum)) {
+
+                    // есть ход
+                    if ($('#with-coin').prop('checked') && !move.WithCoin)
+                        continue;
+
+                    return move;
+                }
+            }
+            return null;
+        }
+
     }
 
 
 
-    var moves = [];
-
-    function GetPiratesAvailability(avmoves) {
-        
-        var nums = 0;
-
-        moves = avmoves;
-        for (var index = 0 ; index < avmoves.length ; index++) {
-
-            var move = avmoves[index];
-            if (move.From.PirateNum == 3)
-                nums |= 4;
-            nums |= move.From.PirateNum;
-        }
-
-        if (nums & 1) {
-            $('#first-pirate').show();
-        } else $('#first-pirate').hide();
-        if (nums & 2) {
-            $('#second-pirate').show();
-        } else $('#second-pirate').hide();
-        if (nums & 4) {
-            $('#third-pirate').show();
-        } else $('#third-pirate').hide();
-
-        return [nums & 1, nums & 2, nums & 4];
-    }
-
-
-    function GetWinner(teams) {
-
-        var maxgold = 0;
-        var winner;
-        for (var index=0 ; index < teams.length ; index++) {
-            var team = teams[index];
-            if (team.gold > maxgold){
-                maxgold = team.gold;
-                winner = team.name;
-            } else if (team.gold == maxgold) {
-                winner += (" и " + team.name);
-            }
-        }
-        return winner;
-    }
-
-
-    function RedrawStat(teams) {
-
-        for (var index=0 ; index < teams.length ; index++) {
-            var team = teams[index];
-
-            groups.teams[team.id].gld.text(team.gold);
-        }
-    }
-
-    /// =============================
-    /// Отображение игроков на экране
-    /// =============================
+    /// ===========================================
+    /// Отображение статистики по игрокам на экране
+    /// ===========================================
     function Teams(teams) {
 
         var teamsElm = $('#teams');
@@ -748,6 +769,34 @@
             };
             teamsElm.append(row);
         }
+
+        // Перерисовка измененной статистики по игрокам
+        this.Redraw = function(teams) {
+
+            for (var id in teams) {
+                var team = teams[id];
+                this.teams[team.id].gld.text(team.gold);
+            }
+        }
+
+        // Определение победителя по статистике
+        this.GetWinner = function (teams) {
+
+            var maxgold = 0;
+            var winner;
+
+            for (var id in teams) {
+                var team = teams[id];
+                if (team.gold > maxgold) {
+                    maxgold = team.gold;
+                    winner = team.name;
+                } else if (team.gold == maxgold) {
+                    winner += (" и " + team.name);
+                }
+            }
+            return winner;
+        }
+
     }
 
 
