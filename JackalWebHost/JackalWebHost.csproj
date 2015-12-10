@@ -139,6 +139,7 @@
     <Compile Include="Models\DrawCoin.cs" />
     <Compile Include="Models\DrawMap.cs" />
     <Compile Include="Models\DrawTeam.cs" />
+    <Compile Include="Models\GameSettings.cs" />
     <Compile Include="Models\LevelChange.cs" />
     <Compile Include="Models\DrawPirate.cs" />
     <Compile Include="Models\DrawMove.cs" />

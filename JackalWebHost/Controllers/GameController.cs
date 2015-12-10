@@ -1,6 +1,8 @@
 ﻿using Jackal;
 using Jackal.Players;
+using JackalWebHost.Models;
 using JackalWebHost.Service;
+using System;
 using System.Web.Mvc;
 
 namespace JackalWebHost.Controllers
@@ -26,17 +28,17 @@ namespace JackalWebHost.Controllers
         /// <summary>
         /// Запуск игры
         /// </summary>
-        public JsonResult Start(string players)
+        public JsonResult Start(string settings)
         {
             GameState gameState = new GameState();
 
-            var playersList = JsonHelper.DeserialiazeWithType<string[]>(players);
+            var gameSettings = JsonHelper.DeserialiazeWithType<GameSettings>(settings);
 
 
             IPlayer[] gamePlayers = new IPlayer[4];
             int index = 0;
 
-            foreach (var pl in playersList)
+            foreach (var pl in gameSettings.players)
             {
                 switch (pl)
                 {
@@ -57,8 +59,10 @@ namespace JackalWebHost.Controllers
                 gamePlayers[index++] = new SmartPlayer();
             }
 
-            int mapId = 887412 + 1;
-            gameState.board = new Board(gamePlayers, mapId);
+            if (!gameSettings.mapId.HasValue)
+                gameSettings.mapId = new Random().Next();
+
+            gameState.board = new Board(gamePlayers, gameSettings.mapId.Value);
             gameState.game = new Game(gamePlayers, gameState.board);
 
             Session["test"] = gameState;
@@ -68,8 +72,8 @@ namespace JackalWebHost.Controllers
 
             return Json(new { 
                 gamename = "test", 
-                map = map, 
-                mapId = mapId, 
+                map = map,
+                mapId = gameSettings.mapId.Value, 
                 stat = service.GetStatistics(gameState.game) 
             });
         }

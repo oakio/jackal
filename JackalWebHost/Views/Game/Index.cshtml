@@ -114,6 +114,12 @@
         .bs-panel-control:after, .bs-panel-start:after {
             content: "Управление";
         }
+
+        .bs-panel-custom-settings {
+            float: right;
+            content: "Настройки";
+        }
+
         .bs-panel-statistics:after {
             content: "Статистика";
         }
@@ -123,6 +129,9 @@
         }
 
 </style>
+   <div class="bs-panel-custom-settings">
+        <button id="game-settings" class="btn btn-default">Настройки</button>
+    </div>
 
 <div class="col-md-offset-1">
 <h2>Остров сокровищ!!!</h2>
@@ -192,11 +201,15 @@
 			</div>
 			<div class="modal-body">
 				<div id="player-choose-menu" class="center-block" style="width: 250px; height: 250px; position: relative;">
-                    <div class="robot" style="position: absolute; top: 200px; left: 100px; cursor: pointer;" ></div>
+                    <div class="human" style="position: absolute; top: 200px; left: 100px; cursor: pointer;" ></div>
 					<div class="robot2" style="position: absolute; top: 100px; left: 0px; cursor: pointer;" ></div>
                     <div class="robot" style="position: absolute; top: 0px; left: 100px; cursor: pointer;" ></div>
 					<div class="robot2" style="position: absolute; top: 100px; left: 200px; cursor: pointer;" ></div>
 				</div>
+                <div class="form-group">
+                    <label for="game-map-id">Код карты:</label>
+                    <input type="email" class="form-control" id="game-map-id" value="@(new Random().Next())">
+                </div>
 				<button id="start-button-modal" class="btn btn-primary" type="submit">Начать</button>
 			</div>
 		</div><!-- /.modal-content -->
@@ -236,7 +249,9 @@
     			input.push($(players[i]).attr('class'));
     		}
 
-    		game.MakeStart(input);
+    		var mapId = $('#game-map-id').val();
+
+    		game.MakeStart(input, parseInt(mapId));
     	});
 
         /// Смена режима игры (пошаговый/непрерывный)
@@ -245,8 +260,13 @@
             game.ChangeState();
         });
 
-        /// Начать игру
+        /// Быстрое начало игры
         $('#game-start').click(function () {
+            game.MakeStart(['human', 'robot2', 'robot2', 'robot2']);
+        });
+
+        /// Настроить игру
+        $('#game-settings').click(function () {
 
             var preparingFileModal = $("#preparing-file-modal");
             preparingFileModal.modal('toggle');
@@ -340,10 +360,10 @@
             game.MakeTurn();
         }
 
-        this.MakeStart = function (players) {
+        this.MakeStart = function (players, mapId) {
 
             var self = this;
-            $.post("/Game/Start", { players: JSON.stringify(players) }, function (data) {
+            $.post("/Game/Start", { settings: JSON.stringify({players : players, mapId: mapId}) }, function (data) {
 
                 self.gamename = data.gamename;
                 $('#gamename').text(self.gamename);
@@ -352,7 +372,10 @@
                 $('.bs-panel-statistics').show();
                 $('.bs-panel-pirate').show();
                 $('.bs-panel-control').show();
+
                 $('.bs-panel-start').hide();
+                $('.bs-panel-custom-settings').hide();
+
                 $('#end-game-alert').hide();
 
                 $('.controls').removeClass('center-block').addClass('col-md-3')
@@ -430,9 +453,12 @@
                     $('#end-game-alert').hide();
 
                     $('.bs-panel-start').show();
+                    $('.bs-panel-custom-settings').show();
 
                     $('.controls').removeClass('col-md-3').addClass('center-block')
                     $('#map').removeClass('col-md-9');
+
+                    $('#teams').empty();
 
                     var mapElm = $('#map');
                     if (typeof (mapElm) != 'undefined')
