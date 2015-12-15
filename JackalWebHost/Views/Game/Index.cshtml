@@ -399,7 +399,7 @@
             var self = this;
             $.post("/Game/Turn", { turnNum: moveNum }, function (data) {
 
-                if (data.stat.isGameOver) {
+                if (data.stat.IsGameOver) {
 
                     self.groups.Redraw(data.stat.Teams)
                     $('#counter').text(data.stat.TurnNo);
