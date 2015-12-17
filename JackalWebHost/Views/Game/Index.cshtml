@@ -1,196 +1,187 @@
-﻿@{
-    ViewBag.Title = "Game";
-}
+﻿<style type="text/css">
+    body {
+        background-color: lightgray;
+    }
 
-<style type="text/css">
-        body {
-            background-color: lightgray;
-        }
-        #map {float: left;}
-        #map table td {width: 50px; height: 50px; border: 1px black solid; vertical-align: top; padding: 0px; }
-		#map table { border-collapse: separate; border-spacing: 2px; box-sizing: border-box; }
-        table td .coins {width: 15px; height: 15px; float: right; color: black; position: relative; z-index: 5;}
-        table td .pirates {width: 15px; height: 15px; float: left; color: white; z-index: 5;}
+    .header-text {
+        font-size: 26px;
+    }
 
-        .controls { width: 200px; }
-        #teams div { color: white; }
-        .controls button { width: 100% }
+    #map {float: left;}
+    #map table td {width: 50px; height: 50px; border: 1px black solid; vertical-align: top; padding: 0px; }
+	#map table { border-collapse: separate; border-spacing: 2px; box-sizing: border-box; }
+    table td .coins {width: 15px; height: 15px; float: right; color: black; position: relative; z-index: 5;}
+    table td .pirates {width: 15px; height: 15px; float: left; color: white; z-index: 5;}
 
-        .back { position: absolute; width: 50px; height: 50px; background-size: cover; border-width: 0px; z-index: 0;}
+    .controls { width: 200px; }
+    #teams div { color: white; }
+    .controls button { width: 100% }
 
-        .level { position: absolute; width: 50px; z-index: 3; }
-        .level-10 { position: absolute; width: 50px; z-index: 3;}
+    .back { position: absolute; width: 50px; height: 50px; background-size: cover; border-width: 0px; z-index: 0;}
 
-        .level-21 { position: absolute; margin-top: 35px; z-index: 3;}
-        .level-20 { position: absolute; margin-left: 35px; z-index: 3;}
+    .level { position: absolute; width: 50px; z-index: 3; }
+    .level-10 { position: absolute; width: 50px; z-index: 3;}
 
-        .level-32 { position: absolute; margin-top: 35px; margin-left: 35px; z-index: 3;}
-        .level-31 { position: absolute; margin-top: 15px; margin-left: 5px; z-index: 3;}
-        .level-30 { position: absolute; margin-left: 35px; z-index: 3;}
+    .level-21 { position: absolute; margin-top: 35px; z-index: 3;}
+    .level-20 { position: absolute; margin-left: 35px; z-index: 3;}
 
-        .level-43 { position: absolute; margin-top: 35px; margin-left: 35px; z-index: 3;}
-        .level-42 { position: absolute; margin-top: 25px; }
-        .level-41 { position: absolute; margin-top: 10px; margin-left: 25px; z-index: 3;}
-        .level-40 { position: absolute; }
+    .level-32 { position: absolute; margin-top: 35px; margin-left: 35px; z-index: 3;}
+    .level-31 { position: absolute; margin-top: 15px; margin-left: 5px; z-index: 3;}
+    .level-30 { position: absolute; margin-left: 35px; z-index: 3;}
 
-        .level-54 { position: absolute; margin-left: 35px; z-index: 3;}
-        .level-53 { position: absolute; margin-left: 15px; z-index: 3;}
-        .level-52 { position: absolute; margin-top: 15px; z-index: 3;}
-        .level-51 { position: absolute; margin-top: 35px; margin-left: 5px; z-index: 3;}
-        .level-50 { position: absolute; margin-top: 35px; margin-left: 35px; z-index: 3;}
+    .level-43 { position: absolute; margin-top: 35px; margin-left: 35px; z-index: 3;}
+    .level-42 { position: absolute; margin-top: 25px; }
+    .level-41 { position: absolute; margin-top: 10px; margin-left: 25px; z-index: 3;}
+    .level-40 { position: absolute; }
 
+    .level-54 { position: absolute; margin-left: 35px; z-index: 3;}
+    .level-53 { position: absolute; margin-left: 15px; z-index: 3;}
+    .level-52 { position: absolute; margin-top: 15px; z-index: 3;}
+    .level-51 { position: absolute; margin-top: 35px; margin-left: 5px; z-index: 3;}
+    .level-50 { position: absolute; margin-top: 35px; margin-left: 35px; z-index: 3;}
 
-		.digit_1 {
-			background-image: url(/Content/Pictures/digits_small.jpg);
-		}
-		.digit_2 {
-			background-image: url(/Content/Pictures/digits_small.jpg);
-			background-position: 51px 0px;
-		}
+	.digit_1 {
+		background-image: url(/Content/Pictures/digits_small.jpg);
+	}
 
-		.digit_3 {
-			background-image: url(/Content/Pictures/digits_small.jpg);
-			background-position: 0px -51px;
-		}
+	.digit_2 {
+		background-image: url(/Content/Pictures/digits_small.jpg);
+		background-position: 51px 0px;
+	}
+
+	.digit_3 {
+		background-image: url(/Content/Pictures/digits_small.jpg);
+		background-position: 0px -51px;
+	}
 		
-		.digit_4 {
-			background-image: url(/Content/Pictures/digits_small.jpg);
-			background-position: 51px -51px;
-		}
+	.digit_4 {
+		background-image: url(/Content/Pictures/digits_small.jpg);
+		background-position: 51px -51px;
+	}
 
-		.digit_5 {
-			background-image: url(/Content/Pictures/digits_small.jpg);
-			background-position: 0px -102px;
-		}
+	.digit_5 {
+		background-image: url(/Content/Pictures/digits_small.jpg);
+		background-position: 0px -102px;
+	}
 
-		.human {
-			background-image: url("/Content/Pictures/human.png");
-			background-repeat: no-repeat;
-			width: 50px;
-			height: 50px;
-			margin: 0;
-			padding: 0;
-		}
+	.human {
+		background-image: url("/Content/Pictures/human.png");
+		background-repeat: no-repeat;
+		width: 50px;
+		height: 50px;
+		margin: 0;
+		padding: 0;
+	}
 
-		.robot {
-			background-image: url("/Content/Pictures/robot.png");
-			background-repeat: no-repeat;
-			width: 50px;
-			height: 50px;
-			margin: 0;
-			padding: 0;
-		}
+	.robot {
+		background-image: url("/Content/Pictures/robot.png");
+		background-repeat: no-repeat;
+		width: 50px;
+		height: 50px;
+		margin: 0;
+		padding: 0;
+	}
 
-		.robot2 {
-			background-image: url("/Content/Pictures/robot2.png");
-			background-repeat: no-repeat;
-			width: 50px;
-			height: 50px;
-			margin: 0;
-			padding: 0;
-		}
+	.robot2 {
+		background-image: url("/Content/Pictures/robot2.png");
+		background-repeat: no-repeat;
+		width: 50px;
+		height: 50px;
+		margin: 0;
+		padding: 0;
+	}
 
-        .bs-panel-control, .bs-panel-statistics, .bs-panel-pirate, .bs-panel-start {
-            background-color: white;
-            border-color: gray;
-            border-style: solid;
-            border-width: 1px;
-            border-radius: 4px;
-            margin: 0 -15px 15px;
-            padding: 45px 15px 15px;
-            position: relative;
-        }
-        .bs-panel-control:after, .bs-panel-statistics:after, .bs-panel-pirate:after, .bs-panel-start:after {
-            color: #959595;
-            font-size: 12px;
-            font-weight: 700;
-            left: 15px;
-            letter-spacing: 1px;
-            position: absolute;
-            text-transform: uppercase;
-            top: 15px;
-        }
+    .bs-panel-control, .bs-panel-statistics, .bs-panel-pirate {
+        background-color: white;
+        border-color: gray;
+        border-style: solid;
+        border-width: 1px;
+        border-radius: 4px;
+        margin: 0 -15px 15px;
+        padding: 45px 15px 15px;
+        position: relative;
+    }
+    .bs-panel-control:after, .bs-panel-statistics:after, .bs-panel-pirate:after {
+        color: #959595;
+        font-size: 12px;
+        font-weight: 700;
+        left: 15px;
+        letter-spacing: 1px;
+        position: absolute;
+        text-transform: uppercase;
+        top: 15px;
+    }
 
-        .bs-panel-control:after, .bs-panel-start:after {
-            content: "Управление";
-        }
+    .bs-panel-control:after {
+        content: "Управление";
+    }
 
-        .bs-panel-custom-settings {
-            float: right;
-            content: "Настройки";
-        }
+    .bs-panel-statistics:after {
+        content: "Статистика";
+    }
 
-        .bs-panel-statistics:after {
-            content: "Статистика";
-        }
-
-        .bs-panel-pirate:after {
-            content: "Подсветка хода";
-        }
-
+    .bs-panel-pirate:after {
+        content: "Подсветка хода";
+    }
 </style>
-   <div class="bs-panel-custom-settings">
-        <button id="game-settings" class="btn btn-default">Настройки</button>
-    </div>
 
-<div class="col-md-offset-1">
-<h2>Остров сокровищ!!!</h2>
-</div>
-<br/>
-<br/>
+<nav class="navbar navbar-default header-text">
+    <div class="container">
+        <ul class="nav navbar-nav">
+            <li><a id="reset" href="#">Начать заново</a></li>
+            <li><a id="game-settings" href="#">Настройки</a></li>
+        </ul>
+    </div>
+</nav>
+
 <div style="width: 100%;">
     <div class="center-block" style="width: 1000px;">
         <div id="map"></div>
-<div class="controls center-block">
+            <div class="controls center-block">
 
-    <div class="bs-panel-statistics" style="display: none;">
-        <div>Код игры: <span id="gamename"></span></div>
-        <div>Код карты: <span id="mapcode"></span></div>
-        <div>Номер хода: <span id="counter"></span></div>
-        <div style="margin: 15px 15px 0 15px;">
-            <div id="teams"></div>
+            <div class="bs-panel-statistics" style="display: none;">
+                <div>Код игры: <span id="gamename"></span></div>
+                <div>Код карты: <span id="mapcode"></span></div>
+                <div>Номер хода: <span id="counter"></span></div>
+                <div style="margin: 15px 15px 0 15px;">
+                    <div id="teams"></div>
+                </div>
+            </div>
+            <div id="end-game-alert" class="alert alert-danger" style="display: none;"></div>
+            <div class="bs-panel-control" style="display: none;">
+                <button id="game" class="btn btn-default">Начать</button>
+                <button id="next" class="btn btn-default">Следующий ход</button>
+            </div>
+            <br/>
+            <div class="bs-panel-pirate" style="display: none;">
+                <div id="first-pirate" class="input-group">
+                    <span class="input-group-addon">
+                    <input  type="radio" name="piratesChoice" value="1" />
+                    </span>
+                    <input type="text" class="form-control" value="1-ый пират" disabled="disabled" />
+                </div><!-- /input-group -->
+                <div id="second-pirate" class="input-group">
+                    <span class="input-group-addon">
+                    <input  type="radio" name="piratesChoice" value="2" />
+                    </span>
+                    <input type="text" class="form-control" value="2-ой пират" disabled="disabled" />
+                </div><!-- /input-group -->
+                <div id="third-pirate" class="input-group">
+                    <span class="input-group-addon">
+                    <input  type="radio" name="piratesChoice" value="3" />
+                    </span>
+                    <input type="text" class="form-control" value="3-ий пират" disabled="disabled" />
+                </div><!-- /input-group -->
+                <hr/>
+                <div id="with-coin-checkbox" class="input-group">
+                    <span class="input-group-addon">
+                    <input id="with-coin" type="checkbox">
+                    </span>
+                    <input type="text" class="form-control" value="С монетой" disabled="disabled" />
+                </div><!-- /input-group -->
+            </div>
         </div>
     </div>
-    <div id="end-game-alert" class="alert alert-danger" style="display: none;"></div>
-    <div class="bs-panel-start">
-        <button id="game-start" class="btn btn-default">Начать</button>
-    </div>
-    <div class="bs-panel-control" style="display: none;">
-        <button id="game" class="btn btn-default">Начать</button>
-        <button id="next" class="btn btn-default">Следующий ход</button>
-        <hr/>
-        <button id="reset" class="btn btn-default">Заново</button>
-    </div>
-    <br/>
-	<div class="bs-panel-pirate" style="display: none;">
-        <div id="first-pirate" class="input-group">
-          <span class="input-group-addon">
-            <input  type="radio" name="piratesChoice" value="1" />
-          </span>
-          <input type="text" class="form-control" value="1-ый пират" disabled="disabled" />
-        </div><!-- /input-group -->
-        <div id="second-pirate" class="input-group">
-          <span class="input-group-addon">
-            <input  type="radio" name="piratesChoice" value="2" />
-          </span>
-          <input type="text" class="form-control" value="2-ой пират" disabled="disabled" />
-        </div><!-- /input-group -->
-        <div id="third-pirate" class="input-group">
-          <span class="input-group-addon">
-            <input  type="radio" name="piratesChoice" value="3" />
-          </span>
-          <input type="text" class="form-control" value="3-ий пират" disabled="disabled" />
-        </div><!-- /input-group -->
-        <hr/>
-        <div id="with-coin-checkbox" class="input-group">
-          <span class="input-group-addon">
-            <input id="with-coin" type="checkbox">
-          </span>
-          <input type="text" class="form-control" value="С монетой" disabled="disabled" />
-        </div><!-- /input-group -->
-	</div>
-</div>
-       </div>
 </div>
 
 <div class="modal fade" id="preparing-file-modal" data-backdrop="static" data-keyboard="false">
@@ -217,11 +208,12 @@
 </div><!-- /.modal -->
 
 <script type="text/javascript">
-
     /// собственно объект игры
     var game = new Game();
 
     $(document).ready(function () {
+        /// Быстрое начало игры
+        game.MakeStart(['human', 'robot2', 'robot2', 'robot2']);
 
         /// выбор игроков
     	$('#player-choose-menu div').click(function () {
@@ -237,9 +229,9 @@
     		}
     	});
 
-        /// Начинаем игру
+        /// Начинаем игру со своими настройками
     	$('#start-button-modal').click(function () {
-
+    	    game.GameReset();
     		var preparingFileModal = $("#preparing-file-modal");
     		preparingFileModal.modal('toggle');
 
@@ -250,44 +242,34 @@
     		}
 
     		var mapId = $('#game-map-id').val();
-
     		game.MakeStart(input, parseInt(mapId));
     	});
 
         /// Смена режима игры (пошаговый/непрерывный)
         $('#game').click(function () {
-
             game.ChangeState();
-        });
-
-        /// Быстрое начало игры
-        $('#game-start').click(function () {
-            game.MakeStart(['human', 'robot2', 'robot2', 'robot2']);
         });
 
         /// Настроить игру
         $('#game-settings').click(function () {
-
             var preparingFileModal = $("#preparing-file-modal");
             preparingFileModal.modal('toggle');
+            return false;
         });
 
         /// Начать заново
         $('#reset').click(function () {
-
             game.GameReset();
+            return false;
         });
 
         /// Следующий ход в пошаговом режиме
         $('#next').click(function () {
-
             game.MakeTurn();
-
         });
 
         /// Атрибут хода (с монетой/ без монеты)
         $('#with-coin').change(function () {
-
             game.moves.DrawPirateAvailableMoves($('input[name=piratesChoice]:checked').val());
 
             if (!game.isHumanStep) return;
@@ -297,7 +279,6 @@
         /// Выбор пирата, ходы которого будут подсвечиваться и,
         /// если игрок - человек, который будет делать ход
 	    $('input[name=piratesChoice]').change(function() {
-
 		    game.moves.DrawPirateAvailableMoves($(this).val());
 
 		    if (!game.isHumanStep) return;
@@ -373,9 +354,6 @@
                 $('.bs-panel-pirate').show();
                 $('.bs-panel-control').show();
 
-                $('.bs-panel-start').hide();
-                $('.bs-panel-custom-settings').hide();
-
                 $('#end-game-alert').hide();
 
                 $('.controls').removeClass('center-block').addClass('col-md-3')
@@ -427,7 +405,6 @@
         }
 
         this.GameReset = function() {
-
             if (this.gamestate == 'start') {
 
                 if (this.isHumanStep) {
@@ -452,9 +429,6 @@
                     $('.bs-panel-control').hide();
                     $('#end-game-alert').hide();
 
-                    $('.bs-panel-start').show();
-                    $('.bs-panel-custom-settings').show();
-
                     $('.controls').removeClass('col-md-3').addClass('center-block')
                     $('#map').removeClass('col-md-9');
 
@@ -463,16 +437,12 @@
                     var mapElm = $('#map');
                     if (typeof (mapElm) != 'undefined')
                         mapElm.html('');
+
+                    game.MakeStart(['human', 'robot2', 'robot2', 'robot2']);
                 });
             }
         }
-
     }
-
-
-
-
-
 
     
     /// ==============================
