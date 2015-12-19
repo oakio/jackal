@@ -1,10 +1,15 @@
-﻿<style type="text/css">
+﻿@{
+    Layout = "Layout.cshtml";
+}
+
+<style type="text/css">
     body {
         background-color: lightgray;
     }
 
-    .header-text {
-        font-size: 26px;
+    .navbar{
+        font-size: 24px;
+        height:20px;
     }
 
     #map {float: left;}
@@ -125,7 +130,7 @@
     }
 </style>
 
-<nav class="navbar navbar-default header-text">
+<nav class="navbar navbar-default">
     <div class="container">
         <ul class="nav navbar-nav">
             <li><a id="reset" href="#">Начать заново</a></li>
@@ -199,7 +204,7 @@
 				</div>
                 <div class="form-group">
                     <label for="game-map-id">Код карты:</label>
-                    <input type="email" class="form-control" id="game-map-id" value="@(new Random().Next())">
+                    <input type="text" class="form-control" id="game-map-id" value="@(new Random().Next())">
                 </div>
 				<button id="start-button-modal" class="btn btn-primary" type="submit">Начать</button>
 			</div>
