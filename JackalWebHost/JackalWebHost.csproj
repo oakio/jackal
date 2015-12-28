@@ -207,10 +207,16 @@
     <Content Include="Content\Fields\water.hires.png" />
     <Content Include="Content\Fields\water.png" />
     <Content Include="Content\Fields\woodoo.png" />
+    <Content Include="Content\Pictures\bons.jpg" />
     <Content Include="Content\Pictures\digits_small.jpg" />
+    <Content Include="Content\Pictures\gokins.jpg" />
     <Content Include="Content\Pictures\human.png" />
+    <Content Include="Content\Pictures\livsi.jpg" />
+    <Content Include="Content\Pictures\piu.jpg" />
     <Content Include="Content\Pictures\robot.png" />
     <Content Include="Content\Pictures\robot2.png" />
+    <Content Include="Content\Pictures\silver.jpg" />
+    <Content Include="Content\Pictures\smallet.jpg" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
