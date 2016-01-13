@@ -96,7 +96,7 @@
 		padding: 0;
 	}
 
-    .bs-panel-control, .bs-panel-statistics, .bs-panel-pirate, .bs-panel-photos  {
+    .bs-panel-control, .bs-panel-statistics, .bs-panel-photos  {
         background-color: white;
         border-color: gray;
         border-style: solid;
@@ -106,7 +106,7 @@
         padding: 45px 15px 15px;
         position: relative;
     }
-    .bs-panel-control:after, .bs-panel-statistics:after, .bs-panel-pirate:after, .bs-panel-photos:after {
+    .bs-panel-control:after, .bs-panel-statistics:after, .bs-panel-photos:after {
         color: #959595;
         font-size: 12px;
         font-weight: 700;
@@ -123,10 +123,6 @@
 
     .bs-panel-statistics:after {
         content: "Статистика";
-    }
-
-    .bs-panel-pirate:after {
-        content: "Подсветка хода";
     }
 
     .bs-panel-photos:after {
@@ -162,6 +158,10 @@
             <img src="~/Content/Pictures/bons.jpg" alt="Билли Бонс" class="img-circle bs-photos photo-active pull-right" data-value="1">
             <img src="~/Content/Pictures/gokins.jpg" alt="Джимми Гокинс" class="img-circle bs-photos pull-right" data-value="2">
             <img src="~/Content/Pictures/livsi.jpg" alt="Доктор Ливси" class="img-circle bs-photos pull-right" data-value="3">
+
+            <div id="with-coin-checkbox" class="checkbox pull-right">
+                <label><input id="with-coin" type="checkbox" />с&nbsp;монетой</label>
+            </div>
         </div>
         <div id="map"></div>
             <div class="controls center-block">
@@ -178,34 +178,6 @@
             <div class="bs-panel-control" style="display: none;">
                 <button id="game" class="btn btn-default">Начать</button>
                 <button id="next" class="btn btn-default">Следующий ход</button>
-            </div>
-            <br/>
-            <div class="bs-panel-pirate" style="display: none;">
-                @*<div id="first-pirate" class="input-group">
-                    <span class="input-group-addon">
-                    <input  type="radio" name="piratesChoice" value="1" />
-                    </span>
-                    <input type="text" class="form-control" value="1-ый пират" disabled="disabled" />
-                </div><!-- /input-group -->
-                <div id="second-pirate" class="input-group">
-                    <span class="input-group-addon">
-                    <input  type="radio" name="piratesChoice" value="2" />
-                    </span>
-                    <input type="text" class="form-control" value="2-ой пират" disabled="disabled" />
-                </div><!-- /input-group -->
-                <div id="third-pirate" class="input-group">
-                    <span class="input-group-addon">
-                    <input  type="radio" name="piratesChoice" value="3" />
-                    </span>
-                    <input type="text" class="form-control" value="3-ий пират" disabled="disabled" />
-                </div><!-- /input-group -->
-                <hr/>*@
-                <div id="with-coin-checkbox" class="input-group">
-                    <span class="input-group-addon">
-                    <input id="with-coin" type="checkbox">
-                    </span>
-                    <input type="text" class="form-control" value="С монетой" disabled="disabled" />
-                </div><!-- /input-group -->
             </div>
         </div>
     </div>
@@ -300,20 +272,10 @@
 
         /// Атрибут хода (с монетой/ без монеты)
         $('#with-coin').change(function () {
-            //game.moves.DrawPirateAvailableMoves($('input[name=piratesChoice]:checked').val());
             game.moves.DrawPirateAvailableMoves($('.photo-active').data('value'));
 
-            if (!game.isHumanStep) return;
-            game.moves.currentTeam.withCoin = $(this).is(':checked');
-	    });
-
-        /// Выбор пирата, ходы которого будут подсвечиваться и,
-        /// если игрок - человек, который будет делать ход
-	    $('input[name=piratesChoice]').change(function() {
-		    game.moves.DrawPirateAvailableMoves($(this).val());
-
-		    if (!game.isHumanStep) return;
-		    game.moves.currentTeam.pirate = $(this).val();
+            //if (!game.isHumanStep) return;
+            //game.moves.currentTeam.withCoin = $(this).is(':checked');
 	    });
 
         /// Выбор пирата, ходы которого будут подсвечиваться и,
@@ -323,13 +285,12 @@
 	        $('.bs-photos').removeClass('photo-active');
 	        $(this).addClass('photo-active');
 
+	        $('#with-coin').prop('checked', true);
 	        game.moves.DrawPirateAvailableMoves($(this).data('value'));
 
 	        if (!game.isHumanStep) return;
 	        game.moves.currentTeam.pirate = $(this).data('value');
 	    });
-
-
     });
 
     function Game() {
@@ -396,7 +357,6 @@
                 $('#mapcode').text(data.mapId);
 
                 $('.bs-panel-statistics').show();
-                $('.bs-panel-pirate').show();
                 $('.bs-panel-control').show();
 
                 $('#end-game-alert').hide();
@@ -469,7 +429,6 @@
                     $('#game').text('Начать');
 
                     $('.bs-panel-statistics').hide();
-                    $('.bs-panel-pirate').hide();
                     $('.bs-panel-control').hide();
                     $('#end-game-alert').hide();
 
@@ -636,8 +595,7 @@
             var team = this.teamsHistory[teamIndex];
             if (team == null) {
                 team = {
-                    pirate: 1,
-                    withCoin: false
+                    pirate: 1
                 }
                 this.teamsHistory[teamIndex] = team;
             }
@@ -670,14 +628,11 @@
             var currentPirate = (availables[this.currentTeam.pirate - 1]) ? this.currentTeam.pirate : 1;
 
             // выставляем настройки для ходов выбранного пирата
-            //$('input[name=piratesChoice][value=' + currentPirate + ']').prop('checked', true);
-
             $('.bs-photos').removeClass('photo-active');
             $('.bs-photos[data-value=' + currentPirate + ']').addClass('photo-active');
 
-            $('#with-coin').prop('checked', this.currentTeam.withCoin);
-
             // отображение подсветки ходов выбранного пирата
+            $('#with-coin').prop('checked', true);
             this.DrawPirateAvailableMoves(currentPirate);
         }
 
@@ -693,16 +648,13 @@
                 }
             }
 
-            if (!withCoin) {
+            if (withCoin) {
+                withCoin = $('#with-coin').prop('checked');
+                $('#with-coin-checkbox').show();
+            } else {
                 $('#with-coin').prop('checked', false);
                 $('#with-coin-checkbox').hide();
             }
-            else {
-                $('#with-coin-checkbox').show();
-            }
-
-            if (withCoin) withCoin = $('#with-coin').prop('checked');
-
 
             for (var index = 0; index < this.moves.length; index++) {
 
@@ -759,7 +711,6 @@
             for (var index = 0; index < this.moves.length; index++) {
 
                 var move = this.moves[index];
-                //var curpirate = $('input[name=piratesChoice]:checked').val();
                 var curpirate = $('.photo-active').data('value');
                 if ((move.To.X == i) && (move.To.Y == j) && (curpirate == move.From.PirateNum)) {
 
