@@ -123,5 +123,14 @@ namespace JackalWebHost.Controllers
             return Json(new { result = "ok" });
         }
 
+
+        /// <summary>
+        /// Эмулятор кубиков
+        /// </summary>
+        public ActionResult Dice()
+        {
+            return View();
+        }
+
     }
 }

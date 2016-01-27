@@ -283,6 +283,7 @@
     </Content>
     <None Include="Properties\PublishProfiles\jackal.online.pubxml" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\Chart.min.js" />
     <Content Include="Scripts\google-analytics.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
     <Content Include="Scripts\jquery-2.1.3.min.js" />
@@ -308,6 +309,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Game\Layout.cshtml" />
     <Content Include="Views\Game\Index.cshtml" />
+    <Content Include="Views\Game\Dice.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
