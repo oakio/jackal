@@ -104,11 +104,17 @@
         function rollDice() {
 
             var dg = getRandomInt(1, 6);
-            updateDice($('#js-first-dice'), dg);
             var dg2 = getRandomInt(1, 6);
-            updateDice($('#js-second-dice'), dg2);
 
-            $('#js-sum-dice').text(dg + dg2)
+            $('#js-first-dice').fadeOut("slow");
+            $('#js-second-dice').fadeOut("slow");
+            $('#js-sum-dice').fadeOut("slow", function () {
+                updateDice($('#js-first-dice'), dg);
+                updateDice($('#js-second-dice'), dg2);
+                $('#js-sum-dice').text(dg + dg2).fadeIn("slow");
+                $('#js-first-dice').fadeIn("slow");
+                $('#js-second-dice').fadeIn("slow");
+            })
 
             if (isCustom) {
                 myLineChart.datasets[0].points[dg + dg2 - 2].value++;
@@ -118,7 +124,7 @@
 
         function updateDice(elm, digit) {
 
-            elm.attr('src', '/Content/Pictures/dice_' + digit + '.png');
+            elm.attr('src', '/Content/Pictures/dice_' + digit + '_small.png');
         }
 
         function getRandomInt(min, max) {
