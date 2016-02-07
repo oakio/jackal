@@ -209,11 +209,17 @@
     <Content Include="Content\Fields\woodoo.png" />
     <Content Include="Content\Pictures\bons.jpg" />
     <Content Include="Content\Pictures\dice_1.png" />
+    <Content Include="Content\Pictures\dice_1_small.png" />
     <Content Include="Content\Pictures\dice_2.png" />
+    <Content Include="Content\Pictures\dice_2_small.png" />
     <Content Include="Content\Pictures\dice_3.png" />
+    <Content Include="Content\Pictures\dice_3_small.png" />
     <Content Include="Content\Pictures\dice_4.png" />
+    <Content Include="Content\Pictures\dice_4_small.png" />
     <Content Include="Content\Pictures\dice_5.png" />
+    <Content Include="Content\Pictures\dice_5_small.png" />
     <Content Include="Content\Pictures\dice_6.png" />
+    <Content Include="Content\Pictures\dice_6_small.png" />
     <Content Include="Content\Pictures\digits_small.jpg" />
     <Content Include="Content\Pictures\gokins.jpg" />
     <Content Include="Content\Pictures\human.png" />
