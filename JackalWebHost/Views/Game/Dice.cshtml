@@ -12,24 +12,48 @@
 
     <script src="~/Scripts/Chart.min.js"></script>
 
-    <style>
+    <style type="text/css">
 
         body { width: 100%; }
         .dice_img {width: 100%; height: 100%; }
         #js-button-dice { background-color: lightgray; }
         .p20 { padding: 20px; }
+        .p15 { padding: 15px; }
         .p10 { padding: 10px; }
         .p5 { padding: 5px; }
         .m10 { margin: 10px; }
         .m5 { margin: 5px; }
-       
+        .pt10 { padding-top: 10px; }
+        .pt20 { padding-top: 20px; }
+
+        .navbar {
+            margin-bottom: 0;
+        }
+ 
     </style>
 
 </head>
 <body>
+
     <div class="container col-xs-12 col-lg-2">
 
-        <div id="js-button-dice" class="row">
+        <div class="navbar navbar-default row">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a class="js-menu-button" data-panel="js-button-dice" style="display: none;" href="#">DICE</a>
+                </li>
+                <li>
+                    <a class="js-menu-button" data-panel="js-graph-panel" href="#">GRAPH</a>
+                </li>
+                <li>
+                    <a class="js-menu-button" data-panel="js-dice-options" href="#">OPT</a>
+                </li>
+            </ul>
+            <div id="js-error-limit" class="p15 pull-right">-1</div>
+            <div id="js-rolls-count" class="p15 pull-right">0</div>
+        </div>
+
+        <div class="js-menu-panel row" id="js-button-dice">
             <div class="row">
                 <div class="col-xs-6" style="padding: 15px;">
                     <img id="js-first-dice" class="dice_img"  />
@@ -44,9 +68,12 @@
             </div>
         </div>
 
-        <div class="row">
+        <div id="js-graph-panel" class="js-menu-panel row" style="display: none;">
 
+            <button class="js-calc-chart p5 m5">36</button>
+            <button class="js-calc-chart p5 m5">72</button>
             <button class="js-calc-chart p5 m5">100</button>
+            <button class="js-calc-chart p5 m5">108</button>
             <button class="js-calc-chart p5 m5">1000</button>
             <button class="js-calc-chart p5 m5">10000</button>
             <button class="js-calc-chart p5 m5">100000</button>
@@ -55,21 +82,59 @@
             <canvas id="myChart" class="col-xs-12" height="400"></canvas>
 
         </div>
+
+        <div id="js-dice-options" class="js-menu-panel row" style="display: none;">
+
+            <div class="row pt20">
+                <div class="col-xs-12">
+                    <label class="col-xs-12">Уровень контроля за ошибками</label>
+                    <button class="js-dice-err-contol p5 m5" data-err-level="0">0</button>
+                    <button class="js-dice-err-contol p5 m5" data-err-level="1">1</button>
+                    <button class="js-dice-err-contol p5 m5" data-err-level="2">2</button>
+                    <button class="js-dice-err-contol p5 m5" data-err-level="-1">-1</button>
+                </div>
+            </div>
+
+            <div class="row pt20">
+                <div class="col-xs-12">
+                    <button class="js-custom-mode p5 m5">сброс статистики</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
 
         var myLineChart = null;
-        var isCustom = false;
+
+        var errorLimit = -1;
+        var hstory = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var normal = [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
+        var rollsCount = 0;
 
         $(document).ready(function () {
 
             $('#js-button-dice').click(rollDice);
 
+            $('.js-menu-button').click(function () {
+
+                $('.js-menu-panel').hide();
+                $('#' + $(this).data('panel')).show();
+                $('.js-menu-button').show();
+                $(this).hide();
+            });
+
+            $('.js-dice-err-contol').click(function () {
+                errorLimit = parseInt($(this).data('err-level'));
+                $('#js-error-limit').text(errorLimit);
+            });
+            
             $('.js-custom-mode').click(function () {
 
-                isCustom = true;
                 var customStat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                rollsCount = 0;
+                hstory = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
                 if (myLineChart == null) {
                     myLineChart = createChart(customStat);
@@ -84,7 +149,6 @@
 
             $('.js-calc-chart').click(function () {
 
-                isCustom = false;
                 if (myLineChart == null) {
                     myLineChart = createChart(getChartData(parseInt($(this).text())));
                 }
@@ -97,29 +161,29 @@
                 }
             });
 
+            myLineChart = createChart([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
             rollDice();
         });
 
 
         function rollDice() {
 
-            var dg = getRandomInt(1, 6);
-            var dg2 = getRandomInt(1, 6);
+            var dc = getRandomDice();
 
             $('#js-first-dice').fadeOut("slow");
             $('#js-second-dice').fadeOut("slow");
             $('#js-sum-dice').fadeOut("slow", function () {
-                updateDice($('#js-first-dice'), dg);
-                updateDice($('#js-second-dice'), dg2);
-                $('#js-sum-dice').text(dg + dg2).fadeIn("slow");
+                updateDice($('#js-first-dice'), dc.one);
+                updateDice($('#js-second-dice'), dc.two);
+                $('#js-sum-dice').text(dc.one + dc.two).fadeIn("slow");
                 $('#js-first-dice').fadeIn("slow");
                 $('#js-second-dice').fadeIn("slow");
             })
 
-            if (isCustom) {
-                myLineChart.datasets[0].points[dg + dg2 - 2].value++;
-                myLineChart.update();
-            }
+            $('#js-rolls-count').text(rollsCount);
+
+            myLineChart.datasets[0].points[dc.one + dc.two - 2].value++;
+            myLineChart.update();
         }
 
         function updateDice(elm, digit) {
@@ -209,16 +273,45 @@
         function getChartData(num) {
 
             var ret = [0,0,0,0,0,0,0,0,0,0,0];
+            if (errorLimit > -1) {
+                rollsCount = 0;
+                hstory = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            }
 
             for (var i = 0 ; i < num ; ++i) {
-                var dg = getRandomInt(1, 6);
-                var dg2 = getRandomInt(1, 6);
-
-                ret[dg + dg2 - 2]++;
+                var dc = getRandomDice();
+                ret[dc.one + dc.two - 2]++;
             }
 
             return ret;
         }
+
+        function getRandomDice() {
+
+            var dg = getRandomInt(1, 6);
+            var dg2 = getRandomInt(1, 6);
+
+            if (errorLimit > -1) {
+
+                var sum = dg + dg2 - 2;
+                var mul = Math.floor(rollsCount / 36) + 1;
+                rollsCount++;
+
+                while ((hstory[sum] - (normal[sum] * mul)) >= errorLimit) {
+
+                    dg = getRandomInt(1, 6);
+                    dg2 = getRandomInt(1, 6);
+                    sum = dg + dg2 - 2;
+                }
+
+                hstory[sum]++;
+
+                //alert(hstory[0] + ', ' + hstory[1] + ', ' + hstory[2] + ', ' + hstory[3] + ', ' + hstory[4] + ', ' + hstory[5] + ', ' + hstory[6] + ', ' + hstory[7] + ', ' + hstory[8] + ', ' + hstory[9] + ', ' + hstory[10])
+            }
+
+            return { one: dg, two: dg2 };
+        }
+
     </script>
 </body>
 </html>
