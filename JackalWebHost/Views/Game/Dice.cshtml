@@ -14,7 +14,9 @@
 
     <style type="text/css">
 
-        body { width: 100%; }
+        body { width: 100%; background-color: lightgray; }
+        #top-menu { background-color: white; }
+        #js-graph-panel { background-color: white; }
         .dice_img {width: 100%; height: 100%; }
         #js-button-dice { background-color: lightgray; }
         .p20 { padding: 20px; }
@@ -26,8 +28,9 @@
         .pt10 { padding-top: 10px; }
         .pt20 { padding-top: 20px; }
 
-        .navbar {
-            margin-bottom: 0;
+        ul.menu li {
+            display: inline; /* Отображать как строчный элемент */
+            padding: 15px;
         }
  
     </style>
@@ -37,23 +40,15 @@
 
     <div class="container col-xs-12 col-lg-2">
 
-        <div class="navbar navbar-default row">
-            <ul class="nav navbar-nav">
-                <li>
-                    <a class="js-menu-button" data-panel="js-button-dice" style="display: none;" href="#">DICE</a>
-                </li>
-                <li>
-                    <a class="js-menu-button" data-panel="js-graph-panel" href="#">GRAPH</a>
-                </li>
-                <li>
-                    <a class="js-menu-button" data-panel="js-dice-options" href="#">OPT</a>
-                </li>
-            </ul>
+        <div id="top-menu" class="row">
+            <div class="js-menu-button p15 pull-left" data-panel="js-button-dice" style="cursor:pointer; display: none;" href="#">DICE</div>
+            <div class="js-menu-button p15 pull-left" data-panel="js-graph-panel" style="cursor:pointer;">GRAPH</div>
+            <div class="js-menu-button p15 pull-left" data-panel="js-dice-options" style="cursor:pointer;">OPT</div>
             <div id="js-error-limit" class="p15 pull-right">-1</div>
             <div id="js-rolls-count" class="p15 pull-right">0</div>
         </div>
 
-        <div class="js-menu-panel row" id="js-button-dice">
+        <div class="js-menu-panel row" id="js-button-dice" style="height: 100%;">
             <div class="row">
                 <div class="col-xs-6" style="padding: 15px;">
                     <img id="js-first-dice" class="dice_img"  />
@@ -135,6 +130,7 @@
                 var customStat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 rollsCount = 0;
                 hstory = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $('#js-rolls-count').text(rollsCount);
 
                 if (myLineChart == null) {
                     myLineChart = createChart(customStat);
@@ -159,6 +155,7 @@
                     }
                     myLineChart.update();
                 }
+                $('#js-rolls-count').text(rollsCount);
             });
 
             myLineChart = createChart([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -295,7 +292,6 @@
 
                 var sum = dg + dg2 - 2;
                 var mul = Math.floor(rollsCount / 36) + 1;
-                rollsCount++;
 
                 while ((hstory[sum] - (normal[sum] * mul)) >= errorLimit) {
 
@@ -308,6 +304,7 @@
 
                 //alert(hstory[0] + ', ' + hstory[1] + ', ' + hstory[2] + ', ' + hstory[3] + ', ' + hstory[4] + ', ' + hstory[5] + ', ' + hstory[6] + ', ' + hstory[7] + ', ' + hstory[8] + ', ' + hstory[9] + ', ' + hstory[10])
             }
+            rollsCount++;
 
             return { one: dg, two: dg2 };
         }
