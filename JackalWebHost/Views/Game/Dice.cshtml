@@ -27,6 +27,7 @@
         .m5 { margin: 5px; }
         .pt10 { padding-top: 10px; }
         .pt20 { padding-top: 20px; }
+        .ml5 { margin-left: 5px; }
 
         ul.menu li {
             display: inline; /* Отображать как строчный элемент */
@@ -69,6 +70,7 @@
             <button class="js-calc-chart p5 m5">72</button>
             <button class="js-calc-chart p5 m5">100</button>
             <button class="js-calc-chart p5 m5">108</button>
+            <button class="js-calc-chart p5 m5">144</button>
             <button class="js-calc-chart p5 m5">1000</button>
             <button class="js-calc-chart p5 m5">10000</button>
             <button class="js-calc-chart p5 m5">100000</button>
@@ -95,6 +97,22 @@
                     <button class="js-custom-mode p5 m5">сброс статистики</button>
                 </div>
             </div>
+
+            <div class="row pt20">
+                <div class="col-xs-12">
+                    <label class="col-xs-12">Режим</label>
+                    <button class="js-dice-mode p5 m5" data-mode-number="0">простой</button>
+                    <button class="js-dice-mode p5 m5" data-mode-number="1">умный</button>
+                </div>
+            </div>
+
+            <div class="row pt20">
+                <div class="col-xs-12">
+                    <div class="p5 m5">
+                        <input type="checkbox" id="js-mode-repeat-reduce" checked="checked" /><label for="js-mode-repeat-reduce" class="ml5">Уменьшение повторов</label>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -102,11 +120,6 @@
     <script>
 
         var myLineChart = null;
-
-        var errorLimit = -1;
-        var hstory = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        var normal = [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
-        var rollsCount = 0;
 
         $(document).ready(function () {
 
@@ -121,16 +134,36 @@
             });
 
             $('.js-dice-err-contol').click(function () {
-                errorLimit = parseInt($(this).data('err-level'));
-                $('#js-error-limit').text(errorLimit);
+                DiceRoller.errorLimit = parseInt($(this).data('err-level'));
+                if (DiceRoller.mode == 1) {
+                    $('#js-error-limit').text('sm');
+                }
+                else {
+                    $('#js-error-limit').text(DiceRoller.errorLimit);
+                }
             });
-            
+
+            $('.js-dice-mode').click(function () {
+                DiceRoller.setMode(parseInt($(this).data('mode-number')));
+                if (DiceRoller.mode == 1) {
+                    $('#js-error-limit').text('sm');
+                }
+                else {
+                    $('#js-error-limit').text(DiceRoller.errorLimit);
+                }
+            });
+
+            $('#js-mode-repeat-reduce').change(function () {
+                DiceRoller.repeatReduce = $(this).is(':checked');
+                alert(DiceRoller.repeatReduce);
+            });
+
             $('.js-custom-mode').click(function () {
 
                 var customStat = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                rollsCount = 0;
-                hstory = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                $('#js-rolls-count').text(rollsCount);
+                DiceRoller.reset();
+
+                $('#js-rolls-count').text(DiceRoller.rollsCount);
 
                 if (myLineChart == null) {
                     myLineChart = createChart(customStat);
@@ -155,7 +188,7 @@
                     }
                     myLineChart.update();
                 }
-                $('#js-rolls-count').text(rollsCount);
+                $('#js-rolls-count').text(DiceRoller.rollsCount);
             });
 
             myLineChart = createChart([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -165,7 +198,7 @@
 
         function rollDice() {
 
-            var dc = getRandomDice();
+            var dc = DiceRoller.getRandomDice();
 
             $('#js-first-dice').fadeOut("slow");
             $('#js-second-dice').fadeOut("slow");
@@ -177,7 +210,7 @@
                 $('#js-second-dice').fadeIn("slow");
             })
 
-            $('#js-rolls-count').text(rollsCount);
+            $('#js-rolls-count').text(DiceRoller.rollsCount);
 
             myLineChart.datasets[0].points[dc.one + dc.two - 2].value++;
             myLineChart.update();
@@ -188,9 +221,6 @@
             elm.attr('src', '/Content/Pictures/dice_' + digit + '_small.png');
         }
 
-        function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
 
 
         function createChart(chartdata) {
@@ -269,45 +299,117 @@
 
         function getChartData(num) {
 
-            var ret = [0,0,0,0,0,0,0,0,0,0,0];
-            if (errorLimit > -1) {
-                rollsCount = 0;
-                hstory = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            }
+            var ret = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            DiceRoller.reset();
 
             for (var i = 0 ; i < num ; ++i) {
-                var dc = getRandomDice();
+                var dc = DiceRoller.getRandomDice();
                 ret[dc.one + dc.two - 2]++;
             }
 
             return ret;
         }
 
-        function getRandomDice() {
 
-            var dg = getRandomInt(1, 6);
-            var dg2 = getRandomInt(1, 6);
+        var DiceRoller = {
 
-            if (errorLimit > -1) {
+            errorLimit: -1,
+            repeatReduce: true,
+            mode: 0,
+            rollsCount: 0,
+            hstory: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            normal: [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1],
+            lastNumber: 0,
 
-                var sum = dg + dg2 - 2;
-                var mul = Math.floor(rollsCount / 36) + 1;
+            reset: function () {
+                this.rollsCount = 0;
+                this.hstory = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            },
 
-                while ((hstory[sum] - (normal[sum] * mul)) >= errorLimit) {
+            setMode: function (num) {
+                
+                if (num == 1) {
+                    this.mode = 1;
+                    this.normal = [3, 6, 9, 12, 15, 18, 15, 12, 9, 6, 3];
 
-                    dg = getRandomInt(1, 6);
-                    dg2 = getRandomInt(1, 6);
-                    sum = dg + dg2 - 2;
+                    for (var i=0 ; i < 36 ; i++) {
+                        this.normal[this.getRollResult().sum() -2]++;
+                    }
+                }
+                else {
+                    this.mode = 0;
+                    this.normal = [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
+                }
+            },
+
+            getRandomDice: function() {
+
+                var ret = this.getPrivateRandomDice();
+
+                if (this.repeatReduce && (this.lastNumber == ret.sum())) {
+
+                    ret = this.getPrivateRandomDice();
                 }
 
-                hstory[sum]++;
+                this.lastNumber = ret.sum();
+                this.hstory[this.lastNumber - 2]++;
+                this.rollsCount++;
 
-                //alert(hstory[0] + ', ' + hstory[1] + ', ' + hstory[2] + ', ' + hstory[3] + ', ' + hstory[4] + ', ' + hstory[5] + ', ' + hstory[6] + ', ' + hstory[7] + ', ' + hstory[8] + ', ' + hstory[9] + ', ' + hstory[10])
+                return ret;
+            },
+
+            getPrivateRandomDice: function () {
+
+                if (this.mode == 1) {
+                    if (this.rollsCount >= 144) {
+                        return this.getRollResult();
+                    }
+                    else {
+                        var rl = this.getRollResult();
+
+                        var idx = rl.sum() - 2;
+                        while (this.hstory[idx] >= this.normal[idx]) {
+
+                            rl = this.getRollResult();
+                            idx = rl.sum() - 2;
+                        }
+                        return rl;
+                    }
+                }
+
+                var roll = this.getRollResult();
+
+                if (this.errorLimit > -1) {
+
+                    var index = roll.sum() - 2;
+                    var mul = Math.floor(this.rollsCount / 36) + 1;
+
+                    while ((this.hstory[index] - (this.normal[index] * mul)) >= this.errorLimit) {
+
+                        roll = this.getRollResult();
+                        index = roll.sum() - 2;
+                    }
+                }
+
+                return roll;
+            },
+
+            getRollResult: function () {
+                return {
+                    one: this.getRandomInt(1, 6),
+                    two: this.getRandomInt(1, 6),
+                    sum: function () {
+                        return (this.one + this.two);
+                    }
+                };
+            },
+
+            getRandomInt: function (min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
             }
-            rollsCount++;
-
-            return { one: dg, two: dg2 };
         }
+
+
 
     </script>
 </body>
