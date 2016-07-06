@@ -2,6 +2,13 @@
 {
     public interface IPlayer
     {
-        int OnMove(Board board, Move[] availableMoves);
+        void OnNewGame();
+
+        /// <summary>
+        /// Насильный выбор хода, для HumanPlayer
+        /// </summary>
+        void SetHumanMove(int moveNum);
+
+        int OnMove(GameState gameState);
     }
 }

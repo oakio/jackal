@@ -6,58 +6,59 @@ namespace Jackal
 {
     public class MapGenerator
     {
-        public int Size = 11;
-        public int TotalCoins = 37;
+        public const int Size = 11;
+        public const int TotalCoins = 37;
 
+        public readonly int MapId;
         private readonly Random _rand;
-        private readonly List<Tile> _tiles;
-        private int _nextTile;
+        private readonly Dictionary<Position,Tile> _tiles;
 
         public MapGenerator(int mapId)
         {
-            _rand = new Random(mapId);
+            MapId = mapId;
+            _rand = new Random(MapId + 5000000);
 
-            _tiles = new List<Tile>(Size*Size);
+            var pack = Shuffle(TilesPack.Instance.List);
+            var positions = Board.GetAllEarth().ToList();
 
-            for (int i = 0; i < 5; i++)
+            if (pack.Count != positions.Count)
+                throw new Exception("wrong tiles pack count");
+
+            _tiles = new Dictionary<Position, Tile>();
+
+            foreach (var info in pack.Zip(positions, (def, position) => new {Def = def, Position = position}))
             {
-                AddTile(new Tile(TileType.Grass, 1));
-                AddTile(new Tile(TileType.Grass, 2));
+                var tempDef = info.Def.Clone();
+                int rotatesCount = _rand.Next(4);
+                for (int j = 1; j <= rotatesCount; j++)
+                {
+	                tempDef.CanonDirection = rotatesCount;
+                    tempDef.ArrowsCode = ArrowsCodesHelper.DoRotate(tempDef.ArrowsCode);
+                }
+                tempDef.Position = info.Position;
+
+                //создаем клетку
+                var tile = new Tile(tempDef);
+
+                //добавляем золото
+                tile.Levels[0].Coins = tile.Type.CoinsCount();
+
+                _tiles.Add(info.Position, tile);
             }
-
-            for (int i = 0; i < 3; i++)
-            {
-                AddTile(new Tile(TileType.Grass, 3));
-            }
-
-            for (int i = 0; i < 2; i++)
-            {
-                AddTile(new Tile(TileType.Grass, 4));
-            }
-
-            AddTile(new Tile(TileType.Grass, 5));
-
-            for (int i = 0; i < (Size*Size - 11); i++)
-            {
-                AddTile(new Tile(TileType.Grass));
-            }
-
-            _tiles = ShuffleTiles();
         }
 
-        private void AddTile(Tile tile)
+        private List<TileParams> Shuffle(IEnumerable<TileParams> defs)
         {
-            _tiles.Add(tile);
+            return defs
+                .Select(x => new {Def = x, Number = _rand.NextDouble()})
+                .OrderBy(x => x.Number)
+                .Select(x => x.Def)
+                .ToList();
         }
 
-        private List<Tile> ShuffleTiles()
+        public Tile GetNext(Position position)
         {
-            return _tiles.OrderBy(x => _rand.Next()).ToList();
-        }
-
-        public Tile GetNext()
-        {
-            return _tiles[_nextTile++];
+            return _tiles[position];
         }
     }
 }

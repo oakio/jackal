@@ -1,20 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Jackal
 {
     public class Ship
     {
+        [JsonProperty]
         public int TeamId;
-        public Position Position;
-        public int Coins;
-        public HashSet<Pirate> Crew;
 
-        public Ship(int teamId, Position position, HashSet<Pirate> crew)
+        [JsonProperty]
+        public Position Position;
+
+        [JsonProperty]
+        public int Coins;
+
+        public Ship(int teamId, Position position)
         {
             TeamId = teamId;
             Position = position;
             Coins = 0;
-            Crew = crew;
         }
     }
 }
