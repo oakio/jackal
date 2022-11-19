@@ -158,7 +158,6 @@
     <Content Include="Content\bootstrap\js\bootstrap.js" />
     <Content Include="Content\bootstrap\js\bootstrap.min.js" />
     <Content Include="Content\bootstrap\js\npm.js" />
-    <Content Include="Content\Fields\1.png" />
     <Content Include="Content\Fields\airplane.png" />
     <Content Include="Content\Fields\arrow1.png" />
     <Content Include="Content\Fields\arrow2.png" />
@@ -167,7 +166,6 @@
     <Content Include="Content\Fields\arrow5.png" />
     <Content Include="Content\Fields\arrow6.png" />
     <Content Include="Content\Fields\arrow7.png" />
-    <Content Include="Content\Fields\back.hires.png" />
     <Content Include="Content\Fields\back.png" />
     <Content Include="Content\Fields\balloon.png" />
     <Content Include="Content\Fields\bengan.png" />
@@ -180,7 +178,6 @@
     <Content Include="Content\Fields\chest5.png" />
     <Content Include="Content\Fields\croc.png" />
     <Content Include="Content\Fields\desert.png" />
-    <Content Include="Content\Fields\empty1.hires.png" />
     <Content Include="Content\Fields\empty1.png" />
     <Content Include="Content\Fields\empty2.png" />
     <Content Include="Content\Fields\empty3.png" />
@@ -204,7 +201,6 @@
     <Content Include="Content\Fields\swamp.png" />
     <Content Include="Content\Fields\trap.png" />
     <Content Include="Content\Fields\treasure.png" />
-    <Content Include="Content\Fields\water.hires.png" />
     <Content Include="Content\Fields\water.png" />
     <Content Include="Content\Fields\woodoo.png" />
     <Content Include="Content\Pictures\bons.jpg" />
